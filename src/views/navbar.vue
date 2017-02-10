@@ -254,7 +254,7 @@
                 <div class="navbar-username">{{profile.fullName}}</div>
                 <!-- <a class="navbar-usermore">View Profile</a> -->
             </div>
-            <ui-button @click="exit" class="btn-default-bd navbar-exit" type="flat">Sign Out</ui-button>
+            <ui-button @click.native="exit" class="btn-default-bd navbar-exit" type="flat">Sign Out</ui-button>
             <span v-if="flag ==='0' && isAdminFlag" @click="administratorMode('1')" class="navbar-switch"><i class="fa fa-user mr5" aria-hidden="true"></i>Admin<i class="fa fa-angle-right ml5" aria-hidden="true"></i></span>
             <span v-if="flag ==='1' && isAdminFlag" @click="administratorMode('0')" class="navbar-switch"><i class="fa fa-user mr5" aria-hidden="true"></i>Staff<i class="fa fa-angle-right ml5" aria-hidden="true"></i></span>
         </div>
@@ -299,10 +299,6 @@ export default {
                 }]
             };
         },
-        computed: {},
-        ready() {
-            this.clickBody();
-        },
         created() {
             this.employeeProfile();
             this.isAdmin();
@@ -321,7 +317,11 @@ export default {
             lang = isExist ? lang : 'en';
             // this.setLang('en');
         },
-        attached() {},
+        mounted: function () {
+          this.$nextTick(function () {
+            this.clickBody();
+          })
+        },
         methods: {
             changeLang() {
                     localStorage.setItem('lang', this.lang.name);
@@ -389,7 +389,7 @@ export default {
                 exit() {
                     this.show = !this.show;
                     this.$http.post(`/security/logout`).then((response) => {
-                        location.href = location.origin + '/login.html#!/';
+                        location.href = location.origin;
                     });
                 },
                 toggle() {

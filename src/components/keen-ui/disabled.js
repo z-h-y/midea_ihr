@@ -1,3 +1,3 @@
-export default function(value) {
-    this.el.disabled = Boolean(value);
+export default function(el, binding) {
+    el.disabled = Boolean(binding.value);
 }
