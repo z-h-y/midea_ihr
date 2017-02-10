@@ -150,7 +150,7 @@
                 <!-- <a class="panel-more" href="javascript:void(0)">More</a> -->
             </div>
             <div class="panel-content">
-                <vuetable :api-url="evaluationUrl" :selected-to="selectedRow" table-wrapper=".vuetable-wrapper" pagination-path="" :fields="columns" :item-actions="itemActions" per-page="10">
+                <vuetable :api-url="evaluationUrl" :selected-to="selectedRow" table-wrapper=".vuetable-wrapper" pagination-path="" :fields="columns" per-page="10">
                 </vuetable>
             </div>
         </div>
@@ -182,6 +182,7 @@ export default {
                 performances: [], //年份绩效
                 evaluationUrl: '/performance/performanceEvaluationStatistics', // 所有绩效方案填写情况统计 url
                 tableData: [],
+                selectedRow: [],
                 status: '',
                 //绩效统计表格字段
                 columns: [{

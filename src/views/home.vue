@@ -16,16 +16,18 @@
 </style>
 
 <template lang="html">
+<div class="">
+  <div v-if="viewflag == '1'">
+      <admin-home>
+      </admin-home>
+  </div>
 
-<div v-if="viewflag == '1'">
-    <admin-home>
-    </admin-home>
+  <div v-if="viewflag =='0'">
+      <staff-home>
+      </staff-home>
+  </div>
 </div>
 
-<div v-if="viewflag =='0'">
-    <staff-home>
-    </staff-home>
-</div>
 
 </template>
 

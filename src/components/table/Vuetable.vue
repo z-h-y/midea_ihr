@@ -360,15 +360,15 @@ body[modality="keyboard"] .ui-checkbox-input:focus+ .ui-checkbox-checkmark .ui-c
 
 <template>
 
-<div class="{{wrapperClass}} fix">
+<div :class="['fix', wrapperClass]">
     <div class="vuetable-area oxc scrollbar pb16">
-        <table class="vuetable {{tableClass}}">
+        <table :class="['vuetable', tableClass]">
             <thead>
                 <tr>
                     <template v-for="field in fields">
                         <template v-if="field.visible">
                             <template v-if="isSpecialField(field.name)">
-                                <th v-if="extractName(field.name) == '__checkbox'" class="table-checkbox {{field.titleClass || ''}}">
+                                <th v-if="extractName(field.name) == '__checkbox'" :class="['table-checkbox', field.titleClass || '']">
                                     <label class="ui-checkbox" :class="{'ui-checkbox': true, 'checked': checkAll}">
                                         <input class="ui-checkbox-input" type="checkbox" :checked="checkAll" @change="toggleAllCheckboxes($event.target.checked, field.name)">
 
@@ -377,14 +377,14 @@ body[modality="keyboard"] .ui-checkbox-input:focus+ .ui-checkbox-checkmark .ui-c
                                         </div>
                                     </label>
                                 </th>
-                                <th v-else id="{{field.name}}" class="table-th-radio {{field.titleClass || ''}}">
+                                <th v-else :id="field.name" :class="['table-th-radio', field.titleClass || '']">
                                     {{field.title || ''}}
                                 </th>
                             </template>
                             <template v-else>
-                                <th @click="orderBy(field, $event)" id="_{{field.name}}" class="{{field.titleClass || ''}} {{isSortable(field) ? 'sortable' : ''}}">
-                                    {{getTitle(field) | capitalize}}&nbsp;
-                                    <i v-if="isCurrentSortField(field)" class="{{ sortIcon(field) }}" v-bind:style="{opacity: sortIconOpacity(field)}"></i>
+                                <th @click="orderBy(field, $event)" :id="'_'+field.name" :class="[field.titleClass || '', isSortable(field) ? 'sortable' : '']">
+                                    {{getTitle(field)}}&nbsp;
+                                    <i v-if="isCurrentSortField(field)" :class="sortIcon(field)" v-bind:style="{opacity: sortIconOpacity(field)}"></i>
                                 </th>
                             </template>
                         </template>
@@ -392,14 +392,14 @@ body[modality="keyboard"] .ui-checkbox-input:focus+ .ui-checkbox-checkmark .ui-c
                 </tr>
             </thead>
             <tbody v-cloak>
-                <template v-for="(itemNumber, item) in tableData">
+                <template v-for="(item, itemNumber) in tableData">
                     <tr @click="onRowClicked(item, $event)" :render="onRowChanged(item)" :class="onRowClass(item, itemNumber)">
                         <template v-for="field in fields">
                             <template v-if="field.visible">
                                 <template v-if="isSpecialField(field.name)">
-                                    <td v-if="extractName(field.name) == '__sequence'" class="vuetable-sequence {{field.dataClass}}" v-html="tablePagination.from + itemNumber">
+                                    <td v-if="extractName(field.name) == '__sequence'" :class="['vuetable-sequence', field.dataClass]" v-html="tablePagination.from + itemNumber">
                                     </td>
-                                    <td v-if="extractName(field.name) == '__checkbox'" class="vuetable-checkboxes {{field.dataClass}}">
+                                    <td v-if="extractName(field.name) == '__checkbox'" :class="['vuetable-checkboxes', field.dataClass]">
                                         <label class="ui-checkbox" :class="{'ui-checkbox': true, 'checked': isSelectedRow(item, field.name, itemNumber)}">
                                             <input class="ui-checkbox-input" type="checkbox" @change="toggleCheckbox($event.target.checked, item, field.name, itemNumber)" :checked="isSelectedRow(item, field.name, itemNumber)">
 
@@ -408,45 +408,45 @@ body[modality="keyboard"] .ui-checkbox-input:focus+ .ui-checkbox-checkmark .ui-c
                                             </div>
                                         </label>
                                     </td>
-                                    <td v-if="extractName(field.name) == '__radio'" class="vuetable-radio {{field.dataClass}}">
+                                    <td v-if="extractName(field.name) == '__radio'" :class="['vuetable-radio', field.dataClass]">
                                         <div class="radio-input-wrapper">
                                             <input class="radio-input" type="radio" :checked="isSelectedRow(item, field.name, itemNumber)" @change="selectRadio(item, field.name, itemNumber)" :name="$radioName">
                                             <span class="radio-border"></span>
                                             <span class="radio-inner-dot"></span>
                                         </div>
                                     </td>
-                                    <td v-if="field.name == '__actions'" class="vuetable-actions {{field.dataClass}}">
+                                    <td v-if="field.name == '__actions'" :class="['vuetable-actions', field.dataClass]">
                                         <template v-for="action in itemActions">
-                                            <button class="{{ action.class }}" @click="callAction(action.name, item)" v-attr="action.extra">
-                                                <i class="{{ action.icon }}"></i> {{ action.label }}
+                                            <button :class="action.class" @click="callAction(action.name, item)" v-attr="action.extra">
+                                                <i :class="action.icon"></i> {{ action.label }}
                                             </button>
                                         </template>
                                     </td>
-                                    <td v-if="extractName(field.name) == '__component'" class="{{field.dataClass}}">
+                                    <td v-if="extractName(field.name) == '__component'" :class="field.dataClass">
                                         <component :is="extractArgs(field.name)" :row-data="item"></component>
                                     </td>
                                 </template>
                                 <template v-else>
-                                    <td v-if="hasCallback(field)" class="{{field.dataClass}}" @click="onCellClicked(item, field, $event)" @dblclick="onCellDoubleClicked(item, field, $event)">
-                                        {{{ callCallback(field, item) }}}
+                                    <td v-if="hasCallback(field)" :class="field.dataClass" @click="onCellClicked(item, field, $event)" @dblclick="onCellDoubleClicked(item, field, $event)">
+                                        <div v-html="callCallback(field, item)"></div>
                                     </td>
-                                    <td v-else class="{{field.dataClass}}" @click="onCellClicked(item, field, $event)" @dblclick="onCellDoubleClicked(item, field, $event)">
-                                        {{{ getObjectValue(item, field.name, "") }}}
+                                    <td v-else :class="field.dataClass" @click="onCellClicked(item, field, $event)" @dblclick="onCellDoubleClicked(item, field, $event)">
+                                        <div v-html="getObjectValue(item, field.name, '')"></div>
                                     </td>
                                 </template>
                             </template>
                         </template>
                     </tr>
                     <template v-if="useDetailRow">
-                        <tr v-if="isVisibleDetailRow(item[detailRowId])" v-html="callDetailRowCallback(item)" @click="onDetailRowClick(item, $event)" :transition="detailRowTransition" class="{{detailRowClass}}">
+                        <tr v-if="isVisibleDetailRow(item[detailRowId])" v-html="callDetailRowCallback(item)" @click="onDetailRowClick(item, $event)" :transition="detailRowTransition" :class="detailRowClass">
                         </tr>
                     </template>
                 </template>
             </tbody>
         </table>
     </div>
-    <div v-if="showPagination" class="vuetable-pagination fix mb16 {{paginationClass}}">
-        <div class="vuetable-pagination-info {{paginationInfoClass}}" v-html="paginationInfo">
+    <div v-if="showPagination" :class="['vuetable-pagination', 'fix', 'mb16', paginationClass]">
+        <div :class="['vuetable-pagination-info', paginationInfoClass]" v-html="paginationInfo">
         </div>
         <div class="vuetable-pagination-pages">
             <!-- <span>pages</span> -->
@@ -455,8 +455,8 @@ body[modality="keyboard"] .ui-checkbox-input:focus+ .ui-checkbox-checkmark .ui-c
             </select>
 
         </div>
-        <div v-show="tablePagination && tablePagination.last_page > 1" class="vuetable-pagination-component {{paginationComponentClass}}">
-            <component v-ref:pagination :is="paginationComponent"></component>
+        <div v-show="tablePagination && tablePagination.last_page > 1" :class="['vuetable-pagination-component', paginationComponentClass]">
+            <component ref=pagination :is="paginationComponent"></component>
         </div>
     </div>
 </div>
@@ -543,7 +543,6 @@ export default {
             default: 'alt'
         },
         perPage: {
-            type: Number,
             coerce: function(val) {
                 return parseInt(val)
             },
@@ -753,7 +752,7 @@ export default {
                         visible: (field.visible === undefined) ? true : field.visible
                     }
                 }
-                self.fields.$set(i, obj)
+                Vue.set(self.fields,i, obj)
             })
         },
         setTitle: function(str) {
@@ -858,7 +857,8 @@ export default {
             if (typeof field.title === 'undefined') {
                 return field.name.replace('.', ' ')
             }
-            return field.title
+            var text = field.title
+            return text[0].toUpperCase() + text.slice(1)
         },
         getSortParam: function() {
             if (!this.sortOrder || this.sortOrder.field == '') {
@@ -897,13 +897,13 @@ export default {
                 el.className = el.className.replace(new RegExp('(^|\\b)' + className.split(' ').join('|') + '(\\b|$)', 'gi'), ' ')
         },
         dispatchEvent: function(eventName, args) {
-            this.$dispatch(this.eventPrefix + eventName, args)
+            // this.$dispatch(this.eventPrefix + eventName, args)
         },
         broadcastEvent: function(eventName, args) {
             if (!this.$children) {
                 return;
             }
-            this.$broadcast(this.eventPrefix + eventName, args)
+            // this.$broadcast(this.eventPrefix + eventName, args)
         },
         orderBy: function(field, event) {
             if (!this.isSortable(field)) {
@@ -1069,7 +1069,7 @@ export default {
             return obj
         },
         callAction: function(action, data) {
-            this.$dispatch(this.eventPrefix + 'action', action, data)
+            // this.$dispatch(this.eventPrefix + 'action', action, data)
         },
         addParam: function(param) {
             this.appendParams.push(param)
@@ -1179,17 +1179,17 @@ export default {
             return true
         },
         onRowClicked: function(dataItem, event) {
-            this.$dispatch(this.eventPrefix + 'row-clicked', dataItem, event)
+            // this.$dispatch(this.eventPrefix + 'row-clicked', dataItem, event)
             return true
         },
         onCellClicked: function(dataItem, field, event) {
-            this.$dispatch(this.eventPrefix + 'cell-clicked', dataItem, field, event)
+            // this.$dispatch(this.eventPrefix + 'cell-clicked', dataItem, field, event)
         },
         onCellDoubleClicked: function(dataItem, field, event) {
-            this.$dispatch(this.eventPrefix + 'cell-dblclicked', dataItem, field, event)
+            // this.$dispatch(this.eventPrefix + 'cell-dblclicked', dataItem, field, event)
         },
         onDetailRowClick: function(dataItem, event) {
-            this.$dispatch(this.eventPrefix + 'detail-row-clicked', dataItem, event)
+            // this.$dispatch(this.eventPrefix + 'detail-row-clicked', dataItem, event)
         },
         callPaginationConfig: function() {
             if (typeof this.$parent[this.paginationConfigCallback] === 'function') {

@@ -76,9 +76,6 @@ export default {
                 loading: false
             }
         },
-        created: function() {
-          this.$on('add-todo', this.addTodo)
-        },
         mounted: function () {
           this.$nextTick(function () {
             this.init();

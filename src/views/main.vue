@@ -21,9 +21,9 @@
     <breadcrumb>
         <breadcrumb-item v-for="item in urls" :link="item.url">{{item.name}}</breadcrumb-item>
     </breadcrumb>
-    <!-- <div id="content" class="content rel">
+    <div id="content" class="content rel">
         <router-view></router-view>
-    </div> -->
+    </div>
 </div>
 
 </template>
