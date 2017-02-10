@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Cache-Control" content="max-age=7200" />
+    <meta http-equiv="Expires" content="Mon, 20 Jul 2009 23:00:00 GMT" />
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=2.0, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=9">
+    <title>iHR</title>
+    <link href="./static/images/public/ihr-logo-w.ico" rel="shortcut icon" type="image/x-icon">
+    <script>
+      if (!window.location.origin) {
+          window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '');
+      }
+      if (!location.hash || (location.hash === '#!/' && location.pathName !== '/login.html')) {
+        location.href = location.origin + '/login.html';
+      }
+    </script>
+    <link rel="stylesheet" href="~/js/style.css" charset="utf-8">
+<!--[if lte IE 9]>
+    <link rel="stylesheet" href="~/static/styles/common/ie9.css">
+<![endif]-->
+</head>
+
+<body>
+  <div id="app">
+    <router-view></router-view>
+  </div>
+    <script type="text/javascript">
+        if (!Function.prototype.bind) {
+            Function.prototype.bind = function(oThis) {
+                if (typeof this !== "function") {
+                    throw new TypeError("Function.prototype.bind - what is trying to be bound is not callable");
+                }
+                var aArgs = Array.prototype.slice.call(arguments, 1),
+                    fToBind = this,
+                    fNOP = function() {},
+                    fBound = function() {
+                        return fToBind.apply(this instanceof fNOP && oThis ? this : oThis,
+                            aArgs.concat(Array.prototype.slice.call(arguments)));
+                    };
+                fNOP.prototype = this.prototype;
+                fBound.prototype = new fNOP();
+                return fBound;
+            };
+        }
+        if (typeof Object.assign != 'function') {
+            (function() {
+                Object.assign = function(target) {
+                    'use strict';
+                    if (target === undefined || target === null) {
+                        throw new TypeError('Cannot convert undefined or null to object');
+                    }
+
+                    var output = Object(target);
+                    for (var index = 1; index < arguments.length; index++) {
+                        var source = arguments[index];
+                        if (source !== undefined && source !== null) {
+                            for (var nextKey in source) {
+                                if (source.hasOwnProperty(nextKey)) {
+                                    output[nextKey] = source[nextKey];
+                                }
+                            }
+                        }
+                    }
+                    return output;
+                };
+            })();
+        }
+    </script>
+    <!--[if IE]>
+    <script src="~/js/browser-polyfill.min.js"></script>
+    <![endif]-->
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="~/js/vue-i18n.min.js"></script>
+    <script src="~/js/vue.resource@0.9.3.js"></script>
+    <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+    <script src="~/js/index.js"></script>
+</body>
+
+</html>

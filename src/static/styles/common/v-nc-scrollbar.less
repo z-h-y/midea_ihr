@@ -1,0 +1,50 @@
+@keyframes fadeIn {
+	 0% {
+      opacity: 0;
+	 }
+	 100%{
+		 opacity: 1;
+	 }
+}
+@keyframes fadeOut {
+  0%{
+		opacity: 1;
+	}
+	100%{
+		opacity: 0;
+	}
+}
+.nice-bar-rail-y{
+	 position: absolute;
+	 top:0;
+	 right: 0;
+	 width: 6px;
+	 height: 100%;
+	 z-index: 100000;
+}
+.nice-bar-slider-y{
+	position: absolute;
+	top:0;
+	right: 0;
+	width: 6px;
+	z-index: 100001;
+	opacity: 0;
+	animation-duration:1s;
+	animation-fill-mode: both;
+	&.fade-in{
+		animation-name: fadeIn;
+	}
+	&.fade-out{
+		animation-name: fadeOut
+	}
+}
+.theme-light{
+	.nice-bar-slider-y{
+		background-color: #aaa;
+	}
+}
+.theme-light{
+	.nice-bar-slider-y{
+		background-color: #222;
+	}
+}

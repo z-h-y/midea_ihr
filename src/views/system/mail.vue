@@ -1,0 +1,163 @@
+<style lang="less">
+
+.ihr-system-email {
+    *{
+      box-sizing: border-box;
+    }
+    .vuetable th {
+        white-space: nowrap;
+    }
+    .group{
+      border: none;
+    }
+}
+
+</style>
+
+<template lang="html">
+
+<div class="content-wrap bg-w ihr-system-email">
+    <div class="group">
+        <ui-button class="mr10 dis-tc btn-primary-bd" icon="fa-plus" color="primary" text="Add" @click="add" button-type="button"></ui-button>
+        <ui-button class="mr10 dis-tc btn-default-bd" icon="fa-pencil-square-o" type="flat" text="Edit" @click="edit" button-type="button"></ui-button>
+        <ui-button class="mr10 dis-tc btn-default-bd" icon="fa-remove" type="flat" text="Delete" @click="delete" button-type="button"></ui-button>
+    </div>
+    <div class="vuetable-wrapper pl16 pr16 pb16">
+        <vuetable :api-url="emailUrl" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="emailColumns" :sort-order="sortOrder" :item-actions="itemActions" per-page="10">
+        </vuetable>
+    </div>
+</div>
+
+</template>
+
+<script>
+
+import {
+    default as Schema
+}
+from '../../schema/index';
+import {
+    default as Message
+}
+from '../../components/basic/message';
+import {
+    convert, formatDate
+}
+from '../../util/assist.js';
+export default {
+    data() {
+            let _self = this;
+
+            return {
+                selectedRow: [],
+                emailUrl: '/system/emailConfig/pageQueryEmailConfig',
+                emailColumns: [{
+                    name: '__checkbox:emaililConfigId',
+                    title: ''
+                }, {
+                    name: 'companyCode',
+                    title: 'Enterprise number',
+                    sortField: 'companyCode'
+                }, {
+                    name: 'companyName',
+                    title: 'CompanyName',
+                    sortField: 'companyName',
+                }, {
+                    name: 'ip',
+                    title: 'Server address',
+                    sortField: 'ip'
+                }, {
+                    name: 'port',
+                    title: 'Port',
+                    dataClass: 'tr',
+                    sortField: 'port'
+                }, {
+                    name: 'emailAccount',
+                    title: 'Mail Account',
+                    dataClass: 'tr',
+                    sortField: 'emailAccount'
+                }, {
+                    name: 'onceSendNum',
+                    title: 'onceSendNum',
+                    dataClass: 'tr',
+                    sortField: 'onceSendNum'
+                }, {
+                    name: 'maxReceiverNum',
+                    title: 'maxReceiverNum',
+                    dataClass: 'tr',
+                    sortField: 'maxReceiverNum'
+                }, {
+                    name: 'status',
+                    title: 'status',
+                    sortField: 'status'
+                }, {
+                    name: 'encryptType',
+                    title: 'encryptType',
+                    sortField: 'encryptType'
+                }, {
+                    name: 'createDate',
+                    title: 'createDate',
+                    dataClass: 'tr',
+                    titleClass: 'mw80',
+                    sortField: 'createDate',
+                    callback: function(value) {
+                        return _self.handleFormatDate(value);
+                    }
+                }, {
+                    name: 'lastUpdateDate',
+                    title: 'lastUpdateDate',
+                    dataClass: 'tr',
+                    titleClass: 'mw80',
+                    sortField: 'lastUpdateDate'
+                }]
+            }
+        },
+        computed: {},
+        mounted() {},
+        methods: {
+            handleFormatDate(value) {
+                    return formatDate(new Date(value));
+                },
+                add() {
+                    let _self = this;
+                    _self.$router.go({
+                        name: 'addMail'
+                    });
+                },
+                delete() {
+                    let _self = this;
+                    let rows = _self.selectedRow;
+                    _self.$http.post('/system/emailConfig/deleteEmailConfig', {
+                        emailIds: rows
+                    }, {
+                        emulateJSON: true
+                    }).then((response) => {
+                        Message({
+                            type: 'success',
+                            message: 'Delete Success!'
+                        });
+                        _self.$broadcast('vuetable:refresh'); //刷新表格
+                    });
+                },
+                edit() {
+                    let _self = this;
+                    let rows = _self.selectedRow;
+                    if (rows.length === 1) {
+                        _self.$router.go({
+                            name: 'editMail',
+                            params: {
+                                mailId: `${rows[0]}`
+                            }
+                        });
+                    } else {
+                        Message({
+                            type: 'error',
+                            message: 'Please select a valid node.'
+                        })
+                    }
+                }
+        },
+        components: {}
+}
+
+</script>

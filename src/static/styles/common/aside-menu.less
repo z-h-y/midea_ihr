@@ -1,0 +1,184 @@
+//滚动条样式
+
+.scrollbar {
+    &::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+
+    &::-webkit-scrollbar-button {
+        display: none;
+    }
+
+    &::-webkit-scrollbar-track {
+        display: none;
+    }
+
+    &::-webkit-scrollbar-track-piece {
+        display: none;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: rgba(68, 89, 123, 1);
+        border-radius: 5px;
+    }
+
+    &::-webkit-scrollbar-corner {
+        display: none;
+    }
+
+    &::-webkit-resizer {
+        display: none;
+    }
+}
+// 左侧菜单默认样式
+.asideMenuBg() {
+    width: 16px;
+    height: 16px;
+    margin-right: 20px;
+    float: left;
+    margin-top: 2px;
+    background: url("../../images/public/menu-ico.png");
+}
+
+.aside-menu-home {
+    .asideMenuBg;
+    background-position: 0 0;
+}
+
+.aside-menu-organization {
+    .asideMenuBg;
+    background-position: 0 -20px;
+}
+
+.aside-menu-position {
+    .asideMenuBg;
+    background-position: 0 -40px;
+}
+
+.aside-menu-staff {
+    .asideMenuBg;
+    background-position: 0 -59px;
+}
+
+.aside-menu-performance {
+    .asideMenuBg;
+    background-position: 0 -80px;
+}
+
+.aside-menu-reports {
+    .asideMenuBg;
+    background-position: 0 -100px;
+}
+
+.aside-menu-notification {
+    .asideMenuBg;
+    background-position: 0 -118px;
+}
+
+.aside-menu-system {
+    .asideMenuBg;
+    background-position: 0 -138px;
+}
+.aside-menu-myPerformance {
+    .asideMenuBg;
+    background-position: 0 -162px;
+}
+
+.aside-menu-font {
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    margin-right: 20px;
+    float: left;
+    margin-top: 2px;
+    font-size: 16px;
+}
+// 菜单经过样式
+.asideMenuBgHover() {
+    width: 16px;
+    height: 16px;
+    margin-right: 20px;
+    float: left;
+    margin-top: 2px;
+    background: url("../../images/public/menu-ico-hover.png");
+}
+
+.aside-menu-home() {
+    .asideMenuBgHover;
+    background-position: 0 0;
+}
+
+.aside-menu-organization() {
+    .asideMenuBgHover;
+    background-position: 0 -20px;
+}
+
+.aside-menu-position() {
+    .asideMenuBgHover;
+    background-position: 0 -40px;
+}
+
+.aside-menu-staff() {
+    .asideMenuBgHover;
+    background-position: 0 -59px;
+}
+
+.aside-menu-performance() {
+    .asideMenuBgHover;
+    background-position: 0 -80px;
+}
+
+.aside-menu-reports() {
+    .asideMenuBgHover;
+    background-position: 0 -100px;
+}
+
+.aside-menu-notification() {
+    .asideMenuBgHover;
+    background-position: 0 -118px;
+}
+
+.aside-menu-system() {
+    .asideMenuBgHover;
+    background-position: 0 -138px;
+}
+.aside-menu-myPerformance() {
+    .asideMenuBgHover;
+    background-position: 0 -162px;
+}
+
+.d-navmenu-item-label:hover .aside-menu-home {
+    .aside-menu-home;
+}
+
+.d-navmenu-item-label:hover .aside-menu-organization {
+    .aside-menu-organization;
+}
+
+.d-navmenu-item-label:hover .aside-menu-position {
+    .aside-menu-position;
+}
+
+.d-navmenu-item-label:hover .aside-menu-staff {
+    .aside-menu-staff;
+}
+
+.d-navmenu-item-label:hover .aside-menu-performance {
+    .aside-menu-performance;
+}
+
+.d-navmenu-item-label:hover .aside-menu-reports {
+    .aside-menu-reports;
+}
+
+.d-navmenu-item-label:hover .aside-menu-notification {
+    .aside-menu-notification;
+}
+
+.d-navmenu-item-label:hover .aside-menu-system {
+    .aside-menu-system;
+}
+.d-navmenu-item-label:hover .aside-menu-myPerformance {
+    .aside-menu-myPerformance;
+}

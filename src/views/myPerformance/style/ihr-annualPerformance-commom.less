@@ -1,0 +1,123 @@
+// 公共样式
+
+.ihr-annualPerformance {
+    padding-bottom: 88px;
+
+    * {
+        box-sizing: border-box;
+    }
+
+    .user-area {
+        width: 495px;
+        height: 388px;
+        overflow: auto;
+        border: 1px solid #efefef;
+        padding: 16px 0 0;
+        position: absolute;
+        top: 17px;
+        left: -388px;
+        background: #fff;
+        cursor: default;
+        border-radius: 4px;
+        display: none;
+    }
+
+    .person-ico {
+        position: relative;
+        width: 17px;
+
+        &:hover {
+            .user-area {
+                display: block;
+            }
+        }
+    }
+
+    .process-history-ctn {
+        .vuetable thead {
+            background: #fff;
+        }
+    }
+
+    .process-history-ctn ul {
+        overflow: initial !important;
+    }
+
+    .ui-collapsible {
+        margin-bottom: 0;
+    }
+
+    .ui-collapsible-body {
+        border: none;
+    }
+
+    .d-panel-content {
+        padding: 0;
+    }
+
+    .ui-collapsible-header {
+        background: #fafafa;
+
+        &:hover {
+            &:not(.disabled) {
+                background: #fafafa;
+            }
+        }
+
+        &:focus {
+            background: #fafafa;
+        }
+    }
+
+    .c-c6a707d {
+        color: #6a707d;
+    }
+
+    .employeeName {
+        width: 252px;
+    }
+
+    .user-msg {
+        width: 90px;
+        margin-left: 27px;
+
+        p {
+            &:first-child {
+                display:block;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            height: 16px;
+        }
+    }
+}
+
+#process-history-list {
+    table {
+        td,
+        th {
+            text-align: center;
+        }
+    }
+
+    .c-3aa2eb {
+        color: #3aa2eb;
+    }
+
+    .lh {
+        line-height: 24px;
+    }
+
+    .posSelect {
+        position: absolute;
+        left: 396px;
+        left: 415px\9\0;
+        top: 2px;
+        width: 375px;
+        .posSelect-select{
+          width:252px;
+          float:left
+        }
+    }
+}
