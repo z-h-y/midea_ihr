@@ -450,13 +450,13 @@ body[modality="keyboard"] .ui-checkbox-input:focus+ .ui-checkbox-checkmark .ui-c
         </div>
         <div class="vuetable-pagination-pages">
             <!-- <span>pages</span> -->
-            <select class="vuetable-pagination-pages-num" @change="reloadData()" v-model="perPage">
+            <select class="vuetable-pagination-pages-num" @change="reloadData()" v-model="curPerPage">
                 <option v-for="num in tableLineNum" v-bind:value="num">{{num}}</option>
             </select>
 
         </div>
         <div v-show="tablePagination && tablePagination.last_page > 1" :class="['vuetable-pagination-component', paginationComponentClass]">
-            <component ref=pagination :is="paginationComponent"></component>
+            <component ref="pagination" :is="paginationComponent"></component>
         </div>
     </div>
 </div>
@@ -695,6 +695,7 @@ export default {
             currentPage: 1,
             visibleDetailRows: [],
             checkAll: false,
+            curPerPage: this.perPage,
             tableLineNum: ['5', '10', '50', '100', '200', '500', '1000']
         }
     },
@@ -725,7 +726,7 @@ export default {
             }
 
             return this.detailRowCallback.trim() !== ''
-        },
+        }
     },
     methods: {
         normalizeFields: function() {
@@ -778,7 +779,7 @@ export default {
 
             var params = [
                 this.queryParams.page + '=' + this.currentPage,
-                this.queryParams.perPage + '=' + this.perPage
+                this.queryParams.perPage + '=' + this.curPerPage
             ]
             if (this.getSortParam()) {
                 params.push(this.queryParams.sort + '=' + this.getSortParam());
@@ -814,6 +815,7 @@ export default {
                     self.dispatchEvent('load-success', response)
                     self.broadcastEvent('load-success', self.tablePagination)
                     self.loadSuccessCallback(response.data);
+                    this.$refs.pagination.loadSuccess(self.tablePagination);
                     if (self.selectedTo.length === self.tableData.length && self.tableData.length > 0) {
                         self.checkAll = true
                     } else {
@@ -1206,6 +1208,15 @@ export default {
             }
             if (this.detailRow !== '') {
                 this.logDeprecatedMessage('detail-row', 'detail-row-callback')
+            }
+        },
+        changePage: function(page) {
+            if (page == 'prev') {
+                this.gotoPreviousPage()
+            } else if (page == 'next') {
+                this.gotoNextPage()
+            } else {
+                this.gotoPage(page)
             }
         }
     },

@@ -294,7 +294,8 @@ export default {
             this.chart.dispose()
         }
     },
-    ready: function() {
+    mounted: function() {
+      this.$nextTick(function() {
         let chart = echarts.init(this.$el, this.theme, this.initOptions)
             // use assign statements to tigger "options" and "group" setters
         chart.setOption(this.options)
@@ -335,6 +336,7 @@ export default {
                 chart.resize();
             }, 200);
         });
+      })
     },
     connect: function(group) {
         if (typeof group !== 'string') {

@@ -11,8 +11,8 @@
     </a>
     <template v-if="notEnoughPages">
         <template v-for="n in totalPage">
-            <a @click="loadPage(n+1)" :class="[pageClass, isCurrentPage(n+1) ? activeClass : '']">
-                            {{ n+1 }}
+            <a @click="loadPage(n)" :class="[pageClass, isCurrentPage(n) ? activeClass : '']">
+                            {{ n }}
                     </a>
         </template>
     </template>

@@ -81,9 +81,9 @@ export default {
         },
         windowStart: function() {
             if (this.tablePagination.current_page <= this.onEachSide) {
-                return 1
+                return 0
             } else if (this.tablePagination.current_page >= (this.totalPage - this.onEachSide)) {
-                return this.totalPage - this.onEachSide*2
+                return this.totalPage - this.onEachSide*2-1
             }
 
             return this.tablePagination.current_page - this.onEachSide
@@ -91,10 +91,19 @@ export default {
     },
     methods: {
         loadPage: function(page) {
-            this.$dispatch('vuetable-pagination:change-page', page)
+            this.$parent.changePage(page);
+            // this.$dispatch('vuetable-pagination:change-page', page)
         },
         isCurrentPage: function(page) {
             return page == this.tablePagination.current_page
+        },
+        loadSuccess: function(tablePagination) {
+            this.tablePagination = tablePagination
+        },
+        setOptions: function(options) {
+            for (var n in options) {
+                this.$set(n, options[n])
+            }
         }
     },
     events: {
