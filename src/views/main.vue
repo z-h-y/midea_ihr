@@ -76,9 +76,7 @@ let initComponents = (Vue, components) => {
 initComponents(Vue);
 export default {
     data() {
-            return {
-                expanded: false
-            };
+            return {};
         },
         props: {
             urls: {
@@ -86,7 +84,11 @@ export default {
                 default: []
             }
         },
-        computed: {},
+        computed: {
+          expanded () {
+            return this.$store.state.main.expanded
+          }
+        },
         ready() {},
         attached() {},
         methods: {},
@@ -96,10 +98,6 @@ export default {
             BreadcrumbItem: BreadcrumbItem
         },
         events: {
-            'navbar:expandedMenu': function(expanded) {
-                this.expanded = expanded;
-                this.$dispatch('main:expandedMenu', expanded);
-            },
             'main:initHomeView': function(expanded) {
                 this.$broadcast('main:initHomeView', expanded);
             },

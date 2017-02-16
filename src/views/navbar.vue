@@ -384,7 +384,7 @@ export default {
                 },
                 expandedMenu() {
                     this.expanded = !this.expanded;
-                    this.$dispatch('navbar:expandedMenu', this.expanded);
+                    this.$store.commit('mainExpanded', this.expanded);
                 },
                 exit() {
                     this.show = !this.show;

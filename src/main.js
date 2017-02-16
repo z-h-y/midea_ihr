@@ -54,6 +54,7 @@ Vue.config.APIURL = APIURL; //接口url
 import { default as routerMap } from './index';
 import { filter } from './util/filter';
 import {default as Message} from './components/basic/message';
+import store from './store';
 
 Vue.use(VueI18n);
 Vue.config.lang = '';
@@ -139,5 +140,6 @@ Vue.http.interceptors.push((request,next) => {
 });
 
 const app = new Vue({
-  router
+  router,
+  store
 }).$mount('#app')

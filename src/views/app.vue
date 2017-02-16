@@ -68,13 +68,17 @@ export default {
                 oriMenus: [],
                 menus: [],
                 urls: [],
-                expanded: false,
                 showtransition:{
                   classA:'expanded-transition',
                   classB:'hide-menu'
                 },
                 loading: false
             }
+        },
+        computed: {
+          expanded () {
+            return this.$store.state.main.expanded
+          }
         },
         mounted: function () {
           this.$nextTick(function () {
@@ -184,9 +188,6 @@ export default {
                 }
         },
         events: {
-            'main:expandedMenu': function(expanded) {
-                this.expanded = expanded;
-            },
             'main:initMenu': function(expanded) {
                 this.loading = true;
                 this.initMenu(expanded);
