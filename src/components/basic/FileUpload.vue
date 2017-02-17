@@ -1,6 +1,6 @@
 <template>
     <label :class="{'file-uploads': true, 'file-uploads-html5': $mode == 'html5', 'file-uploads-html4': $mode == 'html4'}">
-        <span>{{{title}}}</span>
+        <span v-html="title"></span>
         <input-file></input-file>
     </label>
 </template>
@@ -119,15 +119,18 @@ export default {
         data: {},
         headers: {},
       },
+      $mode: 'html5'
     }
   },
 
-  ready() {
-    this._drop(this.drop);
+  mounted() {
+    this.$nextTick(function() {
+      this._drop(this.drop);
+    })
   },
 
 
-  init() {
+  beforeCreate() {
     var input = document.createElement('input');
     input.type = 'file';
     if (window.FormData && input.files)  {

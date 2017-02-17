@@ -77,12 +77,14 @@
     opacity: 0;
     top: -15px;
 }
-
+.ui-modal-footer .footer {
+  display: inline-block;
+}
 </style>
 
 <template lang="html">
 
-<div v-show="visible" class="message" :class="{'message-error': isError}" transition="fade" @mouseenter="clearTimer" @mouseleave="startTimer">
+<div v-if="visible" :class="['message', {'message-error': isError}]" transition="fade" @mouseenter="clearTimer" @mouseleave="startTimer">
     <img v-if="!isError" class="message__icon" :src="typeImg" alt="">
     <div v-if="!isError" class="message__group">
         <p>{{message}}</p>
@@ -102,7 +104,7 @@
               <p v-for="item in extralMessage">{{item}}</p>
             </div>
             <div class="ui-modal-footer">
-                <div slot="footer">
+                <div class="footer">
                   <button class="ui-button ui-button-normal color-default" type="submit" @click="handleClose">
                     <div class="ui-button-content">
                       <div class="ui-button-text">
@@ -147,11 +149,10 @@ export default {
             closed(newVal) {
                 if (newVal) {
                   this.visible = false;
-                  this.$destroy(true);
                 }
             }
         },
-        compiled() {
+        mounted() {
           this.startTimer();
         },
         methods: {

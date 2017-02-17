@@ -1089,7 +1089,7 @@ export default {
             if (isChecked) {
                 this.selectedTo.push(selected)
             } else {
-                this.selectedTo.$remove(selected)
+                this.selectedTo.splice(this.selectedTo.indexOf(selected), 1)
             }
             if (this.selectedTo.length === this.tableData.length) {
                 this.checkAll = true
@@ -1115,9 +1115,9 @@ export default {
                 this.checkAll = false
                 this.tableData.forEach(function(dataItem, index) {
                     if (idColumn) {
-                        self.selectedTo.$remove(dataItem[idColumn])
+                        self.selectedTo.splice(self.selectedTo.indexOf(dataItem[idColumn]), 1)
                     } else {
-                        self.selectedTo.$remove(index)
+                        self.selectedTo.splice(self.selectedTo.indexOf(index), 1)
                     }
                 })
             }

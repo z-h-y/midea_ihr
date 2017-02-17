@@ -33,7 +33,7 @@
 
 <div class="content-wrap bg-w ihr-staff-interns">
     <div class="mb20 pt20">
-        <organization-selector :show.sync="org"></organization-selector>
+        <!-- <organization-selector :show.sync="org"></organization-selector>
         <div class="search-area">
             <v-form :class="{expended: expended}" :model="interns" :schema="internsSchema" label-width="170" label-suffix="" :cols="3" form-style="interns-form">
                 <text-field property="fullName" editor-width="150"></text-field>
@@ -46,22 +46,22 @@
                 <ui-button class="query-btn-search mr10" color="primary" @click="search">{{ $t('button.search') }}</ui-button>
                 <ui-button class="query-btn-reset btn-default-bd" @click="reset" type="flat">{{ $t('button.reset') }}</ui-button>
             </div>
-        </div>
+        </div> -->
         <div class="group">
-            <ui-button class="mr10 dis-tc btn-primary-bd" @click="goAdd" color="primary" icon="fa-plus" :text="$t('button.add')" button-type="button"></ui-button>
-            <ui-button class="mr10 dis-tc btn-default-bd" @click="goEdit" icon="fa-pencil-square-o" type="flat" :text="$t('button.edit')" button-type="button"></ui-button>
+            <ui-button class="mr10 dis-tc btn-primary-bd" @click.native="goAdd" color="primary" icon="fa-plus" :text="$t('button.add')" button-type="button"></ui-button>
+            <ui-button class="mr10 dis-tc btn-default-bd" @click.native="goEdit" icon="fa-pencil-square-o" type="flat" :text="$t('button.edit')" button-type="button"></ui-button>
             <ui-button class="dis-tc-t btn-default-bd" type="flat" @opened="openMenu" show-menu-icons has-dropdown-menu :menu-options="shareMenuOptions" button-type="button" icon="fa-caret-down" :icon-right="true" open-dropdown-on="click" @menu-option-selected="menuOptionSelected" :text="$t('button.more')"></ui-button>
-            <file-upload title="upload" id="excelFile" class="menu-option-upload file-upload" name="internEmployeeFile" :post-action="files.url" :extensions="files.extensions" :accept="files.accept" :multiple="files.multiple" :size="files.size" v-ref:upload :drop="files.drop"></file-upload>
+            <file-upload title="upload" id="excelFile" class="menu-option-upload file-upload" name="internEmployeeFile" :post-action="files.url" :extensions="files.extensions" :accept="files.accept" :multiple="files.multiple" :size="files.size" ref="upload" :drop="files.drop"></file-upload>
             <!-- <input id="excelFile" type="file" name="file" v-on:change="uploadExcel($event)"> -->
         </div>
         <div class="vuetable-wrapper">
-          <vuetable v-ref:vuetable :append-params="moreParams" api-url="/employee/employees/" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="columns" per-page="10">
+          <vuetable ref="vuetable" :append-params="moreParams" api-url="/employee/employees/" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="columns" per-page="10">
           </vuetable>
         </div>
     </div>
 
 
-    <ui-modal :show.sync="task.modal" header="Feedback" :body="taskShowText">
+    <!-- <ui-modal :show.sync="task.modal" header="Feedback" :body="taskShowText">
         <div slot="footer">
             <ui-button v-show=" importStatus == '2'" @click="downloadTaskFile" color="primary">Download feedback</ui-button>
             <ui-button @click="canDownloadTask">Close</ui-button>
@@ -75,7 +75,7 @@
             <div class="loading-txt">Data processing</div>
         </div>
         <div slot="footer"></div>
-    </ui-modal>
+    </ui-modal> -->
 
 </div>
 </template>
@@ -197,10 +197,11 @@ export default {
           }
         },
         computed: {},
-        ready() {
-          this.interns = this.internsSchema.newModel();
+        mounted() {
+          this.$nextTick(function() {
+            this.interns = this.internsSchema.newModel();
+          })
         },
-        attached() {},
         methods: {
             openMenu() {
               var el = document.getElementById('excelFile');
@@ -248,11 +249,11 @@ export default {
               this.interns.unitId = '';
             },
             goAdd() {
-              this.$route.router.go({ name: 'internsAdd'});
+              this.$router.push({ name: 'internsAdd'});
             },
             goEdit() {
               if (this.selectedRow.length === 1) {
-                this.$route.router.go({ name: 'internsView', params: { employeeId: this.selectedRow[0] }});
+                this.$router.go({ name: 'internsView', params: { employeeId: this.selectedRow[0] }});
               } else {
                 Message({
                     type: 'error',
