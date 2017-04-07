@@ -5,8 +5,8 @@
     * {
         box-sizing: border-box;
     }
-    .right-panel{
-      margin-left: 0px;
+    .right-panel {
+        margin-left: 0px;
     }
     .right-panel-tit span {
         font-size: 20px;
@@ -34,48 +34,49 @@
     .vuetable-pagination {
         margin: 16px 0;
     }
-
 }
 
 </style>
 
 <template lang="html">
 
-<div class="content-wrap bg-w ihr-reports-employeeTurnover pt20">
-    <div class="search-area">
-        <v-form :model="turnover" :schema="turnoverSchema" label-width="124" label-suffix="" :cols="3" form-style="indicator-form">
-            <text-field property='empInfo' editor-width="200" placeholder="Search by Employee Name,ID"></text-field>
-            <select-field property='turnoverType' :mapping="dist.turnoverType" editor-width="200"></select-field>
-            <text-field property="orgUnitName" type="selector" :show.sync="org" editor-width="200"></text-field>
-        </v-form>
-        <!-- 组织选择器 -->
-        <div class="query-btn">
-            <ui-button class="query-btn-search mr10" color="primary" @click="search">Search</ui-button>
-            <ui-button class="query-btn-reset btn-default-bd" type="flat" @click="reset">Reset</ui-button>
-        </div>
-    </div>
-    <div class="group"></div>
-    <div class="leftRight-panel bg-f5f5f5 mt16 fix">
-        <div class="right-panel pl16 pr16">
-            <div class="right-panel-tit pb16 tc">
-                <span>Employee Status</span>
-            </div>
-            <ui-button class="dis-tc-t btn-default-bd download" icon="fa-download" type="flat" text="Download" @click="download"></ui-button>
-            <div class="vuetable-wrapper">
-                <vuetable api-url="/report/EmpTurnover" :selected-to="selectedRow" :append-params="queryParams" :fields="columns" pagination-path="" table-wrapper=".vuetable-wrapper" :sort-order="sortOrder" :item-actions="itemActions" per-page="10">
-                </vuetable>
+<div>
+    <div class="content-wrap bg-w ihr-reports-employeeTurnover pt20">
+        <div class="search-area">
+            <v-form :model="turnover" :schema="turnoverSchema" label-width="124" label-suffix="" :cols="3" form-style="indicator-form">
+                <text-field property='empInfo' editor-width="200" :placeholder="$t('reports.message.searchPlaceholder')"></text-field>
+                <select-field property='turnoverType' :mapping="dist.turnoverType" editor-width="200"></select-field>
+                <text-field property="orgUnitName" type="selector" :show.sync="org" editor-width="200"></text-field>
+            </v-form>
+            <!-- 组织选择器 -->
+            <div class="query-btn">
+                <ui-button class="query-btn-search mr10" color="primary" @click="search">{{$t('button.search')}}</ui-button>
+                <ui-button class="query-btn-reset btn-default-bd" type="flat" @click="reset">{{$t('button.reset')}}</ui-button>
             </div>
         </div>
+        <div class="group"></div>
+        <div class="leftRight-panel bg-f5f5f5 mt16 fix">
+            <div class="right-panel pl16 pr16">
+                <div class="right-panel-tit pb16 tc">
+                    <span>{{$t('reports.labelText.employeeStatus')}}</span>
+                </div>
+                <ui-button class="dis-tc-t btn-default-bd download" icon="fa-download" type="flat" :text="$t('button.download')" @click="download"></ui-button>
+                <div class="vuetable-wrapper">
+                    <vuetable api-url="/report/EmpTurnover" :selected-to="selectedRow" :append-params="queryParams" :fields="columns" pagination-path="" table-wrapper=".vuetable-wrapper" :sort-order="sortOrder" :item-actions="itemActions" per-page="10">
+                    </vuetable>
+                </div>
+            </div>
+        </div>
     </div>
+    <organization-selector :show.sync="org"></organization-selector>
 </div>
-<organization-selector :show.sync="org"></organization-selector>
 
 </template>
 
 <script>
 
 import {
-    getDictMapping, downloadFile
+    getDictMapping, downloadFile, transformDict
 }
 from '../../util/assist';
 import {
@@ -87,23 +88,26 @@ import {
 }
 from '../../schema/index';
 
-let turnoverSchema = new Schema({
-    empInfo: {
-        label: 'Employee',
-        required: false,
-        whitespace: false,
-    },
-    turnoverType: {
-        label: 'Turnover Type'
-    },
-    orgUnitName: {
-        label: 'Organization'
-    },
-    unitId: {}
-});
+
 export default {
     data() {
             let _self = this;
+
+            let turnoverSchema = new Schema({
+                empInfo: {
+                    label: _self.$t('reports.labelText.employee'),
+                    required: false,
+                    whitespace: false,
+                },
+                turnoverType: {
+                    label: _self.$t('reports.labelText.turnoverType')
+                },
+                orgUnitName: {
+                    label: _self.$t('reports.labelText.organization')
+                },
+                unitId: {}
+            });
+
             return {
                 tableTotal: '',
                 turnoverSchema: turnoverSchema,
@@ -113,60 +117,67 @@ export default {
                     modal: false
                 },
                 interns: null,
-                dist: {
-                    turnoverType: {}
-                },
                 columns: [{
                     name: 'empFullName',
-                    title: 'Employee',
+                    title: _self.$t('reports.labelText.employee'),
                     sortField: 'empFullName'
                 }, {
                     name: 'employeeCode',
-                    title: 'Employee ID',
+                    title: _self.$t('reports.labelText.employeeId'),
                     dataClass: 'tr',
                     sortField: 'employeeCode'
                 }, {
                     name: 'gender',
-                    title: 'Gender',
-                    sortField: 'gender'
+                    title: _self.$t('reports.labelText.gender'),
+                    sortField: 'gender',
+                    callback: function(value) {
+                        return _self.fixgender(value);
+                    }
                 }, {
                     name: 'fullUnitName',
-                    title: 'Organization',
+                    title: _self.$t('reports.labelText.organization'),
                     sortField: 'fullUnitName'
                 }, {
                     name: 'turnoverType',
-                    title: 'Turnover Type',
-                    sortField: 'turnoverType'
-                },{
+                    title: _self.$t('reports.labelText.turnoverType'),
+                    sortField: 'turnoverType',
+                    callback: function(value) {
+                        return _self.firecordType(value);
+                    }
+                }, {
                     name: 'recordTime',
                     dataClass: 'tr',
                     titleClass: 'mw80',
-                    title: 'Record Time'
-                },{
+                    title: _self.$t('reports.labelText.recordTime')
+                }, {
                     name: 'newUnitName',
-                    title: 'Organization After Transfer',
+                    title: _self.$t('reports.labelText.orgAfterTransfer'),
                     sortField: 'newUnitName'
                 }, {
                     name: 'newJobName',
-                    title: 'Position After Transfer',
+                    title: _self.$t('reports.labelText.positionAfterTransfer'),
                     sortField: 'newJobName'
                 }, {
                     name: 'newMibGrade',
-                    title: 'MIB Grade After Transfer',
+                    title: _self.$t('reports.labelText.MIBGradeAfterTransfer'),
                     sortField: 'newMibGrade'
                 }, {
                     name: 'oldUnitName',
-                    title: 'Organization Before Transfer',
+                    title: _self.$t('reports.labelText.orgBeforeTransfer'),
                     sortField: 'oldUnitName'
                 }, {
                     name: 'oldJobName',
-                    title: 'Position Before Transfer',
+                    title: _self.$t('reports.labelText.positionBeforeTransfer'),
                     sortField: 'oldJobName'
                 }, {
                     name: 'oldMibGrade',
-                    title: 'MIB Grade Before Transfer',
+                    title: _self.$t('reports.labelText.MIBGradeBeforeTransfer'),
                     sortField: 'oldMibGrade'
-                }]
+                }],
+                dist: {
+                    turnoverType: {},
+                    gender: {}
+                },
             }
         },
         computed: {
@@ -181,6 +192,23 @@ export default {
                 ]
             },
         },
+        created() {
+            let dictCodes = ['RECORD_TYPE', 'GENDER'];
+            this.$http.post('/public-access/dicts/items', {
+                dictCodes
+            }, {
+                emulateJSON: true
+            }).then((response) => {
+                for (var d of response.data) {
+                    if (d.dictName === 'RECORD_TYPE') {
+                        this.dist.recordType = transformDict(d.dict);
+                    }
+                    if (d.dictName === 'GENDER') {
+                        this.dist.gender = transformDict(d.dict);
+                    }
+                }
+            })
+        },
         ready() {
             this.$http.get('/employee/employees/dicts/RECORD_TYPE/items/3').then(function(res) {
                 if (res.data) {
@@ -194,15 +222,37 @@ export default {
         },
         mounted() {},
         methods: {
-            search() {
+            fixDist(value, option) {
+                    var dist = {};
+                    switch (option) {
+                        case 'RECORD_TYPE':
+                            dist = this.dist.recordType || {};
+                            break;
+                        case 'GENDER':
+                            dist = this.dist.gender || {};
+                            break;
+                    }
+                    for (let key of Object.keys(dist)) {
+                        if (dist[key] === value) {
+                            value = key;
+                            break;
+                        }
+                    }
+                    return value;
+                },
+                firecordType(value) {
+                    return this.fixDist(value, 'RECORD_TYPE');
+                },
+                fixgender(value) {
+                    return this.fixDist(value, 'GENDER');
+                },
+                search() {
                     this.$broadcast('vuetable:refresh');
                 },
                 reset() {
                     this.turnover.reset();
                 },
                 download() {
-                    // let unitId = this.turnover.unitId;
-                    // if (unitId || unitId === '0') {
                     if (this.tableTotal < 5000) {
                         downloadFile('/report/exportEmpTurnover', {
                             empInfo: this.turnover.empInfo,
@@ -215,12 +265,6 @@ export default {
                             message: this.$t('reports.message.checkReportList')
                         })
                     }
-                    // } else {
-                    //     Message({
-                    //         type: 'error',
-                    //         message: 'Please enter a search keyword. '
-                    //     })
-                    // }
                 },
         },
         components: {},

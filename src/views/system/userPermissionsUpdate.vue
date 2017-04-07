@@ -75,72 +75,74 @@
 
 <template lang="html">
 
-<div class="content-wrap ihr-system-userPermissionsUpdate">
-    <panel title="Permission Settings" class="panel-b" header="panel-header">
-        <v-form :model="userRoleData" :schema="rolesSchema" label-width="150" label-suffix="" :cols="1" form-style="">
-            <text-field class="selector" property='userName' editor-width="392" type="selector" :show.sync="personshow"></text-field>
-            <!-- <text-increment property='employeeId' editor-width="400"></text-increment> -->
-            <text-increment property='employeeName'></text-increment>
-            <text-increment property='positionName' editor-width="400"></text-increment>
-            <text-increment property='organization'></text-increment>
-            <field class="data fix" property="Roles">
-                <label class="data-label">Role</label>
-                <div class="data-content">
-                    <div class="field-row">
-                        <div class="cell">
-                            <label>System Role</label>
-                        </div>
-                        <span class="icon-area" @click="handleAdd('role')"><i class="fa fa-plus-circle"></i></span>
-                    </div>
-                    <template v-for="item in userRoleList">
-                        <v-form :model="item" :schema="rolePerSchema" label-width="150" label-suffix="" :cols="1">
-                            <div class="field-row">
-                                <div class="cell roles-cell">
-                                    <select-field label-width="0" :hide-label="true" property="roleId" editor-width="392"></select-field>
-                                </div>
-                                <span class="icon-area" @click="handleRemove($index,'role')"> <i class="fa fa-trash-o del-bottom"></i></span>
+<div>
+    <div class="content-wrap ihr-system-userPermissionsUpdate">
+        <panel title="Permission Settings" class="panel-b" header="panel-header">
+            <v-form :model="userRoleData" :schema="rolesSchema" label-width="150" label-suffix="" :cols="1" form-style="">
+                <text-field class="selector" property='userName' editor-width="392" type="selector" :show.sync="personshow"></text-field>
+                <!-- <text-increment property='employeeId' editor-width="400"></text-increment> -->
+                <text-increment property='employeeName'></text-increment>
+                <text-increment property='positionName' editor-width="400"></text-increment>
+                <text-increment property='organization'></text-increment>
+                <field class="data fix" property="Roles">
+                    <label class="data-label">{{$t('system.userPermissionsUpdate.role')}}</label>
+                    <div class="data-content">
+                        <div class="field-row">
+                            <div class="cell">
+                                <label>{{$t('system.userPermissionsUpdate.systemRole')}}</label>
                             </div>
-                        </v-form>
-                    </template>
-                </div>
-            </field>
-            <field class="data fix" property="Resources" editor-width="450">
-                <label class="data-label">Data</label>
-                <div class="data-content">
-                    <div class="field-row">
-                        <div class="cell">
-                            <label>Data Module</label>
+                            <span class="icon-area" @click="handleAdd('role')"><i class="fa fa-plus-circle"></i></span>
                         </div>
-                        <div class="cell">
-                            <label>Data Permission</label>
-                        </div>
-                        <span class="icon-area" @click="handleAdd('resource')"><i class="fa fa-plus-circle"></i></span>
+                        <template v-for="item in userRoleList">
+                            <v-form :model="item" :schema="rolePerSchema" label-width="150" label-suffix="" :cols="1">
+                                <div class="field-row">
+                                    <div class="cell roles-cell">
+                                        <select-field label-width="0" :hide-label="true" property="roleId" editor-width="392"></select-field>
+                                    </div>
+                                    <span class="icon-area" @click="handleRemove($index,'role')"> <i class="fa fa-trash-o del-bottom"></i></span>
+                                </div>
+                            </v-form>
+                        </template>
                     </div>
-                    <template v-for="item in userPerList">
-                        <v-form :model="item" :schema="dataPerSchema" label-width="150" label-suffix="" :cols="1">
-                            <div class="field-row">
-                                <div class="cell">
-                                    <select-field label-width="0" :hide-label="true" property="dataModuleKey" editor-width="190"></select-field>
-                                </div>
-                                <div class="cell">
-                                    <text-field label-width="0" :hide-label="true" property="resourceName" editor-width="190" type="selector" @click="showModal($index)"></text-field>
-                                    <!-- <text-field label-width="0" :hide-label="true" property="resourceId" editor-width="260"></text-field> -->
-                                </div>
-                                <span class="icon-area" @click="handleRemove($index,'resource')"> <i class="fa fa-trash-o del-bottom"></i></span>
+                </field>
+                <field class="data fix" property="Resources" editor-width="450">
+                    <label class="data-label">{{$t('system.userPermissionsUpdate.data')}}</label>
+                    <div class="data-content">
+                        <div class="field-row">
+                            <div class="cell">
+                                <label>{{$t('system.userPermissionsUpdate.dataModule')}}</label>
                             </div>
-                        </v-form>
-                    </template>
-                </div>
-            </field>
-        </v-form>
-    </panel>
-    <div class="btn-group">
-        <ui-button @click="submit" color="primary mr10">Submit</ui-button>
-        <ui-button @click="cancel" class="btn-default-bd" type="flat">Cancel</ui-button>
+                            <div class="cell">
+                                <label>{{$t('system.userPermissionsUpdate.dataPermission')}}</label>
+                            </div>
+                            <span class="icon-area" @click="handleAdd('resource')"><i class="fa fa-plus-circle"></i></span>
+                        </div>
+                        <template v-for="item in userPerList">
+                            <v-form :model="item" :schema="dataPerSchema" label-width="150" label-suffix="" :cols="1">
+                                <div class="field-row">
+                                    <div class="cell">
+                                        <select-field label-width="0" :hide-label="true" property="dataModuleKey" editor-width="190"></select-field>
+                                    </div>
+                                    <div class="cell">
+                                        <text-field label-width="0" :hide-label="true" property="resourceName" editor-width="190" type="selector" @click="showModal($index)"></text-field>
+                                        <!-- <text-field label-width="0" :hide-label="true" property="resourceId" editor-width="260"></text-field> -->
+                                    </div>
+                                    <span class="icon-area" @click="handleRemove($index,'resource')"> <i class="fa fa-trash-o del-bottom"></i></span>
+                                </div>
+                            </v-form>
+                        </template>
+                    </div>
+                </field>
+            </v-form>
+        </panel>
+        <div class="btn-group">
+            <ui-button @click="submit" color="primary mr10">{{$t('button.submit')}}</ui-button>
+            <ui-button @click="cancel" class="btn-default-bd" type="flat">{{$t('button.cancel')}}</ui-button>
+        </div>
     </div>
+    <organization-selector :show.sync="show" :is-admin="true"></organization-selector>
+    <user-selector :show.sync="personshow" v-if="!readonlyFlag"></user-selector>
 </div>
-<organization-selector :show.sync="show" :is-admin="true"></organization-selector>
-<user-selector :show.sync="personshow" v-if="!readonlyFlag"></user-selector>
 
 </template>
 
@@ -158,42 +160,6 @@ import {
     convert, getDictMapping
 }
 from '../../util/assist.js';
-
-let rolesSchema = new Schema({
-    userName: {
-        label: 'User Name',
-        required: true,
-        whitespace: false
-    },
-    employeeId: {
-        label: 'Employee ID',
-        required: false,
-        whitespace: false
-    },
-    positionName: {
-        label: 'Position',
-        required: false,
-        whitespace: false
-    },
-    organization: {
-        label: 'Organization',
-        required: false,
-        whitespace: false
-    },
-    employeeName: {
-        label: 'Employee Name',
-        required: false,
-        whitespace: false
-    },
-    Roles: {
-        label: 'Roles',
-        required: false,
-        whitespace: false
-    },
-    Resources: {
-        label: 'Resources'
-    }
-});
 
 var dataPerData = {
     label: 'roleId',
@@ -233,6 +199,41 @@ var rolePerData = {
 
 export default {
     data() {
+            let rolesSchema = new Schema({
+                userName: {
+                    label: this.$t('system.userPermissionsUpdate.userName'),
+                    required: true,
+                    whitespace: false
+                },
+                employeeId: {
+                    label: this.$t('system.userPermissionsUpdate.employeeId'),
+                    required: false,
+                    whitespace: false
+                },
+                positionName: {
+                    label: this.$t('system.userPermissionsUpdate.positionName'),
+                    required: false,
+                    whitespace: false
+                },
+                organization: {
+                    label: this.$t('system.userPermissionsUpdate.organization'),
+                    required: false,
+                    whitespace: false
+                },
+                employeeName: {
+                    label: this.$t('system.userPermissionsUpdate.employeeName'),
+                    required: false,
+                    whitespace: false
+                },
+                Roles: {
+                    label: this.$t('system.userPermissionsUpdate.roles'),
+                    required: false,
+                    whitespace: false
+                },
+                Resources: {
+                    label: this.$t('system.userPermissionsUpdate.resources')
+                }
+            });
             return {
                 rolesSchema: rolesSchema,
                 readonlyFlag: true,
@@ -331,7 +332,7 @@ export default {
 
         },
         components: {
-          Panel: require('../../components/basic/panel.vue')
+            Panel: require('../../components/basic/panel.vue')
         },
         events: {
             'organization-selector:selected': function(node) {
@@ -367,8 +368,8 @@ export default {
                 }, {
                     emulateJSON: true
                 }).then((response) => {
-                  this.userPerList = [];
-                  this.userRoleList=[];
+                    this.userPerList = [];
+                    this.userRoleList = [];
                     let rs = response.json();
                     for (let r of rs.resourceList) {
                         let data = {

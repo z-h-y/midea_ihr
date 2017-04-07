@@ -152,15 +152,15 @@
 <template lang="html">
 <div class="ihr-performance-addOrgScheme">
   <panel :title="panelTitle" class="panel-b mt20 ml20 mb20 mr20" header="panel-header">
-      <ui-tabs type="text" background-color="clear" text-color="gray" text-color-active="primary" :active-tab = "activeTab">
-          <ui-tab header="Basic Information" id = 'basic' :disabled='!isEdit'>
-            <v-form v-ref:basicform :model="basicModel" :schema="basicSchema" label-width="150" label-suffix="" :cols="1" form-style="org-form">
-              <text-field v-ref:schemeName property='schemeName' editor-width="400"></text-field>
+      <ui-tabs ref="uitabs" type="text" background-color="clear" text-color="gray" text-color-active="primary" @tab-change="activeTabChanged">
+          <ui-tab :title="$t('performance.basicInformation')" id='basic' :disabled='!isEdit'>
+            <v-form ref="basicform" :model="basicModel" :schema="basicSchema" label-width="150" label-suffix="" :cols="1" form-style="org-form">
+              <text-field ref="schemename" property='schemeName' editor-width="400"></text-field>
               <select-field property="schemeCategory" v-show = "show.isView == false" editor-width="400" :select-change="setingSelected" :mapping="dictList.schemeCategory"></select-field>
               <text-increment property="schemeCategoryName" v-show = "show.isView == true" editor-width="400"></text-increment>
               <select-field property="restrictYear" editor-width="400" :mapping="dictList.years"></select-field>
               <!-- <select-field property="templateId" v-show = "show.isView == false" editor-width="400" :mapping = "temMapping"></select-field> -->
-              <text-field property='templateName' type="selector" v-show = "show.isView == false && showTemplate" :readonly="true" :show.sync="tempShow" editor-width="400">
+              <text-field property='templateName' @open-selector="openSelector('tempshow')" type="selector" v-show = "show.isView == false && showTemplate" :readonly="true" :show="tempShow" editor-width="400">
                 <input type="hidden" v-model="basicModel.templateId">
               </text-field>
               <text-increment property="templateName" v-show = "show.isView == true" editor-width="400"></text-increment>
@@ -168,38 +168,38 @@
               <text-field property='endDate' editor-width="400"></text-field>
             </v-form>
             <div class="btn-group">
-                <ui-button @click="basicNext" color="primary mr10">Next</ui-button>
-                <ui-button @click="cancel" class="btn-default-bd" type="flat">Cancel</ui-button>
+                <ui-button @click="basicNext" color="primary mr10">{{$t('button.next')}}</ui-button>
+                <ui-button @click="cancel" class="btn-default-bd" type="flat">{{$t('button.cancel')}}</ui-button>
             </div>
           </ui-tab>
 
-          <ui-tab header="Organization" id = 'employees' :disabled='!isEdit'>
+          <ui-tab :title="$t('staff.organization')" id = 'employees' :disabled='!isEdit'>
             <div class = "field emp-select-field">
-                <label class="prop-name">Organization(s)</label><ui-button @click = "empShow.modal = true" class="query-btn-reset btn-default-bd" type="flat">select</ui-button>
+                <label class="prop-name">{{$t('performance.Organizations')}}</label><ui-button @click = "$refs.orgselector.open()" class="query-btn-reset btn-default-bd" type="flat">{{$t('button.select')}}</ui-button>
             </div>
             <div class="pb161">
-              <vuetable v-ref:aEmployeesTable :api-url="tableUrl" :selected-to="selectedRow" :append-params="empParams"  :fields="empColumns"  pagination-path = "" table-wrapper="pb161" :sort-order="sortOrder" :item-actions="empActItem" per-page="10">
+              <vuetable ref="aemployeestable" @empaction="empAction" :api-url="tableUrl" :selected-to="selectedRow" :append-params="empParams"  :fields="empColumns"  pagination-path = "" table-wrapper="pb161" :sort-order="sortOrder" :item-actions="empActItem" per-page="10">
               </vuetable>
             </div>
             <div class="btn-group">
-                <ui-button @click="toProcess" color="primary mr10">Next</ui-button>
-                <ui-button @click="tabChange('basic')" class="btn-default-bd" type="flat">Back</ui-button>
+                <ui-button @click="toProcess" color="primary mr10">{{$t('button.next')}}</ui-button>
+                <ui-button @click="tabChange('basic')" class="btn-default-bd" type="flat">{{$t('button.back')}}</ui-button>
             </div>
-            <!-- <person-selector v-ref:'employeesModal' :show.sync="empShow"></person-selector> -->
             <ui-confirm
-              @confirmed="deleteConfirmed" @denied="deleteDenied" :show.sync="show.delConfirm"
+              ref="delconfirm"
+              @confirm="deleteConfirmed" @denied="deleteDenied" :show="show.delConfirm"
               close-on-confirm>
-              Do you want to delete this?
+              {{$t('common.deleteConfirm')}}
             </ui-confirm>
           </ui-tab>
 
-          <ui-tab header="Process" id = 'process' :disabled='!isEdit' v-ref:itemforms>
+          <ui-tab :title="$t('performance.process')" id = 'process' :disabled='!isEdit' ref="itemforms">
               <div class="field-row">
-                <v-form v-ref:processform :model="processModel" :schema="processSchema" label-width="0" label-suffix=""  form-style="nodeStyle">
-                  <div class="cell field textfield"><label>Select Process</label></div>
+                <v-form ref="processform" :model="processModel" :schema="processSchema" label-width="0" label-suffix=""  form-style="nodeStyle">
+                  <div class="cell field textfield"><label>{{$t('performance.selectProcess')}}</label></div>
                   <!-- <div class="cell"><select-field label-width="0" :hide-label="true" property="processId" editor-width="200" :select-change="selectProcess"></select-field></div> -->
                   <div class="cell">
-                    <text-field :hide-label="true" property='processTemplateName' type="selector" :readonly="true" :show.sync="proTempShow" editor-width="200">
+                    <text-field :hide-label="true" property='processTemplateName' @open-selector="openSelector('protemp')" type="selector" :readonly="true" :show="proTempShow" editor-width="200">
                       <input type="hidden" v-model="processModel.processTemplateId">
                     </text-field>
                   </div>
@@ -208,7 +208,7 @@
               </div>
               <div class="process-set-ctn">
                   <ul class="fix cell-g">
-                      <template v-for="(index,item) in nodeData">
+                      <template v-for="(item, index) in nodeData">
                           <li class="process-set-item cell-1-5">
                               <div class="img-wrap process-default">
                                   <div class="valign">
@@ -220,7 +220,7 @@
                               </div>
                               <v-form :model="item" :schema="processSchema" label-width="0" form-style="weight-form">
                                 <div class="text proc-input">
-                                    <text-field :hide-label="true" property='employeeName' type="selector" :readonly="true" :show.sync="proShow" editor-width="120" @click="catchItem(item)"  v-if="item.approveRole == 4">
+                                    <text-field :hide-label="true" property='employeeName' @open-selector="openSelector('proshow')" type="selector" :readonly="true" :show="proShow" editor-width="120" @click="catchItem(item)"  v-if="item.approveRole == 4">
                                       <input type="hidden" v-model="item.employeeId">
                                     </text-field>
                                   <!-- <label>{{item.employeeName}}</label>
@@ -228,7 +228,7 @@
                                   <button @click="toFindPerson(item)" class="proc-operate">Edit</button> -->
                                 </div>
                                 <div class="text proc-input" v-show="item.stageName == 'performanceEvaluate' && countEvaluate != 1">
-                                    <text-field v-ref:schemename :hide-label="true" property='nodeWeight' editor-width="50">%</text-field>
+                                    <text-field ref="schemename" :hide-label="true" property='nodeWeight' editor-width="50">%</text-field>
                                 </div>
                                 <div class="text operationText" v-if="item.stageName == 'performanceEvaluate' && countEvaluate == 1">
                                   <label>100%</label>
@@ -240,31 +240,26 @@
                   </ul>
               </div>
             <div class="pb162">
-              <vuetable v-ref:proTable :api-url="proTableUrl" :append-params="proParams"  :fields="proColumns"  pagination-path = "" table-wrapper="pb162" :sort-order="sortOrder" :item-actions="proActItem" per-page="10">
+              <vuetable ref="protable" @action="action" :api-url="proTableUrl" :append-params="proParams"  :fields="proColumns"  pagination-path = "" table-wrapper="pb162" :sort-order="sortOrder" :item-actions="proActItem" per-page="10">
               </vuetable>
             </div>
             <div class="btn-group">
-                <ui-button @click="submitConfirmed" color="primary mr10">Submit</ui-button>
-                <ui-button @click="tabChange('employees')" class="btn-default-bd" type="flat">Back</ui-button>
+                <ui-button @click="submitConfirmed" color="primary mr10">{{$t('button.submit')}}</ui-button>
+                <ui-button @click="tabChange('employees')" class="btn-default-bd" type="flat">{{$t('button.back')}}</ui-button>
             </div>
-            <!-- <ui-confirm
-                @confirmed="submitConfirmed" :show.sync="show.submitConfirm"
-                close-on-confirm>
-                Do you want to submit this?
-            </ui-confirm> -->
           </ui-tab>
       </ui-tabs>
   </panel>
-  <person-selector :show.sync="show" :multi-selected="false" :handle-comfirmed = "savePerson"></person-selector>
-  <person-selector :show.sync="proShow" multi-selected = "false" :handle-comfirmed = "personCallback"></person-selector>
-  <process-template-selector :show.sync="proTempShow" multi-selected="false" :handle-comfirmed="proTempCallback"></process-template-selector>
-  <org-table-orgscheme-selector :show.sync="empShow"></org-table-orgscheme-selector>
-  <template-table-selector template-type="organization" multi-selected="false" :template-category="basicModel.schemeCategory" :show.sync="tempShow" :handle-comfirmed="templateCallback"></template-table-selector>
-  <ind-model :show.sync="show.indview" :params = "indModalParam" type="organization" :indicator-setting = "indSettingKey"></ind-model>
+  <person-selector :show="show" :multi-selected="false" :handle-comfirmed = "savePerson"></person-selector>
+  <person-selector ref="proshow" :show="proShow" multi-selected = "false" :handle-comfirmed = "personCallback"></person-selector>
+  <process-template-selector ref="protemp" :show="proTempShow" multi-selected="false" :handle-comfirmed="proTempCallback"></process-template-selector>
+  <org-table-orgscheme-selector ref="orgselector" :show="empShow"></org-table-orgscheme-selector>
+  <template-table-selector ref="tempshow" template-type="organization" multi-selected="false" :template-category="basicModel.schemeCategory" :show="tempShow" :handle-comfirmed="templateCallback"></template-table-selector>
+  <ind-model ref="indmodel" @modelsubmit="modelSubmit" :show="show.indview" :params = "indModalParam" type="organization" :indicator-setting = "indSettingKey"></ind-model>
 </div>
 </template>
 
-<script type="text/ecmascript-6">
+<script>
 
 import Vue from 'vue';
 import {initFormData,convert,formatDate,transformDict} from '../../util/assist';
@@ -275,9 +270,9 @@ import indicatorSettings from './indicatorSettingsModal.vue';
 Vue.component('schemeOrg-action', {
   template: [
     '<div class="action-custom">',
-      '<button class="operate-custom"  v-show = "showIndSetting" @click="itemAction(\'edit-item\', rowData)"><i>Indicator Setting</i></button>',
+      '<button class="operate-custom"  v-show = "showIndSetting" @click="itemAction(\'edit-item\', rowData)"><i>{{$t(\'performance.indicatorSetting\')}}</i></button>',
       // '<button class="operate" @click="itemAction(\'res-item\', rowData)"><i>principal Setting</i></button>',
-      '<button class="operate-custom" @click="itemAction(\'delete-item\', rowData)"><i>Delete</i></button>',
+      '<button class="operate-custom" @click="itemAction(\'delete-item\', rowData)"><i>{{$t(\'button.delete\')}}</i></button>',
     '</div>'
   ].join(''),
   //
@@ -296,7 +291,7 @@ Vue.component('schemeOrg-action', {
   },
   methods: {
     itemAction: function(action, data) {
-        this.$dispatch('empTable:' + 'action', action, data)
+        this.$parent.$emit('empaction', action, data)
       // console.log('custom-action: ' + action, data.name)
     }
   }
@@ -309,7 +304,7 @@ export default {
         let _self = this;
         let basicSchema = new Schema({
             schemeName: {
-                label: 'Scheme Name',
+                label: _self.$t('performance.schemeName'),
                 required: true,
                 whitespace: false,
                 rules: {
@@ -326,14 +321,14 @@ export default {
                 }
             },
             schemeCategory: {
-                label: 'Scheme Category',
+                label: _self.$t('performance.schemeCategory'),
                 required: true
             },
             schemeCategoryName: {
-              label: 'Scheme Category'
+              label: _self.$t('performance.schemeCategory')
             },
             restrictYear: {
-                label: 'Restrict To Year',
+                label: _self.$t('performance.restrictToYear'),
                 required: true,
                 whitespace: false
             },
@@ -348,16 +343,16 @@ export default {
             //     // }
             // },
             templateName: {
-              label: 'Select Template',
+              label: _self.$t('performance.selectTemplate'),
               required: true
             },
             startDate: {
-                label: 'Start Date',
+                label: _self.$t('staff.startDate'),
                 required: true,
                 type: 'datetime'
             },
             endDate: {
-                label: 'End Date',
+                label: _self.$t('staff.endDate'),
                 required: true,
                 type: 'datetime'
             }
@@ -367,27 +362,6 @@ export default {
               label: '',
               // required: true,
               whitespace: false
-              // mapping: function() {
-              //   return new Promise((resolve) => {
-              //     Vue.http.get(`/performance/processTemplates/dropdownList`,{
-              //       params:{
-              //         status:1
-              //       }
-              //     }).then((response) => {
-              //
-              //       let data = response.data;
-              //       if(data) {
-              //         let result = {};
-              //         if(data && data instanceof Array) {
-              //           for(let i = 0;i < data.length;i++) {
-              //             result[data[i].processTemplateName] = data[i].processTemplateId
-              //           }
-              //         resolve(result);
-              //         }
-              //       }
-              //     })
-              //   });
-              // }
           },
           processTemplateName: {
             required: true,
@@ -405,7 +379,7 @@ export default {
         });
             return {
                 isEdit: false,
-                panelTitle: 'Add Org Scheme',
+                panelTitle: this.$t('performance.addOrgScheme'),
                 tableUrl:'/performance/schemeInfos/department/relatedList',
                 proTableUrl:'/performance/schemeInfos/department/processList',
                 dictList: {
@@ -440,7 +414,6 @@ export default {
                   modal:false,
                 },
                 temMapping:[],
-                activeTab:'basic',
                 indModalParam : {},
                 currentSchemeName:'',
                 nodeData:[],
@@ -449,30 +422,30 @@ export default {
                 processSchema: processSchema,
                 processModel: processSchema.newModel(),
                 empActItem: [
-                  { name: 'res-item', label: 'responseSetting', class: 'operate'},
-                  { name: 'edit-item', label: 'indSetting', class: 'operate'},
-                  { name: 'delete-item', label: 'delete', class: 'operate' }
+                  { name: 'res-item', label: this.$t('performance.responseSetting'), class: 'operate'},
+                  { name: 'edit-item', label: this.$t('performance.indSetting'), class: 'operate'},
+                  { name: 'delete-item', label: this.$t('button.delete'), class: 'operate' }
                 ],
                 empColumns: [
                     {
                       name: 'unitShortName',
-                      title: 'Organization Name'
+                      title: this.$t('performance.organizationName')
                     },
                     {
                       name: 'unitCode',
-                      title: 'Organization ID'
+                      title: this.$t('performance.organizationID')
                     },
                     {
                       name: 'employeeName',
-                      title: 'Principal'
+                      title: this.$t('performance.principal')
                     },
                     {
                       name: 'positionName',
-                      title: 'Position'
+                      title: this.$t('performance.position')
                     },
                     {
                       name: '__component:schemeOrg-action',
-                      title: 'Actions'
+                      title: this.$t('performance.actions')
                     }
                 ],
                 proActItem: [
@@ -482,27 +455,27 @@ export default {
                 proColumns: [
                     {
                       name: 'unitName',
-                      title: 'Organization Name'
+                      title: this.$t('performance.organizationName')
                     },
                     {
                       name: 'unitCode',
-                      title: 'Organization ID'
+                      title: this.$t('performance.organizationID')
                     },
                     {
                       name: 'employeeName',
-                      title: 'Principal'
+                      title: this.$t('performance.principal')
                     },
                     {
                       name: 'approveStagesList',
-                      title: 'Approve Stages',
+                      title: this.$t('performance.approveStages'),
                       callback: function(value) {
                         let resStr = ""
                         if(!value instanceof Array) return;
                         value.forEach(function(item, index) {
-                          let approvePeople = item.approvePeople ? item.approvePeople.join(",") : "(no people)";
+                          let approvePeople = item.approvePeople ? item.approvePeople.join(",") : _self.$t('performance.noPeople');
                           resStr += approvePeople;
                           if(index < (value.length-1)) {
-                            resStr += "<img class='wh-px40 br50 ml5 mr5' src='../../static/images/public/arrows.png' alt='' />";
+                            resStr += "<img class='wh-px40 br50 ml5 mr5' src='../../assets/images/public/arrows.png' alt='' />";
                           }
                         })
                         return resStr;
@@ -527,6 +500,11 @@ export default {
         },
         created() {
           this.initDictList();
+        },
+        mounted() {
+          this.$nextTick(function() {
+            this.initRoute()
+          })
         },
         components: {
           'ind-model' : indicatorSettings,
@@ -564,8 +542,26 @@ export default {
             return this.basicModel.schemeCategory ? true : false
           }
         },
-        events: {
-          'selected-org': function(selectedData) {
+
+        methods: {
+          empAction(action, data) {
+            this.empOperaterow =  data;
+            if (action == 'edit-item') {
+              this.indModalParam.schemeId = this.schemeId;
+              this.indModalParam.employeeId = data.employeeId;
+              this.indModalParam.schemeEmployeeId = data.schemeEmployeeId;
+              this.indSettingKey = this.indSettingKeys[data.indicatorsSetting];
+              this.$refs.indmodel.open()
+              this.$nextTick(()=>{
+                this.$refs.indmodel.initTable();
+              })
+            } else if (action == 'res-item') {
+              this.show.modal = true;
+            } else if (action == 'delete-item') {
+              this.$refs.delconfirm.open()
+            }
+          },
+          selectOrg(selectedData) {
 
             if(this.$route.params.step === "employees") {
               //校验选中的人员是否在列表里面
@@ -601,7 +597,7 @@ export default {
               }
 
               if(selectedParam.length < 1) {
-                this.openMessage('error',"The selected Organization exists in the list");
+                this.openMessage('error',this.$t('performance.message.addOrgSchemeSelectOrgExists'));
                 return;
               } else {
                 let param = {
@@ -614,60 +610,115 @@ export default {
                 this.$http.post('/performance/schemeInfos/department/createRelated',data, {
                   emulateJSON: true
                 }).then((response) => {
-                  this.$broadcast('vuetable:refresh');
+                  this.$refs.aemployeestable.reloadData();
                 });
               }
             }
           },
-          // 'selected-person': function(selectData) {
-          //     let data = {
-          //       schemeId:this.schemeId,
-          //       schemeUnitId:this.empOperaterow.schemeUnitId,
-          //       employeeId:selectData[0].employeeId,
-          //       schemeEmployeeId:this.empOperaterow.schemeEmployeeId
-          //     };
-          //     this.$http.put('/performance/schemeInfos/department/updateRelated',data, {
-          //       emulateJSON: true
-          //     }).then((response) => {
-          //       this.openMessage('error',`save successful`);
-          //       this.$broadcast('vuetable:refresh');
-          //     });
-          // },
-          'vuetable:action': function(action, data) {
+          action(action, data) {
               this.empOperaterow =  data;
               if (action == 'edit-item') {
                 this.indModalParam.schemeId = this.schemeId;
                 this.indModalParam.employeeId = data.employeeId;
                 this.indModalParam.schemeEmployeeId = data.schemeEmployeeId;
                 this.indSettingKey = this.indSettingKeys[data.indicatorsSetting];
-                this.show.indview= true;
+                this.$refs.indmodel.open()
                 this.$nextTick(()=>{
-                  this.$broadcast('indModal:refresh');
+                  this.$refs.indmodel.initTable();
                 })
               } else if (action == 'res-item') {
                 this.show.modal = true;
               } else if (action == 'delete-item') {
-                this.show.delConfirm = true;
+                this.$refs.delconfirm.open()
               }
           },
-          'empTable:action': function(action, data) {
-            this.empOperaterow =  data;
-            if (action == 'edit-item') {
-              this.indModalParam.schemeId = this.schemeId;
-              this.indModalParam.employeeId = data.employeeId;
-              this.indModalParam.schemeEmployeeId = data.schemeEmployeeId;
-              this.indSettingKey = this.indSettingKeys[data.indicatorsSetting];
-              this.show.indview= true;
-              this.$nextTick(()=>{
-                this.$broadcast('indModal:refresh');
-              })
-            } else if (action == 'res-item') {
-              this.show.modal = true;
-            } else if (action == 'delete-item') {
-              this.show.delConfirm = true;
+          activeTabChanged(tabId) {
+            switch(tabId) {
+              case 'basic': this.tabChange('basic',this.schemeId);break;
+              case 'employees': this.tabChange("employees",this.schemeId,this.basicModel.schemeCategory);break;
+              case 'process': this.tabChange('process',this.schemeId);break;
             }
           },
-          'indModal:submit': function(params) {
+          initRoute() {
+            let _self = this;
+            let routeName = _self.$route.name;
+            let step = _self.$route.params.step;
+
+
+            if (routeName === 'addOrgScheme') {
+              if(!!step){
+                _self.$refs.uitabs.setActiveTab(step)
+                if(step === 'basic') {
+                  return;
+                } else if(step === 'employees') {
+                  _self.$nextTick(()=>{
+                    this.$refs.protable.reloadData();
+                  })
+                } else if (step === 'process') {
+                  this.nodeData = [];
+                }
+              }
+            } else if (routeName === 'editOrgScheme') {
+                _self.isEdit = true;
+                if(!!step){
+                  _self.panelTitle = this.$t('performance.editOrgScheme');
+                  _self.$refs.uitabs.setActiveTab(step)
+                  if(step === 'basic') {
+                    _self.show.isView = true;
+                    _self.$http.get(`/performance/schemeInfos/detail`,{params:{schemeId:this.schemeId}}).then((response)=>{
+                      let repData = response.data;
+                      _self.currentSchemeName = repData.schemeName;
+                      _self.basicModel.schemeName = _self.currentSchemeName;
+                      _self.basicModel.schemeCategory = repData.schemeCategory;
+                      _self.basicModel.schemeCategoryName = repData.schemeCategoryName;
+                      _self.basicModel.restrictYear = repData.restrictYear;
+                      _self.basicModel.templateId = repData.templateId;
+                      _self.basicModel.templateName = repData.templateName;
+                      _self.basicModel.startDate = formatDate(new Date(repData.startDate),'YYYY-MM-DD HH:mm');
+                      _self.basicModel.endDate = formatDate(new Date(repData.endDate),'YYYY-MM-DD HH:mm');
+                    })
+
+                  } else if (step === 'employees') {
+                    _self.$refs.aemployeestable.reloadData();
+                  } else if (step === 'process') {
+                    _self.$http.get('/performance/process/schemeProcessRatioList', {
+                        params: {
+                          schemeInfoId:_self.schemeId
+                        },
+                        emulateJSON: true
+                    }).then((response) => {
+                        _self.nodeData = [];
+                        let rep = response.data;
+                        _self.processModel.processId = rep.processTemplateId;
+                        _self.processModel.processTemplateName = rep.processTemplateName;
+                        _self.$nextTick(()=>{
+                          this.$refs.aemployeestable.reloadData();
+                        })
+                        for(let item of rep.processRatioNameList) {
+                          // let proModel = new Schema(processSchema);
+                          // proModel.approveRoleName = item.approveRoleName;
+                          // proModel.nodeWeight = item.ratio;
+                          // _self.nodeData.push(proModel);
+                          let proModel = _self.processSchema.newModel();
+                          proModel.approveRoleName = item.approveRoleName;
+                          proModel.approveRole = item.approveRole;
+                          proModel.nodeName = item.nodeName;
+                          proModel.templateRoleId = item.templateRoleId;
+                          proModel.templateId = item.templateId;
+                          proModel.operation = item.operation;
+                          proModel.stageName = item.stageName;
+                          proModel.nodeWeight = item.ratio;
+                          proModel.schemeId = this.schemeId;
+                          proModel.employeeId = item.employeeId;
+                          proModel.employeeName = item.employeeName;
+                          _self.nodeData.push(proModel);
+                        }
+                    });
+                  }
+                }
+            }
+          },
+          modelSubmit(params) {
             let _self = this;
             let data = {};
             convert(params, data, "", true);
@@ -675,19 +726,12 @@ export default {
               emulateJSON: true
             }).then((response) => {
               _self.openMessage('success',this.$t('common.saveSuccess'));
-              this.show.indview = false;
+              this.$refs.indmodel.close()
             });
           },
-          'active-tab-changed': function(tabId) {
-            switch(tabId) {
-              case 'basic': this.tabChange('basic',this.schemeId);break;
-              case 'employees': this.tabChange("employees",this.schemeId,this.basicModel.schemeCategory);break;
-              case 'process': this.tabChange('process',this.schemeId);break;
-            }
-          }
-        },
-
-        methods: {
+          openSelector(selector) {
+            this.$refs[selector].open();
+          },
           initDictList() {
             let dictCodes = ['SCHEME_CATEGORY','YEAR'];
             let obj = {
@@ -718,7 +762,7 @@ export default {
             let _self = this;
             let _aPerformance = this.basicModel;
 
-            let passed = _aPerformance.$schema.isFormValidate(this.$refs.basicform);
+            let passed = this.$refs.basicform.isFormValidate();
             if (!passed) return;
 
             var startDate = this.setDateType(_aPerformance.startDate);
@@ -760,7 +804,8 @@ export default {
               orgType:orgType || this.schemeCategory || '0'
             };
             let name = !this.schemeId ? 'addOrgScheme' : 'editOrgScheme';
-            this.$router.go({ name: name, params: param});
+            this.$router.push({ name: name, params: param});
+            this.initRoute()
           },
           toFindPerson(opt) {
               this.proShow.modal = true;
@@ -779,7 +824,7 @@ export default {
               emulateJSON: true
             }).then((response) => {
               this.openMessage('success',this.$t('common.saveSuccess'));
-              this.$broadcast('vuetable:refresh');
+              this.$refs.aemployeestable.reloadData()
             });
           },
           saveProc() {
@@ -820,7 +865,7 @@ export default {
               emulateJSON: true
             }).then((response) => {
               _self.openMessage('success',this.$t('common.saveSuccess'));
-              this.$router.go({ name: 'orgScheme'});
+              this.$router.push({ name: 'orgScheme'});
             });
           },
           openMessage(type,message){
@@ -838,7 +883,7 @@ export default {
             this.saveProc();
           },
           cancel() {
-            this.$router.go({
+            this.$router.push({
                 name: 'orgScheme',
             });
           },
@@ -874,7 +919,7 @@ export default {
                 proModel.schemeId = this.schemeId;
                 this.nodeData.push(proModel);
               }
-              this.$broadcast("vuetable:refresh");
+              this.$refs.aemployeestable.reloadData();
             })
           },
           deleteConfirmed() {
@@ -889,8 +934,8 @@ export default {
               }
             }).then((response) => {
               _self.openMessage('success',this.$t('common.deleteSuccess'));
-              this.$broadcast('vuetable:refresh');
-              this.show.delConfirm = false;
+              this.$refs.aemployeestable.reloadData();
+              this.$refs.delconfirm.close()
             })
           },
           selectProcess(value) {
@@ -902,13 +947,13 @@ export default {
           checkWeight() {
             let _self = this;
             let passed = true;
-            passed = this.processModel.$schema.isFormValidate(this.$refs.processform);
+            passed = this.$refs.processform.isFormValidate();
 
             if (passed) {
               _self.nodeData.forEach(function(item, index) {
                   let vform = _self.$refs.itemforms.$children[index+5];
                   if(vform) {
-                    passed = item.$schema.isFormValidate(vform);
+                    passed = vform.isFormValidate();
                   }
               });
             }
@@ -934,7 +979,7 @@ export default {
           },
           setingSelected(value) {
             this.$nextTick(function(){
-              this.$broadcast("template-selector:refresh");
+              this.$refs.tempshow.refresh()
             });
             // if(value) {
             //   this.loadTempMapping(value);
@@ -965,103 +1010,21 @@ export default {
             // })
           },
           personCallback(SelectedPer) {
-            this.$set('optPerson.employeeId',SelectedPer[0].employeeId);
-            this.$set('optPerson.employeeName',SelectedPer[0].employeeName);
+            this.$set(this.optPerson, 'employeeId',SelectedPer[0].employeeId);
+            this.$set(this.optPerson, 'employeeName',SelectedPer[0].employeeName);
           },
           templateCallback(SelectedPer) {
-            this.$set('basicModel.templateId',SelectedPer[0].templateId);
-            this.$set('basicModel.templateName',SelectedPer[0].templateName);
+            this.$set(this.basicModel, 'templateId',SelectedPer[0].templateId);
+            this.$set(this.basicModel, 'templateName',SelectedPer[0].templateName);
           },
           proTempCallback(SelectedPer) {
-            this.$set('processModel.processId',SelectedPer[0].processTemplateId);
-            this.$set('processModel.processTemplateName',SelectedPer[0].processTemplateName);
+            this.$set(this.processModel, 'processId',SelectedPer[0].processTemplateId);
+            this.$set(this.processModel, 'processTemplateName',SelectedPer[0].processTemplateName);
             this.findNodeList(this.processModel.processId);
           },
           catchItem(item) {
             this.optPerson = item;
           }
-        },
-
-        route: {
-            data(transition) {
-                let _self = this;
-                let routeName = _self.$route.name;
-                let step = transition.to.params.step;
-
-
-                if (routeName === 'addOrgScheme') {
-                  if(!!step){
-                    _self.activeTab = step;
-                    if(step === 'basic') {
-                      return;
-                    } else if(step === 'employees') {
-                      _self.$nextTick(()=>{
-                        this.$broadcast('vuetable:refresh');
-                      })
-                    } else if (step === 'process') {
-                      this.nodeData = [];
-                    }
-                  }
-                } else if (routeName === 'editOrgScheme') {
-                    _self.isEdit = true;
-                    if(!!step){
-                      _self.panelTitle = 'Edit Org Scheme';
-                      _self.activeTab = step;
-                      if(step === 'basic') {
-                        _self.show.isView = true;
-                        _self.$http.get(`/performance/schemeInfos/detail`,{params:{schemeId:this.schemeId}}).then((response)=>{
-                          let repData = response.data;
-                          _self.currentSchemeName = repData.schemeName;
-                          _self.basicModel.schemeName = _self.currentSchemeName;
-                          _self.basicModel.schemeCategory = repData.schemeCategory;
-                          _self.basicModel.schemeCategoryName = repData.schemeCategoryName;
-                          _self.basicModel.restrictYear = repData.restrictYear;
-                          _self.basicModel.templateId = repData.templateId;
-                          _self.basicModel.templateName = repData.templateName;
-                          _self.basicModel.startDate = formatDate(new Date(repData.startDate),'YYYY-MM-DD HH:mm');
-                          _self.basicModel.endDate = formatDate(new Date(repData.endDate),'YYYY-MM-DD HH:mm');
-                        })
-
-                      } else if (step === 'employees') {
-                        _self.$broadcast('vuetable:refresh');
-                      } else if (step === 'process') {
-                        _self.$http.get('/performance/process/schemeProcessRatioList', {
-                            params: {
-                              schemeInfoId:_self.schemeId
-                            },
-                            emulateJSON: true
-                        }).then((response) => {
-                            _self.nodeData = [];
-                            let rep = response.data;
-                            _self.processModel.processId = rep.processTemplateId;
-                            _self.processModel.processTemplateName = rep.processTemplateName;
-                            _self.$nextTick(()=>{
-                              this.$broadcast('vuetable:refresh');
-                            })
-                            for(let item of rep.processRatioNameList) {
-                              // let proModel = new Schema(processSchema);
-                              // proModel.approveRoleName = item.approveRoleName;
-                              // proModel.nodeWeight = item.ratio;
-                              // _self.nodeData.push(proModel);
-                              let proModel = _self.processSchema.newModel();
-                              proModel.approveRoleName = item.approveRoleName;
-                              proModel.approveRole = item.approveRole;
-                              proModel.nodeName = item.nodeName;
-                              proModel.templateRoleId = item.templateRoleId;
-                              proModel.templateId = item.templateId;
-                              proModel.operation = item.operation;
-                              proModel.stageName = item.stageName;
-                              proModel.nodeWeight = item.ratio;
-                              proModel.schemeId = this.schemeId;
-                              proModel.employeeId = item.employeeId;
-                              proModel.employeeName = item.employeeName;
-                              _self.nodeData.push(proModel);
-                            }
-                        });
-                      }
-                    }
-                }
-            }
         }
 }
 

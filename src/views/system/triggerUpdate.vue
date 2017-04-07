@@ -8,7 +8,7 @@
 
 <div class="ihr-position-triggerUpdate">
     <panel :title="panelTitle" class="panel-b mt20 ml20 mb20 mr20" header="panel-header">
-        <v-form v-ref:triggerform :model="trigger" :schema="triggerSchema" label-width="160" label-suffix="" :cols="1" form-style="org-form">
+        <v-form ref="triggerform" :model="trigger" :schema="triggerSchema" label-width="160" label-suffix="" :cols="1" form-style="org-form">
 
             <select-field property='type' editor-width="400"></select-field>
             <text-field property="name" editor-width="400"></text-field>
@@ -21,8 +21,8 @@
         </v-form>
     </panel>
     <div class="btn-group">
-        <ui-button @click="submit" color="primary mr10">Submit</ui-button>
-        <ui-button @click="cancel" class="btn-default-bd" type="flat">Cancel</ui-button>
+        <ui-button @click="submit" color="primary mr10">{{$t('button.submit')}}</ui-button>
+        <ui-button @click="cancel" class="btn-default-bd" type="flat">{{$t('button.cancel')}}</ui-button>
     </div>
 </div>
 

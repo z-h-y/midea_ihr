@@ -52,11 +52,11 @@
 
   <div class="content-wrap bg-w ihr-staff-interns">
     <panel :title="$t('staff.overseasPosting')" class="panel-b mb-suitable" header="panel-header">
-    <employee-common-info :employee-id="employeeId" :employee-info.sync="employeeInfo"></employee-common-info>
-    <v-form v-ref:myform :model="overseas" :schema="overseasSchema" label-width="220" label-suffix="" :cols="1" form-style="int-join-com-form">
+    <employee-common-info :employee-id="employeeId" :employee-info="employeeInfo"></employee-common-info>
+    <v-form ref="myform" :model="overseas" :schema="overseasSchema" label-width="220" label-suffix="" :cols="1" form-style="int-join-com-form">
         <radiogroup-field :mapping="whetherType" property="isFirstDispatch"></radiogroup-field>
         <select-field property="expatriationCategory" :mapping="expatriationCategory" editor-width="400"></select-field>
-        <text-field property="dispatchPositionName" type="selector" :readonly="true" :show.sync="position" editor-width="400"></text-field>
+        <text-field property="dispatchPositionName" @open-selector="openSelector" type="selector" :readonly="true" :show="position" editor-width="400"></text-field>
         <text-field property="businessCardTitle" editor-width="400"></text-field>
         <text-field property="disptachUnitName" :placeholder="$t('staff.selectPosition')" :readonly="true" editor-width="400"></text-field>
         <select-field :mapping="mibGradeMapping" property="jobGrade" editor-width="400"></select-field>
@@ -68,7 +68,7 @@
         <text-field type="textarea" :editor-height="100" editor-width="400" property="roles"></text-field>
         <text-field class="visa-upload" property="visa" editor-width="400">
           <div class="file-upload-content">
-            <file-upload title="upload" class="file-upload" name="file" :post-action="files.url" :extensions="files.extensions" :accept="files.accept" :multiple="files.multiple" :size="files.size" v-ref:upload :drop="files.drop"></file-upload>
+            <file-upload @addFileUpload="addFileUpload" @afterFileUpload="afterFileUpload" :title="$t('button.upload')" class="file-upload" name="file" :post-action="files.url" :extensions="files.extensions" :accept="files.accept" :multiple="files.multiple" :size="files.size" ref="upload" :drop="files.drop"></file-upload>
             <span class="file-name" :title="fileName">{{fileName}}</span>
             <i v-show="fileName || fileName === '0'" class="fa fa-trash-o" aria-hidden="true" @click="delFile"></i>
           </div>
@@ -76,8 +76,8 @@
         </text-field>
     </v-form>
     </panel>
-    <position-selector :show.sync="position" :handle-comfirmed="selectPosition"></position-selector>
-    <employee-submit v-ref:employeesubmit :form-confirmed="confirmed" :form-cancel="cancel" :is-form-validate="isFormValidate"></employee-submit>
+    <position-selector ref="posselect" :show="position" :handle-comfirmed="selectPosition"></position-selector>
+    <employee-submit ref="employeesubmit" :form-confirmed="confirmed" :form-cancel="cancel" :is-form-validate="isFormValidate"></employee-submit>
 
 </div>
 
@@ -155,7 +155,7 @@ export default {
                 mibGradeMapping: {},
                 files: {
                   url: Vue.config.APIURL + '/system/attachment/uploadFile',
-                  accept: 'image/*,application/msexcel,application/msword,application/pdf',
+                  accept: 'image/:,application+/msexcel,application/msword,application/pdf',
                   size: 1024 * 1024 * 2,
                   multiple: false,
                   extensions: 'gif,jpg,jpeg,png,pdf,doc,docx,xlsx,xls',
@@ -224,11 +224,13 @@ export default {
             }
           });
         },
-        ready() {
+        mounted() {
           this.overseas = this.overseasSchema.newModel();
         },
-        attached() {},
         methods: {
+          openSelector() {
+            this.$refs['posselect'].open();
+          },
           overOneYear(start, end) {
             var year = new Date(end).getFullYear() - new Date(start).getFullYear();
             var month = new Date(end).getMonth() - new Date(start).getMonth();
@@ -238,23 +240,6 @@ export default {
             }
             return false;
           },
-          // changeFile(e) {
-          //   var rawFile = e.srcElement.files;
-          //   var files = Array.prototype.slice.call(rawFile, 0);
-          //   if (!this.checkFileSize(files)) {
-          //     return;
-          //   }
-          //   var name = [];
-          //   var formData = new FormData();
-          //   files.forEach(function(file) {
-          //       name.push(file.name);
-          //       formData.append('file', file);
-          //   });
-          //   this.idFileName = name.join(',');
-          //   this.$http.post('/system/attachment/uploadFile', formData).then(function(res) {
-          //     this.overseas.visa = res.body;
-          //   });
-          // },
           delFile() {
             this.overseas.visa = '';
             this.fileName = '';
@@ -274,7 +259,7 @@ export default {
             return validate;
           },
           isFormValidate() {
-              var passed = this.overseas.$schema.isFormValidate(this.$refs.myform);
+              var passed = this.$refs.myform.isFormValidate();
               if (!passed) {
                 return;
               }
@@ -295,7 +280,7 @@ export default {
                         type: 'success',
                         message: this.$t('staff.message.overseasPostingSuccess')
                     });
-                      this.$route.router.go({
+                      this.$router.push({
                           name: 'regularEmployees'
                       });
                   },function(response) {
@@ -303,7 +288,7 @@ export default {
                   });
           },
           cancel() {
-              this.$route.router.go({
+              this.$router.push({
                   name: 'regularEmployees'
               });
           },
@@ -342,29 +327,16 @@ export default {
               }
               this.mibGradeMapping = result;
             })
-          }
-        },
-        events: {
-            'selected-person': function(value) {
-                if (value && value instanceof Array) {
-                    let tempNames = [],
-                        tempIds = [];
-                    for (let index of value.keys()) {
-                        tempNames.push(value[index].employeeName);
-                        tempIds.push(value[index].employeeId);
-                    }
-                    this.overseas.localSupervisor = tempNames.join(',');
-                }
-            },
-            addFileUpload(file, component) {
-              if (this.files.auto) {
-                component.active = true;
-              }
-            },
-            afterFileUpload(file, component) {
-              this.overseas.visa = file.data;
-              this.fileName = file.name;
+          },
+          addFileUpload(file, component) {
+            if (this.files.auto) {
+              component.active = true;
             }
+          },
+          afterFileUpload(file, component) {
+            this.overseas.visa = file.data;
+            this.fileName = file.name;
+          }
         },
         components: {
           EmployeeCommonInfo: require('../employeeCommonInfo.vue'),

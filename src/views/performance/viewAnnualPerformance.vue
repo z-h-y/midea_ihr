@@ -96,18 +96,18 @@
 <div class="ihr-position-manageAnnualPerformance content-wrap">
   <panel :title="panelTitle" class="panel-b mb-suitable" header="panel-header">
       <ui-tabs type="text" background-color="clear" text-color="gray" text-color-active="primary" :active-tab = "activeTab" @active-tab-changed="changeTabs">
-          <ui-tab header="Basic Information" id = 'basic' :disabled='false'>
+          <ui-tab :title="$t('performance.basicInformation')" id = 'basic' :disabled='false'>
             <v-form :model="group" :schema="groupSchema" label-width="150" label-suffix="" :cols="1">
               <text-increment property='schemeName' editor-width="400"></text-increment>
               <text-increment property='restrictYear' editor-width="400"></text-increment>
               <text-increment property='resultConfirmedEmpName' editor-width="400"></text-increment>
               <div class='field'>
-                  <label style="width:150px;">Weight</label>
+                  <label style="width:150px;">{{$t('performance.weight')}}</label>
                   <div class="field-content weight-field" style="margin-left:150px;">
                     <div class="field-row">
-                      <div class="cell"><label>Business Unit</label></div>
-                      <div class="cell"><label>Department<label></div>
-                      <div class="cell"><label>Individual<label></div>
+                      <div class="cell"><label>{{$t('performance.businessUnit')}}</label></div>
+                      <div class="cell"><label>{{$t('performance.department')}}</label></div>
+                      <div class="cell"><label>{{$t('performance.individual')}}</label></div>
                     </div>
                     <div class="field-row">
                         <div class="cell">
@@ -125,82 +125,84 @@
               <text-increment class="description" property='description' editor-width="400"></text-increment>
             </v-form>
             <div class="btn-group">
-                <ui-button @click="basicNext" color="primary mr10">Next</ui-button>
-                <ui-button @click="cancel" class="btn-default-bd" type="flat">Cancel</ui-button>
+                <ui-button @click="basicNext" color="primary mr10">{{$t('button.next')}}</ui-button>
+                <ui-button @click="cancel" class="btn-default-bd" type="flat">{{$t('button.cancel')}}</ui-button>
             </div>
-            <person-selector :show.sync="show"></person-selector>
+            <person-selector :show="show" :handle-comfirmed="selectPer"></person-selector>
           </ui-tab>
 
-          <ui-tab header="Employees" id = 'employees' :disabled='false'>
+          <ui-tab :title="$t('performance.employees')" id = 'employees' :disabled='false'>
             <!-- <div class = "field">
                 <label class="prop_name">Select Employee(s)</label><ui-button @click = "show2.modal = true" class="query-btn-reset btn-default-bd" type="flat">select</ui-button>
             </div> -->
             <div class="vuetable-wrapper pl16 pr16 pb16">
-              <vuetable v-ref:aEmployeesTable :api-url="tableUrl" :selected-to="selectedRow" :append-params="empParams"  :fields="columns"  pagination-path = "" table-wrapper=".vuetable-wrapper pl16 pr16 pb16" :sort-order="sortOrder" :item-actions="itemActions" per-page="10">
+              <vuetable ref="aemployeestable" @action="action" :api-url="tableUrl" :selected-to="selectedRow" :append-params="empParams"  :fields="columns"  pagination-path = "" table-wrapper=".vuetable-wrapper pl16 pr16 pb16" :sort-order="sortOrder" :item-actions="itemActions" per-page="10">
               </vuetable>
             </div>
             <div class="btn-group">
-                <ui-button @click="toRatio" color="primary mr10">Next</ui-button>
-                <ui-button @click="tabChange('basic','',true)" class="btn-default-bd" type="flat">Back</ui-button>
+                <ui-button @click="toRatio" color="primary mr10">{{$t('button.next')}}</ui-button>
+                <ui-button @click="tabChange('basic','',true)" class="btn-default-bd" type="flat">{{$t('button.back')}}</ui-button>
             </div>
-            <person-selector :show.sync="show2"></person-selector>
-            <ui-modal id="edit-weight" :show.sync="show.weightModal" type="small" header="Weight Setting">
+            <person-selector :show="show2" :handle-comfirmed="selectPer"></person-selector>
+            <ui-modal id="edit-weight" :show="show.weightModal" type="small" header="Weight Setting">
               <v-form :model="weightModel" :schema="weightSchema" label-width="150" label-suffix="" :cols="1" form-style="org-form">
                 <text-field property='businessUnitProportion' editor-width="100">%</text-field>
                 <text-field property='unitProportion' editor-width="100">%</text-field>
                 <text-field property='personalProportion' editor-width="100">%</text-field>
               </v-form>
               <div slot="footer">
-                  <ui-button color="primary mr10" @click = "saveWeight">save</ui-button>
-                  <ui-button class="btn-default-bd" type="flat" @click = "show.weightModal = false">Cancel</ui-button>
+                  <ui-button color="primary mr10" @click = "saveWeight">{{$t('button.save')}}</ui-button>
+                  <ui-button class="btn-default-bd" type="flat" @click = "show.weightModal = false">{{$t('button.cancel')}}</ui-button>
               </div>
             </ui-modal>
             <ui-confirm
-              @confirmed="deleteConfirmed" @denied="deleteDenied" :show.sync="show.delConfirm"
+            ref="delconfirm"
+              @confirm="deleteConfirmed" @denied="deleteDenied" :show="show.delConfirm"
               close-on-confirm>
-              Do you want to delete this?
+              {{$t('common.deleteConfirm')}}
             </ui-confirm>
           </ui-tab>
 
-          <ui-tab header="Ratio" id = 'ratio' :disabled='false'>
+          <ui-tab :title="$t('performance.ratio')" id = 'ratio' :disabled='false'>
             <v-form :model="ratioModel" :schema="ratioSchema" label-width="100" label-suffix="">
               <div class = "ratio-tab">
                 <div class="field-row field-ratio">
-                  <div class="cell"><label>Default Ratio</label></div>
-                  <div class="cell"><label>Excellent</label></div>
+                  <div class="cell"><label>{{$t('performance.defaultRatio')}}</label></div>
+                  <div class="cell"><label>{{$t('performance.excellent')}}</label></div>
                   <div class="cell-line"><label>{{ratioModel.excellentRatio}}%</label></div>
                 </div>
                 <div class="field-row field-ratio">
                   <div class="cell"><label></label></div>
-                  <div class="cell"><label>Very Good</label></div>
+                  <div class="cell"><label>{{$t('performance.veryGood')}}</label></div>
                   <div class="cell-line"><label>{{ratioModel.veryGoodRatio}}%</label></div>
                 </div>
                 <div class="field-row field-ratio">
                   <div class="cell"><label></label></div>
-                  <div class="cell"><label>Good</label></div>
+                  <div class="cell"><label>{{$t('performance.good')}}</label></div>
                   <div class="cell-line"><label>{{ratioModel.goodRatio}}%</label></div>
                 </div>
                 <div class="field-row field-ratio">
                   <div class="cell"><label></label></div>
-                  <div class="cell"><label>Needs Improvement</label></div>
+                  <div class="cell"><label>{{$t('performance.needsImprovement')}}</label></div>
                   <div class="cell-line"><label>{{ratioModel.needsRatio}}%</label></div>
                 </div>
                 <div class="field-row field-ratio">
                   <div class="cell"><label></label></div>
-                  <div class="cell"><label>Disqualified</label></div>
+                  <div class="cell"><label>{{$t('performance.disqualified')}}</label></div>
                   <div class="cell-line"><label>{{ratioModel.disqualifiedRatio}}%</label></div>
                 </div>
               </div>
             </v-form>
             <div class="btn-group">
                 <!-- <ui-button @click="submit" color="primary mr10">Submit</ui-button> -->
-                <ui-button @click="tabChange('employees')" class="btn-default-bd" type="flat">Back</ui-button>
+                <ui-button @click="tabChange('employees')" class="btn-default-bd" type="flat">{{$t('button.back')}}</ui-button>
             </div>
             <ui-confirm
-                @confirmed="submitConfirmed" :show.sync="show.subConfirm"
+            ref="subconfirm"
+                @confirm="submitConfirmed" :show="show.subConfirm"
                 close-on-confirm
             >
-                Do you want to submit this?
+                {{$t('common.submitConfirm')}}
             </ui-confirm>
           </ui-tab>
       </ui-tabs>
@@ -209,7 +211,7 @@
 
 </template>
 
-<script type="text/ecmascript-6">
+<script>
 
 import Vue from 'vue';
 import { getDictMapping,initFormData,convert} from '../../util/assist';
@@ -219,87 +221,89 @@ import {
 from '../../schema/index';
 import { default as Message } from '../../components/basic/message';
 
-let groupSchema = new Schema({
-    schemeName: {
-        label: 'Scheme Name',
-        required: true,
-        whitespace: false
-    },
-    restrictYear: {
-        label: 'Restrict To Year',
-        required: true,
-        mapping: function() {
-          return getDictMapping('YEAR');
-        }
-    },
-    resultConfirmedEmpName: {
-        label: 'Result Confirmed by',
-        required: true,
-        whitespace: false
-    },
-    businessUnitProportion: {
-        label: '',
-        whitespace: false
-    },
-    unitProportion: {
-        label: '',
-        whitespace: false
-    },
-    personalProportion: {
-        label: '',
-        whitespace: false
-    },
-    description: {
-        label: 'Description',
-        whitespace: false
-    },
-    defaultWeight: {
-      label: 'Default Weight',
-      whitespace: false
-    }
-});
-let weightSchema = new Schema({
-  businessUnitProportion: {
-      label: 'Organization',
-      whitespace: false
-  },
-  unitProportion: {
-      label: 'Employee Name',
-      whitespace: false
-  },
-  personalProportion: {
-      label: 'Employee ID',
-      whitespace: false
-  }
-});
-let ratioSchema = new Schema({
-  excellentRatio: {
-      label: '',
-      whitespace: false
-  },
-  veryGoodRatio: {
-      label: '',
-      whitespace: false
-  },
-  goodRatio: {
-      label: '',
-      whitespace: false
-  },
-  needsRatio: {
-      label: '',
-      whitespace: false
-  },
-  disqualifiedRatio: {
-      label: '',
-      whitespace: false
-  }
-});
-
 
 export default {
     data() {
+      let self = this;
+      let groupSchema = new Schema({
+          schemeName: {
+              label: self.$t('performance.schemeName'),
+              required: true,
+              whitespace: false
+          },
+          restrictYear: {
+              label: self.$t('performance.restrictToYear'),
+              required: true,
+              mapping: function() {
+                return getDictMapping('YEAR');
+              }
+          },
+          resultConfirmedEmpName: {
+              label: self.$t('performance.resultConfirmedby'),
+              required: true,
+              whitespace: false
+          },
+          businessUnitProportion: {
+              label: '',
+              whitespace: false
+          },
+          unitProportion: {
+              label: '',
+              whitespace: false
+          },
+          personalProportion: {
+              label: '',
+              whitespace: false
+          },
+          description: {
+              label: self.$t('performance.description'),
+              whitespace: false
+          },
+          defaultWeight: {
+            label: self.$t('performance.defaultWeight'),
+            whitespace: false
+          }
+      });
+      let weightSchema = new Schema({
+        businessUnitProportion: {
+            label: self.$t('staff.organization'),
+            whitespace: false
+        },
+        unitProportion: {
+            label: self.$t('staff.employeeName'),
+            whitespace: false
+        },
+        personalProportion: {
+            label: self.$t('staff.employeeId'),
+            whitespace: false
+        }
+      });
+      let ratioSchema = new Schema({
+        excellentRatio: {
+            label: '',
+            whitespace: false
+        },
+        veryGoodRatio: {
+            label: '',
+            whitespace: false
+        },
+        goodRatio: {
+            label: '',
+            whitespace: false
+        },
+        needsRatio: {
+            label: '',
+            whitespace: false
+        },
+        disqualifiedRatio: {
+            label: '',
+            whitespace: false
+        }
+      });
+
+
           return {
-              panelTitle: 'View Annual Scheme',
+              panelTitle: this.$t('performance.viewAnnualScheme'),
               tableUrl:'/performance/yearPfmScores/employees',
               empTableUrl:'person/employees',
               show: {
@@ -325,31 +329,36 @@ export default {
               columns: [
                   {
                     name: 'employeeName',
-                    title: 'Employee Name'
+                    title: this.$t('staff.employeeName')
                   },
                   {
                     name: 'employeeCode',
                     dataClass: 'tr',
-                    title: 'Employee ID'
+                    title: this.$t('staff.employeeId')
                   },
                   {
                     name: 'positionName',
-                    title: 'Position'
+                    title: this.$t('performance.position')
                   },
                   {
                     name: 'businessUnitProportion',
-                    title: 'Business Unit'
+                    title: this.$t('performance.businessUnit')
                   },
                   {
                     name: 'unitProportion',
-                    title: 'Department'
+                    title: this.$t('performance.department')
                   },
                   {
                     name: 'personalProportion',
-                    title: 'Individual'
+                    title: this.$t('performance.individual')
                   }
               ]
           }
+        },
+        mounted() {
+          this.$nextTick(function() {
+            this.initRoute()
+          })
         },
         computed: {
           queryParams() {
@@ -371,8 +380,8 @@ export default {
             return this.$route.params.id ? this.$route.params.id : 0;
           }
         },
-        events: {
-          'selected-person': function(selectedData) {
+        methods: {
+          selectPer(selectedData) {
             if(this.$route.params.step === "basic"){
               let containArray1 = [],containArray2 = [];
               for(let i = 0; i < selectedData.length ; i++) {
@@ -403,19 +412,16 @@ export default {
               this.$http.post('/performance/annualEmployees',data, {
                   emulateJSON: true
               }).then((response) => {
-                  this.$broadcast('vuetable:refresh');
+                  this.$refs.aemployeestable.reloadData();
               });
             }
           },
-          'vuetable:action': function(action, data) {
+          action(action, data) {
             this.operateRow =  data;
             if (action == 'delete-item') {
-              this.show.delConfirm = true;
+              this.$refs.delconfirm.open();
             }
-          }
-        },
-
-        methods: {
+          },
           changeTabs(id) {
             this.tabChange(id,this.schemeId);
           },
@@ -429,7 +435,7 @@ export default {
             };
             let name = this.$route.name;
 
-            this.$router.go({ name: name, params: param, query:{back:back}})
+            this.$router.push({ name: name, params: param, query:{back:back}})
           },
           initEditModal(data){
 
@@ -453,7 +459,7 @@ export default {
                 emulateJSON: true
             }).then((response) => {
               _self.openMessage('success',this.$t('common.saveSuccess'));
-              this.$broadcast('vuetable:refresh');
+              this.$refs.aemployeestable.reloadData();
               this.show.weightModal = false;
             });
           },
@@ -469,7 +475,7 @@ export default {
             })
           },
           submit() {
-            this.show.subConfirm = true;
+            this.$refs.subconfirm.open();
           },
           submitConfirmed() {
             this.ActivateScheme();
@@ -488,11 +494,11 @@ export default {
                 emulateJSON: true
             }).then((response) => {
               Message({message: this.$t('common.deleteSuccess'),type:'success'});
-              this.$broadcast('vuetable:refresh');
+              this.$refs.aemployeestable.reloadData();
             });
           },
           cancel() {
-            this.$router.go({
+            this.$router.push({
                 name: 'annualPerformance',
             });
           },
@@ -511,18 +517,16 @@ export default {
           },
           forwardUrl(pathName, params) {
               params = params || {};
-              this.$router.go({
+              this.$router.push({
                   name: pathName,
                   params: params
               });
-              this.$router.go({name:pathName,params:params});
-          }
-        },
-        route: {
-            data(transition) {
+              this.$router.push({name:pathName,params:params});
+          },
+          initRoute() {
 
                 let _self = this;
-                let step = transition.to.params.step;
+                let step = _self.$route.params.step;
                 let routeName = _self.$route.name;
                 _self.activeTab = step;
 
@@ -531,7 +535,7 @@ export default {
                         initFormData('/performance/yearPfmScores/basicInfo',_self.group,{schemeYearId:this.schemeId});
                       } else if (step === 'employees') {
                         _self.$nextTick(()=>{
-                          this.$broadcast('vuetable:refresh');
+                          this.$refs.aemployeestable.reloadData();
                         })
                       } else if (step === 'ratio') {
                         initFormData('/performance/yearPfmScores/ratio',_self.ratioModel,{schemeYearId:this.schemeId});

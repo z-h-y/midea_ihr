@@ -6,59 +6,62 @@
 
 <template lang="html">
 
-<ui-confirm header="Delete" type="danger" confirm-button-text="Delete" confirm-button-icon="delete" deny-button-text="Cancel" @confirmed="deleteConfirmed" @denied="deleteDenied" :show.sync="show.deleteConfirm" close-on-confirm>
-    Are you sure to delete this?
-</ui-confirm>
-<template v-for="(index,item) in data">
+<div>
+    <ui-confirm :header="$t('button.delete')" type="danger" :confirm-button-text="$t('button.delete')" confirm-button-icon="delete" :deny-button-text="$t('button.cancel')" @confirmed="deleteConfirmed" @denied="deleteDenied" :show.sync="show.deleteConfirm"
+    close-on-confirm>
+        {{$t('common.deleteConfirm')}}
+    </ui-confirm>
+    <template v-for="(index,item) in data">
 
-    <div class="indicators-item" v-show="!item.isEdit">
-        <div class="indicators-head">
-            <div class="title">
-                <i class="number">{{ index + 1}}</i>
-                <span class="indicators-weight-title">{{item.indicatorName}} ({{item.unit}})</span>
+        <div class="indicators-item" v-show="!item.isEdit">
+            <div class="indicators-head">
+                <div class="title">
+                    <i class="number">{{ index + 1}}</i>
+                    <span class="indicators-weight-title">{{item.indicatorName}} ({{item.unit}})</span>
+                </div>
+                <div class="operate">
+                    <i v-if="item.mandatory==='0'" class="fa fa-trash" :class="{'cursor-default':edit}" @click="handleDelete(index,item)" aria-hidden="true" v-show="isAdmin"></i>
+                    <i v-if="item.mandatory==='0'" class="fa fa-pencil" :class="{'cursor-default':edit}" @click="handleEdit(index,item)" aria-hidden="true"></i>
+                    <i v-if="item.mandatory==='0'" class="fa fa-arrow-up" :class="{'cursor-default':edit}" @click="handleUp(index)" aria-hidden="true" v-show="isAdmin"></i>
+                    <i v-if="item.mandatory==='0'" class="fa fa-arrow-down" :class="{'cursor-default':edit}" @click="handleDown(index)" aria-hidden="true" v-show="isAdmin"></i>
+                </div>
             </div>
-            <div class="operate">
-                <i v-if="item.mandatory==='0'" class="fa fa-trash" :class="{'cursor-default':edit}" @click="handleDelete(index,item)" aria-hidden="true" v-show="isAdmin"></i>
-                <i v-if="item.mandatory==='0'" class="fa fa-pencil" :class="{'cursor-default':edit}" @click="handleEdit(index,item)" aria-hidden="true"></i>
-                <i v-if="item.mandatory==='0'" class="fa fa-arrow-up" :class="{'cursor-default':edit}" @click="handleUp(index)" aria-hidden="true" v-show="isAdmin"></i>
-                <i v-if="item.mandatory==='0'" class="fa fa-arrow-down" :class="{'cursor-default':edit}" @click="handleDown(index)" aria-hidden="true" v-show="isAdmin"></i>
-            </div>
-        </div>
-        <div class="indicators-body">
-            <div class="cell-1-1">
-                <label class="prop-name">Weight</label>
-                <div class="field-content"><span class="text-editor">{{item.weight}} %</span></div>
-            </div>
-            <div class="cell-1-1">
-                <label class="prop-name">Targets</label>
-                <div class="field-content"><span class="text-editor">{{item.target}}</span></div>
-            </div>
-            <div class="cell-1-1">
-                <label class="prop-name">Criteria/Formula</label>
-                <div class="field-content"><span class="text-editor">{{item.criteria}}</span></div>
-            </div>
-            <div class="cell-1-1">
-                <label class="prop-name">Data Source Dept</label>
-                <div class="field-content"><span class="text-editor">{{item.dataSources}}</span></div>
-            </div>
-        </div>
-    </div>
-    <v-form :model="item.model" :schema="item.schema" label-width="150" label-suffix="" :cols="1" v-show="item.isEdit" class="form-edit-ctn">
-        <text-field property='indicatorName' editor-width="400"></text-field>
-        <text-field property='unit' editor-width="400"></text-field>
-        <text-field property='weight' editor-width="400" type="number"></text-field>
-        <text-field property='target' editor-width="400" ></text-field>
-        <text-field property='criteria' editor-width="400"></text-field>
-        <text-field property='dataSources' editor-width="400"></text-field>
-        <div class='field'>
-            <div class="btn-wrap">
-                <ui-button color="primary mr10" @click="handleItemSubmit(item.model,index,item)">Save</ui-button>
-                <ui-button class="btn-default-bd" @click="handleCancelEdit(index,item)" type="flat">Cancel</ui-button>
+            <div class="indicators-body">
+                <div class="cell-1-1">
+                    <label class="prop-name">{{ $t('myperformance.furnish.weight') }}</label>
+                    <div class="field-content"><span class="text-editor">{{item.weight}} %</span></div>
+                </div>
+                <div class="cell-1-1">
+                    <label class="prop-name">{{ $t('myperformance.furnish.targets') }}</label>
+                    <div class="field-content"><span class="text-editor">{{item.target}}</span></div>
+                </div>
+                <div class="cell-1-1">
+                    <label class="prop-name">{{ $t('myperformance.furnish.criteria') }}</label>
+                    <div class="field-content"><span class="text-editor">{{item.criteria}}</span></div>
+                </div>
+                <div class="cell-1-1">
+                    <label class="prop-name">{{ $t('myperformance.furnish.dataSourceDept') }}</label>
+                    <div class="field-content"><span class="text-editor">{{item.dataSources}}</span></div>
+                </div>
             </div>
         </div>
-    </v-form>
+        <v-form :model="item.model" :schema="item.schema" label-width="150" label-suffix="" :cols="1" v-show="item.isEdit" class="form-edit-ctn">
+            <text-field property='indicatorName' editor-width="400"></text-field>
+            <text-field property='unit' editor-width="400"></text-field>
+            <text-field property='weight' editor-width="400" type="number"></text-field>
+            <text-field property='target' editor-width="400"></text-field>
+            <text-field property='criteria' editor-width="400"></text-field>
+            <text-field property='dataSources' editor-width="400"></text-field>
+            <div class='field'>
+                <div class="btn-wrap">
+                    <ui-button color="primary mr10" @click="handleItemSubmit(item.model,index,item)">{{ $t('myperformance.furnish.save') }}</ui-button>
+                    <ui-button class="btn-default-bd" @click="handleCancelEdit(index,item)" type="flat">{{ $t('myperformance.furnish.q') }}</ui-button>
+                </div>
+            </div>
+        </v-form>
 
-</template>
+    </template>
+</div>
 
 </template>
 
@@ -76,59 +79,7 @@ import {
     formatDate
 }
 from '../../util/assist';
-let indicatorSchema = new Schema({
-    indicatorName: {
-        label: 'Indicator Name',
-        required: true,
-        whitespace: false,
-    },
-    unit: {
-        label: 'Unit',
-        required: true,
-        whitespace: false,
-    },
-    weight: {
-        label: 'Weight',
-        required: true,
-        whitespace: false,
-        rules: {
-            type: 'custom',
-            message: 'Please enter a 1~101 positive integer!',
-            validate() {
-                var isValidate = true;
-                if (this.weight < 1 || this.weight > 100) {
-                    isValidate = false;
-                } else {
-                    if (this.weight % 1 !== 0) {
-                        isValidate = false;
-                    }
-                }
-                return isValidate;
-            }
-        }
-    },
-    target: {
-        label: 'Targets',
-        required: true,
-        whitespace: false
-    },
-    criteria: {
-        label: 'Criteria/Formula',
-        required: true,
-        whitespace: false,
-    },
-    dataSources: {
-        label: 'Data Source Dept',
-        required: true,
-        whitespace: false,
-    },
-    mandatory: {
 
-    },
-    employeeIndicatorId: {
-
-    }
-});
 
 export default {
     props: [{
@@ -138,6 +89,62 @@ export default {
         name: 'parentId'
     }],
     data() {
+
+        let indicatorSchema = new Schema({
+            indicatorName: {
+                label: this.$t('myperformance.furnish.indicatorName'),
+                required: true,
+                whitespace: false,
+            },
+            unit: {
+                label: this.$t('myperformance.furnish.unita'),
+                required: true,
+                whitespace: false,
+            },
+            weight: {
+                label: this.$t('myperformance.furnish.weight'),
+                required: true,
+                whitespace: false,
+                rules: {
+                    type: 'custom',
+                    message: this.$t('myperformance.furnish.ee'),
+                    validate() {
+                        var isValidate = true;
+                        if (this.weight < 1 || this.weight > 100) {
+                            isValidate = false;
+                        } else {
+                            if (this.weight % 1 !== 0) {
+                                isValidate = false;
+                            }
+                        }
+                        return isValidate;
+                    }
+                }
+            },
+            target: {
+                label: this.$t('myperformance.furnish.target'),
+                required: true,
+                whitespace: false
+            },
+            criteria: {
+                label: this.$t('myperformance.furnish.criteria'),
+                required: true,
+                whitespace: false,
+            },
+            dataSources: {
+                label: this.$t('myperformance.furnish.dataSources'),
+                required: true,
+                whitespace: false,
+            },
+            mandatory: {
+
+            },
+            employeeIndicatorId: {
+
+            }
+        });
+
+
         let _self = this;
         return {
             show: {
@@ -187,7 +194,7 @@ export default {
             if (photoId)
                 return Vue.config.APIURL + `/system/attachment/downloadImg/${photoId}`;
             else
-                return `/static/images/public/xwz.png`;
+                return `/assets/images/public/xwz.png`;
         },
         handleFormatDate(value) {
             return formatDate(new Date(value));

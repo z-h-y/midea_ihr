@@ -12,7 +12,7 @@
 
 <div class="ihr-position-addGroup">
     <panel :title="panelTitle" class=" panel-b  mb40 mr20" header="panel-header" id="addIndicator-newstyle">
-        <v-form v-ref:indForm :model="group" :schema="groupSchema" label-width="150" label-suffix="" :cols="1" form-style="org-form">
+        <v-form ref="indform" :model="group" :schema="groupSchema" label-width="150" label-suffix="" :cols="1" form-style="org-form">
             <text-field property='indicatorName' editor-width="400"></text-field>
             <text-field property='unit' editor-width="400"></text-field>
             <select-field property='indicatorCategory' editor-width="400"></select-field>
@@ -24,13 +24,10 @@
         </v-form>
     </panel>
     <div class="btn-group">
-        <ui-button @click="submit" color="primary mr10">Submit</ui-button>
-        <ui-button @click="cancel" class="btn-default-bd" type="flat">Cancel</ui-button>
+        <ui-button @click="submit" color="primary mr10">{{$t('button.submit')}}</ui-button>
+        <ui-button @click="cancel" class="btn-default-bd" type="flat">{{$t('button.cancel')}}</ui-button>
     </div>
 </div>
-<!-- <ui-alert type="success" :show>
-    Okilly dokilly, your account was updated successfully.
-</ui-alert> -->
 
 </template>
 
@@ -41,62 +38,80 @@ import { getDictMapping } from '../../util/assist';
 import {default as Schema}from '../../schema/index';
 import {default as Message} from '../../components/basic/message';
 
-let options = {
-    indicatorName: {
-        label: 'Indicator Name',
-        required: true,
-        whitespace: false
-    },
-    unit: {
-        label: 'Unit',
-        required: true,
-        whitespace: false
-    },
-    indicatorCategory: {
-        label: 'Indicator Category',
-        required: true,
-        mapping: function(){
-          return getDictMapping('INDICATOR_CATEGORY');
-        },
-    },
-    indicatorFunction: {
-        label: 'Function',
-        required: true,
-        mapping: function(){
-          return getDictMapping('INDICATOR_FUNCTION');
-        }
-    },
-    subFunction: {
-        label: 'Sub-Function',
-        required: true,
-        mapping: function(){
-          return getDictMapping('SUB_FUNCTION');
-        }
-    },
-    mopType: {
-        label: 'M\\O\\P',
-        mapping: function(){
-          return getDictMapping('MOP_TYPE');
-        }
-    },
-    formula: {
-        label: 'Criteria/Formula',
-        required: true
-    },
-    dataSources: {
-        label: 'Data Sources',
-        required: true
-    }
-};
-let indicatorSchema = new Schema(options);
-
 export default {
     data() {
+      let options = {
+          indicatorName: {
+              label: this.$t('performance.indicatorName'),
+              required: true,
+              whitespace: false
+          },
+          unit: {
+              label: this.$t('performance.unit'),
+              required: true,
+              whitespace: false
+          },
+          indicatorCategory: {
+              label: this.$t('performance.indicatorCategory'),
+              required: true,
+              mapping: function(){
+                return getDictMapping('INDICATOR_CATEGORY');
+              },
+          },
+          indicatorFunction: {
+              label: this.$t('performance.function'),
+              required: true,
+              mapping: function(){
+                return getDictMapping('INDICATOR_FUNCTION');
+              }
+          },
+          subFunction: {
+              label: this.$t('performance.subFunction'),
+              required: true,
+              mapping: function(){
+                return getDictMapping('SUB_FUNCTION');
+              }
+          },
+          mopType: {
+              label: 'M\\O\\P',
+              mapping: function(){
+                return getDictMapping('MOP_TYPE');
+              }
+          },
+          formula: {
+              label: this.$t('performance.criteriaFormula'),
+              required: true
+          },
+          dataSources: {
+              label: this.$t('performance.dataSources'),
+              required: true
+          }
+      };
+      let indicatorSchema = new Schema(options);
             return {
-                panelTitle: 'Add Indicator',
+                panelTitle: this.$t('performance.addIndicator'),
                 groupSchema: indicatorSchema,
                 group: indicatorSchema.newModel()
             }
+        },
+        mounted() {
+          let _self = this;
+
+          if (_self.$route.name === 'addIndicator') {
+
+          } else if (_self.$route.name === 'editIndicator') {
+
+              _self.group.id = _self.$route.params.id;
+              _self.panelTitle = this.$t('performance.editIndicator');
+              _self.$http.get(`/performance/indicators/${_self.group.id}`).then((response) => {
+                  let props = response.json();
+                  for (let prop in props) {
+                      if (props.hasOwnProperty(prop)) {
+                          _self.group[prop] = props[prop];
+                      }
+                  }
+              });
+          }
         },
         methods: {
             // 提交
@@ -104,7 +119,7 @@ export default {
                 let _self = this,
                 indicatorModel = this.group;
 
-                let passed = indicatorModel.$schema.isFormValidate(this.$refs.indform);
+                let passed = this.$refs.indform.isFormValidate();
                 if (!passed) return;
 
                 if (_self.$route.name === 'addIndicator') {
@@ -125,7 +140,7 @@ export default {
                           type: 'success',
                           message: this.$t('common.saveSuccess')
                         })
-                        _self.$router.go({
+                        _self.$router.push({
                             name: 'indicator'
                         });
                     });
@@ -146,7 +161,7 @@ export default {
                             type: 'success',
                             message: this.$t('common.saveSuccess')
                           })
-                          _self.$router.go({
+                          _self.$router.push({
                               name: 'indicator'
                           });
                     });
@@ -154,7 +169,7 @@ export default {
             },
             cancel() {
 
-              this.$router.go({
+              this.$router.push({
                   name: 'indicator',
               });
             },
@@ -166,31 +181,6 @@ export default {
 
                 handfunc(response);
               });
-            }
-        },
-        route: {
-            data(transition) {
-                let _self = this;
-
-                if (_self.$route.name === 'addIndicator') {
-                    // _self.$http.get('/pos/jobFamilys/generation').then((response) => {
-                    //     if (response.data) {
-                    //         _self.group['jobFamilyCode'] = response.data;
-                    //     }
-                    // });
-                } else if (_self.$route.name === 'editIndicator') {
-
-                    _self.group.id = transition.to.params.id;
-                    _self.panelTitle = 'Edit Indicator';
-                    _self.$http.get(`/performance/indicators/${_self.group.id}`).then((response) => {
-                        let props = response.json();
-                        for (let prop in props) {
-                            if (props.hasOwnProperty(prop)) {
-                                _self.group[prop] = props[prop];
-                            }
-                        }
-                    });
-                }
             }
         },
         components: {

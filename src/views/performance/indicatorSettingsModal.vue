@@ -115,174 +115,107 @@
 
 </style>
 <template>
-<ui-modal id="select-indicator" :show.sync="show" type="large" header="Indicators Setting" v-ref:itemforms>
-    <ui-button class="ml10 mr10 dis-tc btn-default-bd" @click="showConfirm" color="white" icon="fa-remove" text="Delete"></ui-button>
-    <div class="field-row">
-        <div class="cell tl w16 ind-th">
-          <label class="ui-checkbox" :class="{'ui-checkbox': true, 'checked': checkAll}">
-              <input class="ui-checkbox-input" type="checkbox" :checked="checkAll" @change="toggleAllCheckboxes($event.target.checked)">
+<div>
+    <ui-modal id="select-indicator" :show="show" type="large" :title="$t('performance.indicatorsSetting')" ref="itemforms">
+        <ui-button class="ml10 mr10 dis-tc btn-default-bd" @click="showConfirm" color="white" icon="fa-remove">{{$t('button.delete')}}</ui-button>
+        <div class="field-row">
+            <div class="cell tl w16 ind-th">
+              <label class="ui-checkbox" :class="{'ui-checkbox': true, 'checked': checkAll}">
+                  <input class="ui-checkbox-input" type="checkbox" :checked="checkAll" @change="toggleAllCheckboxes($event.target.checked)">
 
-              <div class="ui-checkbox-checkmark">
-                  <div class="ui-checkbox-focus-ring"></div>
-              </div>
-          </label>
-        </div>
-        <div class="cell tl w150 ind-th">
-            <label>Indicator Name</label>
-        </div>
-        <div class="cell tl w60 ind-th">
-            <label>Unit </label>
-        </div>
-        <div class="cell tl w150 ind-th">
-            <label>Target</label>
-        </div>
-        <div class="cell tl w60 ind-th">
-            <label>Weight(%)</label>
-        </div>
-        <div class="cell tl w150 ind-th">
-            <label>Criteria	</label>
-        </div>
-        <div class="cell tl w100 ind-th">
-            <label>Mandatory</label>
-        </div>
-        <!-- <div class="cell tl w100 ind-th">
-            <label>operate</label>
-        </div> -->
-    </div>
-      <div class="indicator-main">
-        <div class="indicator-section" v-for="item in tableData">
-          <v-form class="mt5" :model="item" :schema="indSettingsSchema" label-width="0" label-suffix="" :cols="1">
-            <div class="field-row field-bottom">
-                <!-- <div class="indicator-bottom">
-
-                </div> -->
-                <div class="cell w16">
-                  <label class="ui-checkbox" :class="{'ui-checkbox': true, 'checked': isSelectedRow(item)}">
-                      <input class="ui-checkbox-input" type="checkbox" @change="toggleCheckbox($event.target.checked, item)" :checked="isSelectedRow(item)">
-
-                      <div class="ui-checkbox-checkmark">
-                          <div class="ui-checkbox-focus-ring"></div>
-                      </div>
-                  </label>
-                </div>
-                <div class="cell w150">
-                    <text-increment title="{{item.indicatorName}}" label-width="0" property='indicatorName' editor-width="140" :hide-label="true" :readonly="true"></text-increment>
-                </div>
-                <div class="cell w60">
-                    <text-field label-width="0" :hide-label="true" property='unit' :hide-label="true" editor-width="60"></text-field>
-                </div>
-                <div class="cell w150">
-                    <text-field label-width="0" type="textarea"  :hide-label="true" property='target' :hide-label="true" editor-width="140"></text-field>
-                </div>
-                <div class="cell w60">
-                    <text-field  label-width="0" :hide-label="true" property='weight' type="number" :hide-label="true" editor-width="60"></text-field>
-                </div>
-                <div class="cell w150">
-                    <text-field label-width="0" type="textarea" :hide-label="true" property='criteria' :hide-label="true" editor-width="130" ></text-field>
-                </div>
-                <div class="cell w100">
-                  <select-field label-width="0" :hide-label="true" property='mandatory' :hide-label="true" editor-width="100"></select-field>
-                </div>
-                <!-- <div class="cell w60">
-                  <button class="operate" @click="showConfirm(item)"><i class="fa fa-trash"></i> </button>
-                </div> -->
+                  <div class="ui-checkbox-checkmark">
+                      <div class="ui-checkbox-focus-ring"></div>
+                  </div>
+              </label>
             </div>
-          </v-form>
+            <div class="cell tl w150 ind-th">
+                <label>{{$t('performance.indicatorName')}}</label>
+            </div>
+            <div class="cell tl w60 ind-th">
+                <label>{{$t('performance.unit')}}</label>
+            </div>
+            <div class="cell tl w150 ind-th">
+                <label>{{$t('performance.target')}}</label>
+            </div>
+            <div class="cell tl w60 ind-th">
+                <label>{{$t('performance.weight')}}(%)</label>
+            </div>
+            <div class="cell tl w150 ind-th">
+                <label>{{$t('performance.criteria')}}	</label>
+            </div>
+            <div class="cell tl w100 ind-th">
+                <label>{{$t('performance.mandatory')}}</label>
+            </div>
+            <!-- <div class="cell tl w100 ind-th">
+                <label>operate</label>
+            </div> -->
         </div>
+          <div class="indicator-main">
+            <div class="indicator-section" v-for="item in tableData">
+              <v-form class="mt5" :model="item" :schema="indSettingsSchema" label-width="0" label-suffix="" :cols="1">
+                <div class="field-row field-bottom">
+                    <!-- <div class="indicator-bottom">
 
-      </div>
+                    </div> -->
+                    <div class="cell w16">
+                      <label class="ui-checkbox" :class="{'ui-checkbox': true, 'checked': isSelectedRow(item)}">
+                          <input class="ui-checkbox-input" type="checkbox" @change="toggleCheckbox($event.target.checked, item)" :checked="isSelectedRow(item)">
 
-    <div slot="footer">
-       <ui-button color="primary" @click="save">Save</ui-button>
-       <ui-button @click="show = false">Close</ui-button>
-   </div>
- </ui-modal>
- <div id = "deleteConfirm">
-   <!-- <ui-confirm
-     header="Delete" @confirmed="deleteConfirmed" :show.sync="isDelConfirm"
-     close-on-confirm>
-     Do you want to delete this?
-   </ui-confirm> -->
- </div>
- </template>
+                          <div class="ui-checkbox-checkmark">
+                              <div class="ui-checkbox-focus-ring"></div>
+                          </div>
+                      </label>
+                    </div>
+                    <div class="cell w150">
+                        <text-increment :title="item.indicatorName" label-width="0" property='indicatorName' editor-width="140" :hide-label="true" :readonly="true"></text-increment>
+                    </div>
+                    <div class="cell w60">
+                        <text-field label-width="0" :hide-label="true" property='unit' editor-width="60"></text-field>
+                    </div>
+                    <div class="cell w150">
+                        <text-field label-width="0" type="textarea"  :hide-label="true" property='target' editor-width="140"></text-field>
+                    </div>
+                    <div class="cell w60">
+                        <text-field  label-width="0" :hide-label="true" property='weight' type="number" editor-width="60"></text-field>
+                    </div>
+                    <div class="cell w150">
+                        <text-field label-width="0" type="textarea" :hide-label="true" property='criteria' editor-width="130" ></text-field>
+                    </div>
+                    <div class="cell w100">
+                      <select-field label-width="0" :hide-label="true" property='mandatory' editor-width="100"></select-field>
+                    </div>
+                    <!-- <div class="cell w60">
+                      <button class="operate" @click="showConfirm(item)"><i class="fa fa-trash"></i> </button>
+                    </div> -->
+                </div>
+              </v-form>
+            </div>
+
+          </div>
+
+        <div slot="footer">
+           <ui-button color="primary" @click="save">{{$t('button.save')}}</ui-button>
+           <ui-button @click="close">{{$t('button.close')}}</ui-button>
+       </div>
+     </ui-modal>
+     <div id = "deleteConfirm">
+
+     </div>
+</div>
+</template>
 
 <script type="text/ecmascript6">
 import {
     removeClass, addClass
 }
 from 'wind-dom';
+import {
+    transformDict
+}
+from '../../util/assist.js';
 import { default as Message } from '../../components/basic/message';
 import {default as Schema} from '../../schema/index';
 
-let mandatoryOption = [
-    {
-        text: 'Yes',
-        value: '1'
-    },
-    {
-        text: 'NO',
-        value: '0'
-    }
-];
-
-let indSettingsSchema = new Schema({
-    indicatorName: {
-        label: 'Template Name',
-        required: true,
-        whitespace: false
-    },
-    unit: {
-        label: 'Template Category',
-        required: true
-    },
-    target: {
-        label: 'Template Category',
-        required: true
-    },
-    weight: {
-        label: 'Template Category',
-        required: true,
-        rules: {
-            type: 'custom',
-            message: 'Please enter a 1~100 positive integer!',
-            validate() {
-                var isValidate = true;
-                if (this.weight < 1 || this.weight > 100) {
-                    isValidate = false;
-                } else {
-                    if (this.weight % 1 !== 0) {
-                        isValidate = false;
-                    }
-                }
-                return isValidate;
-            }
-        }
-    },
-    positionName: {
-        label: 'Indicators Setting',
-        required: true,
-        whitespace: false
-    },
-    orgFullName: {
-        label: 'Description',
-        required: true,
-        whitespace: false
-    },
-    criteria: {
-        label: 'Description',
-        required: true,
-        whitespace: false
-    },
-    mandatory: {
-        label: 'Description',
-        required: true,
-        whitespace: false,
-        mapping: {
-          'Yes':'1',
-          'No':'0'
-        }
-    }
-});
 
 export default {
   props: {
@@ -307,6 +240,81 @@ export default {
 
   },
   data() {
+    let self = this;
+    let mandatoryOption = [
+        {
+            text: 'Yes',
+            value: '1'
+        },
+        {
+            text: 'NO',
+            value: '0'
+        }
+    ];
+
+    let indSettingsSchema = new Schema({
+        indicatorName: {
+            label: self.$t('performance.templateName'),
+            required: true,
+            whitespace: false
+        },
+        unit: {
+            label: self.$t('performance.templateCategory'),
+            required: true
+        },
+        target: {
+            label: self.$t('performance.templateCategory'),
+            required: true
+        },
+        weight: {
+            label: self.$t('performance.templateCategory'),
+            required: true,
+            rules: {
+                type: 'custom',
+                message: self.$t('performance.message.positiveInteger'),
+                validate() {
+                    var isValidate = true;
+                    if (this.weight < 1 || this.weight > 100) {
+                        isValidate = false;
+                    } else {
+                        if (this.weight % 1 !== 0) {
+                            isValidate = false;
+                        }
+                    }
+                    return isValidate;
+                }
+            }
+        },
+        positionName: {
+            label: self.$t('performance.indicatorsSetting'),
+            required: true,
+            whitespace: false
+        },
+        orgFullName: {
+            label: self.$t('performance.description'),
+            required: true,
+            whitespace: false
+        },
+        criteria: {
+            label: self.$t('performance.description'),
+            required: true,
+            whitespace: false
+        },
+        mandatory: {
+            label: self.$t('performance.description'),
+            required: true,
+            whitespace: false,
+            mapping() {
+              var key1 = self.$t('common.yes');
+              var key2 = self.$t('common.no');
+              var obj = {};
+              obj[key1] = 1;
+              obj[key2] = 0;
+              return obj;
+            }
+        }
+    });
+
     return {
       tableData:[],
       mandatoryOption,
@@ -319,15 +327,13 @@ export default {
       delItem: []
     };
   },
-  events: {
-    'indModal:refresh': function() {
-        this.initTable();
-    }
-  },
-  ready() {
-    // this.initTable();
-  },
   methods: {
+    open() {
+      this.$refs.itemforms.open()
+    },
+    close() {
+      this.$refs.itemforms.close()
+    },
     initTable() {
       this.tableData = [];
       this.selectedTo = [];
@@ -387,7 +393,7 @@ export default {
 
       _self.tableData.forEach(function(item, index) {
           let vform = _self.$refs.itemforms.$children[index+4];
-          var isPassed = item.$schema.isFormValidate(vform);
+          var isPassed = vform.isFormValidate();
           if (!isPassed) {
             passed = false;
           }
@@ -415,10 +421,10 @@ export default {
             employeeIndicatorIds: this.delItem
           }
         }).then((response) => {
-          this.$dispatch('indModal:submit',params);
+          this.$emit('modelsubmit',params);
         })
       } else {
-        this.$dispatch('indModal:submit',params);
+        this.$emit('modelsubmit',params);
       }
     },
     deleteConfirmed() {
@@ -440,20 +446,6 @@ export default {
       this.delItem = this.delItem.concat(this.selectedTo);
       this.selectedTo = [];
       this.isDelConfirm = false;
-      // let _self = this;
-      // this.$http.delete(`/performance/schemeInfo/indicator/delete`,{
-      //   params:{
-      //     // employeeIndicatorIds:[this.optItem.employeeIndicatorId]
-      //     employeeIndicatorIds: this.selectedTo
-      //   }
-      // }).then((response) => {
-      //   Message({
-      //     type: 'success',
-      //     message:  this.$t('common.deleteSuccess')
-      //   })
-      //   _self.initTable();
-      //   this.isDelConfirm = false;
-      // })
     },
     countWeigth() {
       let result = 0;
@@ -467,7 +459,8 @@ export default {
         if (isChecked) {
             this.selectedTo.push(selected)
         } else {
-            this.selectedTo.$remove(selected)
+            var index = this.selectedTo.indexOf(selected);
+            this.selectedTo.splice(index, 1)
         }
         if (this.selectedTo.length === this.tableData.length) {
             this.checkAll = true

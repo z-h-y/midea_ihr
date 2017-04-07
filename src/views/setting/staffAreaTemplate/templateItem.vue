@@ -16,22 +16,22 @@
     <div class="label-hide" property="details">
         <div class="field-row">
             <div class="cell tl w160 pl4">
-                <label>Default Label</label>
+                <label>{{$t('system.template.defaultLabel')}}</label>
             </div>
             <div class="cell tl w160">
-                <label>Label</label>
+                <label>{{$t('system.template.label')}}</label>
             </div>
             <div class="cell tl w160">
-                <label>Field Type</label>
+                <label>{{$t('system.template.fieldType')}}</label>
             </div>
             <div class="cell tl w160">
-                <label>Data Dictionary</label>
+                <label>{{$t('system.template.dataDictionary')}}</label>
             </div>
             <div class="cell tl w160">
-                <label>Mandatory</label>
+                <label>{{$t('system.template.mandatory')}}</label>
             </div>
             <div class="cell tl w160">
-                <label>Enabled</label>
+                <label>{{$t('system.template.enabled')}}</label>
             </div>
             <span class="icon-area cell" @click="handleAdd()" v-if="data.length < 20">
               <i class="fa fa-plus-circle f14 poi"></i>
@@ -44,22 +44,22 @@
                         <text-increment label-width="0" property='fieldName' editor-width="160" :hide-label="true" :readonly="true"></text-increment>
                     </div>
                     <div class="cell w160">
-                        <text-field label-width="0" :hide-label="true" property='fieldBusinessName' :hide-label="true" editor-width="140"></text-field>
+                        <text-field label-width="0" :hide-label="true" property='fieldBusinessName' editor-width="140"></text-field>
                     </div>
                     <div class="cell w160">
-                        <select-field label-width="0" :hide-label="true" property='fieldType' :hide-label="true" editor-width="140"></select-field>
+                        <select-field label-width="0" :hide-label="true" property='fieldType' editor-width="140"></select-field>
                     </div>
                     <div class="cell w160">
 
-                        <text-field v-if="item.fieldType === '1'" label-width="0" :hide-label="true" property='dataDictionary' :hide-label="true" editor-width="140"></text-field>
-                        <text-field v-if="item.fieldType === '2'" label-width="0" :hide-label="true" property='dataDictionary' :hide-label="true" editor-width="140" :readonly="true"></text-field>
+                        <text-field v-if="item.fieldType === '1'" label-width="0" :hide-label="true" property='dataDictionary' editor-width="140"></text-field>
+                        <text-field v-if="item.fieldType === '2'" label-width="0" :hide-label="true" property='dataDictionary' editor-width="140" :readonly="true"></text-field>
 
                     </div>
                     <div class="cell w160">
-                        <radioGroup-field property='isMustFill' :hide-label="true" label-width="0" :hide-label="true"></radioGroup-field>
+                        <radioGroup-field property='isMustFill' :hide-label="true" label-width="0"></radioGroup-field>
                     </div>
                     <div class="cell w160">
-                        <radioGroup-field property='isShow' :hide-label="true" label-width="0" :hide-label="true"></radioGroup-field>
+                        <radioGroup-field property='isShow' :hide-label="true" label-width="0"></radioGroup-field>
                     </div>
                     <span class="icon-area pl2 rel t8" @click="handleRemove($index)"> <i class="fa fa-trash-o del-bottom f14 poi" v-if="data.length > 1"></i></span>
                 </div>

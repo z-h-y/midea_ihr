@@ -1,170 +1,169 @@
 <style lang="less">
 
-.mb-suitable {
-    margin-bottom: 89px;
-}
+    .mb-suitable {
+        margin-bottom: 89px;
+    }
 
-.text-color-gray {
-    color: #6a707d;
-}
-
-.tree-panel {
-    box-sizing: border-box;
-    width: 100%;
-    border: 1px solid #ecedee;
-    overflow: hidden;
-    float: left;
-    background-color: #fff;
-}
-
-.treelist {
-    margin: 1px;
-    width: 230px;
-    max-height: 100%;
-    padding: 8px;
-    overflow: auto;
-    float: left;
-    box-sizing: border-box;
-}
-
-.treelist-detail {
-    margin-left: 230px !important;
-    border-left: 2px solid #eee;
-}
-
-.help-desk {
-    padding: 16px 16px 0 16px;
-    background-color: #fff;
-    height: 100%;
-    overflow: auto;
-    .help-desk-header {
-        position: relative;
-        box-sizing: border-box;
-        display: inline-block;
-        width: 100%;
-        overflow: hidden;
-        padding: 12px 0px;
-    }
-    .headline {
-        display: inline-block;
-        font-size: 20px;
-    }
-    .subhead {
-        display: inline-block;
-        font-size: 14px;
-        color: #a5acbe;
-    }
-    .regular {
-        overflow: hidden;
-        li {
-            box-sizing: border-box;
-            display: inline-block;
-            float: left;
-            width: 50%;
-            overflow: hidden;
-            font-size: 14px;
-            height: 36px;
-            line-height: 36px;
-            vertical-align: middle;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            color: #a5acbe;
-        }
-    }
-    .prop-name,
-    .prop-val {
-        box-sizing: border-box;
-        display: inline-flex;
-        width: 50%;
-        text-align: left;
-    }
-    .prop-name {
-        color: #a5acbe;
-    }
-    .prop-val {
+    .text-color-gray {
         color: #6a707d;
     }
-    .org-details {
-        li {
-            box-sizing: border-box;
-            font-size: 14px;
-            min-height: 36px;
-            line-height: 36px;
-            vertical-align: middle;
-            color: #a5acbe;
-            word-break: break-word;
-            // border-bottom:1px solid #ccc;
-        }
-        .prop-name {
-            float: left;
-            width: 200px;
-            box-sizing: border-box;
-            text-align: left;
-        }
-        .prop-val {
-            display: block;
-            color: #545454;
-            margin-left: 200px;
-        }
-    }
-    .tabs {
-        margin-top: 16px;
-    }
-}
 
-.ihr-org-operate {
-    * {
+    .tree-panel {
+        box-sizing: border-box;
+        width: 100%;
+        border: 1px solid #ecedee;
+        overflow: hidden;
+        float: left;
+        background-color: #fff;
+    }
+
+    .treelist {
+        margin: 1px;
+        width: 230px;
+        max-height: 100%;
+        padding: 8px;
+        overflow: auto;
+        float: left;
         box-sizing: border-box;
     }
-    .vuetable th,
-    .vuetable tbody td {
-        border: 1px solid #e4e4e4;
+
+    .treelist-detail {
+        margin-left: 230px !important;
+        border-left: 2px solid #eee;
     }
-    .group {
-        border: none;
-        padding-top: 0px;
-        margin-left: 0px;
+
+    .help-desk {
+        padding: 16px 16px 0 16px;
+        background-color: #fff;
+        height: 100%;
+        overflow: auto;
+        .help-desk-header {
+            position: relative;
+            box-sizing: border-box;
+            display: inline-block;
+            width: 100%;
+            overflow: hidden;
+            // padding: 12px 0px;
+        }
+        .headline {
+            display: inline-block;
+            font-size: 20px;
+        }
+        .subhead {
+            display: inline-block;
+            font-size: 14px;
+            color: #a5acbe;
+        }
+        .regular {
+            overflow: hidden;
+            li {
+                box-sizing: border-box;
+                display: inline-block;
+                float: left;
+                width: 50%;
+                overflow: hidden;
+                font-size: 14px;
+                height: 36px;
+                line-height: 36px;
+                vertical-align: middle;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                color: #a5acbe;
+            }
+        }
+        .prop-name,
+        .prop-val {
+            box-sizing: border-box;
+            display: inline-flex;
+            width: 50%;
+            text-align: left;
+        }
+        .prop-name {
+            color: #a5acbe;
+        }
+        .prop-val {
+            color: #6a707d;
+        }
+        .org-details {
+            li {
+                box-sizing: border-box;
+                font-size: 14px;
+                min-height: 36px;
+                line-height: 36px;
+                vertical-align: middle;
+                color: #a5acbe;
+                word-break: break-word;
+                // border-bottom:1px solid #ccc;
+            }
+            .prop-name {
+                float: left;
+                width: 200px;
+                box-sizing: border-box;
+                text-align: left;
+            }
+            .prop-val {
+                display: block;
+                color: #545454;
+                margin-left: 200px;
+            }
+        }
+        .tabs {
+            margin-top: 16px;
+        }
     }
-}
 
-// company licnese list
-.company-license-list {
-    width: 70%;
-    // border:1px solid red;
-    margin-left: 80px;
-    float: left;
-    overflow-y: auto;
-}
+    .ihr-org-operate {
+        * {
+            box-sizing: border-box;
+        }
+        .vuetable th,
+        .vuetable tbody td {
+            border: 1px solid #e4e4e4;
+        }
+        .group {
+            border: none;
+            padding-top: 0px;
+            margin-left: 0px;
+        }
+    }
 
-.company-license-list li {
-    float: left;
-    width: 100px;
-    overflow: hidden;
-    margin-left: 10px;
-}
+    // company licnese list
+    .company-license-list {
+        width: 70%;
+        // border:1px solid red;
+        margin-left: 80px;
+        float: left;
+        overflow-y: auto;
+    }
 
-.company-license-list a {
-    display: block;
-    hieght: 36px;
-}
+    .company-license-list li {
+        float: left;
+        width: 100px;
+        overflow: hidden;
+        margin-left: 10px;
+    }
 
-.company-license-list p {
-    width: 74px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
+    .company-license-list a {
+        display: block;
+        hieght: 36px;
+    }
 
-.company-license {
-    width: 80%;
-    height: 90%;
-    position: absolute;
-    margin: auto;
-    left: 0;
-    right: 0;
-    top: 0;
-}
+    .company-license-list p {
+        width: 74px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 
+    .company-license {
+        width: 80%;
+        height: 90%;
+        position: absolute;
+        margin: auto;
+        left: 0;
+        right: 0;
+        top: 0;
+    }
 </style>
 
 <template lang="html">
@@ -172,18 +171,24 @@
 <div class="content-wrap ihr-org-operate">
     <!-- 查询 -->
     <div class="group" id="group" style="height:40px;">
-        <ui-button class="mr10 dis-tc btn-primary-bd" @click="handleAdd" color="primary" icon="fa-plus" text="Add" button-type="button"></ui-button>
-        <ui-button class="mr10 dis-tc btn-default-bd" @click="handleEdit" color="white" icon="fa-pencil-square-o" text="Edit" button-type="button"></ui-button>
-        <ui-button class="mr10 dis-tc btn-default-bd" @click="handleDelete" color="white" icon="fa-remove" text="Delete" button-type="button"></ui-button>
-        <ui-button class="dis-tc-t btn-default-bd" color="white" show-menu-icons has-dropdown-menu button-type="button" :menu-options="shareMenuOptions" icon="fa-caret-down" :icon-right="true" open-dropdown-on="click" @menu-option-selected="menuOptionSelected" text="More"></ui-button>
-        <ui-confirm header="Delete" type="danger" confirm-button-text="Delete" confirm-button-icon="delete" deny-button-text="Cancel" @confirmed="deleteConfirmed" @denied="deleteDenied" :show.sync="show.deleteConfirm" close-on-confirm>
-            Are you sure to delete this Organization?
-        </ui-confirm>
+        <ui-button class="mr10 dis-tc btn-primary-bd" @click="handleAdd" color="primary" icon="fa-plus"  button-type="button">{{$t('button.add')}}</ui-button>
+        <ui-button class="mr10 dis-tc btn-default-bd" @click="handleEdit" color="white" icon="fa-pencil-square-o" button-type="button">{{$t('button.edit')}}</ui-button>
+        <ui-button class="mr10 dis-tc btn-default-bd" @click="handleDelete" color="white" icon="fa-remove" button-type="button">{{$t('button.delete')}}</ui-button>
+        <ui-button color="primary" icon="fa-caret-down" has-dropdown ref="dropdownButton" :size="size">
+            <ui-menu contain-focus has-icons has-secondary-text slot="dropdown"
+                :options="menuOptions"
+                @select="menuOptionSelected"
+            ></ui-menu>
+           {{$t('button.more')}}
+        </ui-button>
+<!--         <ui-confirm :header="$t('organization.confirmBox.title')" type="danger" :confirm-button-text="$t('button.delete')" confirm-button-icon="delete" :deny-button-text="$t('button.cancel')" @confirmed="deleteConfirmed" @denied="deleteDenied" :show.sync="show.deleteConfirm" close-on-confirm>
+            {{$t('organization.confirmBox.infoText')}}
+        </ui-confirm> -->
     </div>
     <div class="content-main fix">
         <div class="tree-panel fix">
             <div class="treelist" id="treePanel">
-                <tree :data="trees" :level-config="levelConfig" :show-checkbox="showCheckbox" v-ref:tree :click-node="loadNodeDetail"></tree>
+                <tree :data="trees" :level-config="levelConfig" :show-checkbox="showCheckbox" ref="tree" :click-node="loadNodeDetail"></tree>
             </div>
 
             <div id="treelistDetail" class="help-desk treelist-detail">
@@ -194,104 +199,103 @@
                 <div class="help-desk-cnt">
                     <ul class="regular fix">
                         <li>
-                            <span class="prop-name">Effective Date</span>
+                            <span class="prop-name">{{$t('organization.orgInfo.effectDate')}}</span>
                             <span class="prop-val">{{orgNodeDetail.beginDate}}</span>
                         </li>
                         <li>
-                            <span class="prop-name">Organization ID</span>
+                            <span class="prop-name">{{$t('organization.orgInfo.orgId')}}</span>
                             <span class="prop-val">{{orgNodeDetail.unitCode}}</span>
                         </li>
                         <li>
-                            <span class="prop-name">Head Of Organization</span>
+
+                            <span class="prop-name">{{$t('organization.orgInfo.headOfOrg')}}</span>
                             <span class="prop-val">{{orgNodeDetail.unitLeaderName}}</span>
                         </li>
                         <li>
-                            <span class="prop-name">Superior Organization</span>
-                            <span class="prop-val" title="{{orgNodeDetail.parentUnitName}}">{{orgNodeDetail.parentUnitName}}</span>
+                            <span class="prop-name">{{$t('organization.orgInfo.superiorOrg')}}</span>
+                            <span class="prop-val" :title="orgNodeDetail.parentUnitName">{{orgNodeDetail.parentUnitName}}</span>
                         </li>
                     </ul>
                 </div>
                 <div class="tabs">
-                    <ui-tabs type="text" background-color="clear" text-color="gray" text-color-active="primary">
-                        <ui-tab header="Organization Details" id="org-details" style="position:relative;">
+                    <ui-tabs type="text" background-color="clear" text-color="gray" text-color-active="primary" @tab-change="changeTab">
+                        <ui-tab :title="$t('organization.tapButton.orgDetail')" id="org-details" style="position:relative;">
                             <ul id="props-57875212" class="org-details">
                                 <li>
-                                    <span class="prop-name">Organization</span>
+                                    <span class="prop-name">{{$t('organization.orgDetails.org')}}</span>
                                     <span class="prop-val">{{orgNodeDetail.unitShortName}}</span>
                                 </li>
                                 <li>
-                                    <span class="prop-name">Abbreviation</span>
+                                    <span class="prop-name">{{$t('organization.orgDetails.abbreviation')}}</span>
                                     <span class="prop-val">{{orgNodeDetail.abbreviation}}</span>
                                 </li>
                                 <li>
-                                    <span class="prop-name">Organization ID</span>
+                                    <span class="prop-name">{{$t('organization.orgInfo.orgId')}}</span>
                                     <span class="prop-val">{{orgNodeDetail.unitCode}}</span>
                                 </li>
                                 <li>
-                                    <span class="prop-name">Location</span>
+                                    <span class="prop-name">{{$t('organization.orgDetails.location')}}</span>
                                     <span class="prop-val">{{(orgNodeDetail.city ? (orgNodeDetail.city + ",") : '') + (orgNodeDetail.stateName ? (orgNodeDetail.stateName + ",") : '') + (orgNodeDetail.countryName ? (orgNodeDetail.countryName) : '') }}</span>
                                 </li>
                                 <li>
-                                    <span class="prop-name">Country Scope</span>
+                                    <span class="prop-name">{{$t('organization.orgDetails.countryScope')}}</span>
                                     <span class="prop-val">{{orgNodeDetail.countryScopeName}}</span>
                                 </li>
                                 <li>
-                                    <span class="prop-name">Legal Entity</span>
+                                    <span class="prop-name">{{$t('organization.orgDetails.legalEntity')}}</span>
                                     <span class="prop-val">{{orgNodeDetail.legalentity}}</span>
                                 </li>
                                 <li>
-                                    <span class="prop-name">Legal Representative</span>
+                                    <span class="prop-name">{{$t('organization.orgDetails.legalRepresentative')}}</span>
                                     <span class="prop-val">{{orgNodeDetail.corporation}}</span>
                                 </li>
                                 <li>
-                                    <span class="prop-name">Effective Date  <i style="color:red;">*</i></span>
+                                    <span class="prop-name">{{$t('organization.orgInfo.effectDate')}}<i style="color:red;">*</i></span>
                                     <span class="prop-val">{{orgNodeDetail.beginDate}}</span>
                                 </li>
                                 <li>
-                                    <span class="prop-name">Organization Size</span>
+                                    <span class="prop-name">{{$t('organization.orgDetails.orgSize')}}</span>
                                     <span class="prop-val">{{orgNodeDetail.unitSize == 0 ? "" : orgNodeDetail.unitSize}}</span>
                                 </li>
                                 <li>
-                                    <span class="prop-name">Superior Organization</span>
+                                    <span class="prop-name">{{$t('organization.orgInfo.superiorOrg')}}</span>
                                     <span class="prop-val">{{orgNodeDetail.parentUnitName}}</span>
                                 </li>
                                 <li>
-                                    <span class="prop-name">Head of Organization</span>
+                                    <span class="prop-name">{{$t('organization.orgInfo.headOfOrg')}}</span>
                                     <span class="prop-val">{{orgNodeDetail.unitLeaderName}}</span>
                                 </li>
                                 <li>
-                                    <span class="prop-name">Organization Tier</span>
+                                    <span class="prop-name">{{$t('organization.orgDetails.orgTier')}}</span>
                                     <span class="prop-val">{{orgNodeDetail.unitTier}}</span>
                                 </li>
                                 <li>
-                                    <span class="prop-name">Head Count</span>
+                                    <span class="prop-name">{{$t('organization.orgDetails.headCount')}}</span>
                                     <span class="prop-val">{{orgNodeDetail.unitSize == 0 ? "" : orgNodeDetail.unitSize}}</span>
                                 </li>
                                 <li class="fix">
-                                    <span style="float:left;display:block;height:36px;line-height:36px;">Company License </span>
+                                    <span style="float:left;display:block;height:36px;line-height:36px;">{{$t('organization.orgDetails.companyLicense')}}</span>
                                     <ul class="company-license-list">
-                                        <!-- self.companyLicense = response.data; -->
-                                        <!-- debugger;response.data[0].attachmentName -->
                                         <li class="extra-download" v-for="list in companyLicense">
                                             <a href="javascript:;" @click="downFile(list.attachmentId)" v-if="!list.isPicture">
-                                                <img src="../../static/images/other.png" alt="" style="width:26px;float:left;margin-top:5px;" title="{{list.attachmentName}}" />
+                                                <img src="assets/images/other.png" alt="" style="width:26px;float:left;margin-top:5px;" :title="list.attachmentName" />
                                                 <p>
                                                     {{list.attachmentName}}
                                                 </p>
                                             </a>
                                             <a v-else>
-                                                <img id="license-pic" v-on:click="showBig($event)" v-bind:src="imgUrl + list.attachmentId" alt="" style="height:100px;" title="{{list.attachmentName}}" />
+                                                <img id="license-pic" v-on:click="showBig($event)" v-bind:src="imgUrl + list.attachmentId" alt="" style="height:100px;" :title="list.attachmentName" />
                                             </a>
                                         </li>
                                     </ul>
 
                                 </li>
                                 <li>
-                                    <span class="prop-name">Organization Responsibility</span>
+                                    <span class="prop-name">{{$t('organization.orgDetails.orgResponsibility')}}</span>
                                     <span class="prop-val">{{orgNodeDetail.unitResponsibility}}</span>
                                 </li>
                                 <li>
-                                    <span class="prop-name">Additional Info</span>
+                                    <span class="prop-name">{{$t('organization.orgDetails.additionalInfo')}}</span>
                                     <span class="prop-val">{{orgNodeDetail.remark}}</span>
                                 </li>
                             </ul>
@@ -299,26 +303,21 @@
                                 <img v-bind:src="showPic" alt="" style="width:100%;" />
                             </div>
 
-
                         </ui-tab>
 
-
-
-
-
-                        <ui-tab header="Positions" id="positions">
+                        <ui-tab :title="$t('organization.tapButton.positions')" id="positions">
                             <!-- <div class="pt10 pb10"><span class="items">Positions <i class="item-number">{{positionsTotal}}</i> Items<span></div> -->
                             <vuetable :load-success-callback="positionsSuccess" :api-url="positionsUrl" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="columns.positions" :sort-order="sortOrder" per-page="10">
                             </vuetable>
                         </ui-tab>
 
-                        <ui-tab header="Members" id="members">
+                        <ui-tab :title="$t('organization.tapButton.members')" id="members">
                             <!-- <div class="pt10 pb10"><span class="items">Members <i class="item-number">{{membersTotal}}</i> Items<span></div> -->
                             <vuetable :load-success-callback="membersSuccess" :api-url="memUrl" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="columns.members" :sort-order="sortOrder" :item-actions="itemActions" per-page="10">
                             </vuetable>
                         </ui-tab>
 
-                        <ui-tab header="History" id="history-records">
+                        <ui-tab :title="$t('organization.tapButton.history')" id="history-records">
                             <!-- <div class="pt10 pb10"><span class="items">History Records <i class="item-number">{{recordsTotal}}</i> Items<span></div> -->
                             <vuetable :load-success-callback="recordsSuccess" :api-url="hisRecUrl" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="columns.hisRecords" :sort-order="sortOrder" :item-actions="itemActions" per-page="10">
                             </vuetable>
@@ -334,14 +333,8 @@
 
 <script>
 
-import {
-    formatDate, getDictMapping, downloadFile
-}
-from '../../util/assist.js';
-import {
-    default as Message
-}
-from '../../components/basic/message';
+import {formatDate, getDictMapping, downloadFile} from '../../util/assist.js';
+import {default as Message} from '../../components/basic/message';
 export default {
     data() {
             let _self = this;
@@ -352,93 +345,94 @@ export default {
                 columns: {
                     positions: [{
                         name: 'positionName',
-                        title: 'MIB Position'
+                        title: this.$t('organization.positionTabel.MIBPosition')
                     }, {
                         name: 'positionCode',
-                        title: 'Position ID'
+                        title: this.$t('organization.positionTabel.positionID')
                     }, {
                         name: 'positioCategory',
-                        title: 'Job Category',
+                        title: this.$t('organization.positionTabel.jobCategory'),
                         callback(value) {
                             return _self.fixPositionCategory(value);
                         }
                     }, {
                         name: 'mibGrade',
-                        title: 'MIB Grade'
+                        title: this.$t('organization.positionTabel.MIBGrade')
                     }, {
                         name: 'businessTitle',
-                        title: 'Position'
+                        title: this.$t('organization.positionTabel.position')
                     }, {
                         name: 'beginDate',
                         dataClass: 'tr',
                         titleClass: 'mw80',
-                        title: 'Effective Date'
+                        title: this.$t('organization.positionTabel.effectDate')
                     }],
                     members: [{
                         name: 'employeeName',
-                        title: 'Employee Name'
+                        title: this.$t('organization.members.employeeName')
                     }, {
                         name: 'employeeCode',
                         dataClass: 'tr',
-                        title: 'Employee ID'
+                        title: this.$t('organization.members.employeeID')
                     }, {
                         name: 'positionName',
-                        title: 'MIB Position'
+                        title: this.$t('organization.members.MIBPosition')
                     }, {
                         name: 'officePhone',
                         dataClass: 'tr',
-                        title: 'Phone'
+                        title: this.$t('organization.members.phone')
                     }, {
                         name: 'email',
-                        title: 'Email'
+                        title: this.$t('organization.members.email')
                     }, {
                         name: 'officeAddress',
-                        title: 'Location'
+                        title: this.$t('organization.members.location')
                     }],
                     hisRecords: [{
                         name: 'operateTypeName',
-                        title: 'Operation Type'
+                        title: this.$t('organization.historyRecord.operatType')
                     }, {
                         name: 'unitName',
-                        title: 'Org Name'
+                        title: this.$t('organization.historyRecord.orgName')
                     }, {
                         name: 'tier',
                         dataClass: 'tr',
-                        title: 'Tier'
+                        title: this.$t('organization.historyRecord.tier')
                     }, {
                         name: 'effectiveDate',
                         dataClass: 'tr',
                         titleClass: 'mw80',
-                        title: 'Effective Date'
+                        title: this.$t('organization.historyRecord.effectDate')
                     }, {
                         name: 'superioirOrgName',
-                        title: 'Superioir Org'
+                        title: this.$t('organization.historyRecord.superioirOrg')
                     }, {
                         name: 'superioirOrgCode',
-                        title: 'Superior Org ID'
+                        title: this.$t('organization.historyRecord.superiorOrgId')
                     }]
                 },
-                shareMenuOptions: [{
+                menuOptions: [{
                     id: 'changeOrg',
-                    text: ' Change Organization',
+                    label: this.$t('organization.moreSelection.changeOrg'),
                     icon: '',
                     secondaryText: 'Ctrl+E'
                 }, {
                     id: 'changeTir',
-                    text: 'Change Tier',
+                    label: this.$t('organization.moreSelection.changeTier'),
                     icon: '',
                     secondaryText: 'Ctrl+D'
                 }, {
                     id: 'mergeOrg',
-                    text: 'Merge Organization',
+                    label: this.$t('organization.moreSelection.mergeOrg'),
                     icon: '',
                     secondaryText: 'Ctrl+Shift+S'
                 }, {
                     id: 'annulOrg',
-                    text: 'Cancel Organization',
+                    label: this.$t('organization.moreSelection.cancelOrg'),
                     icon: '',
                     secondaryText: 'Del'
                 }],
+         
                 companyLicense: [],
                 showPic: '',
                 breadCrumbItem: [],
@@ -492,26 +486,26 @@ export default {
                 self.mibGradeDist = res;
             })
         },
-        ready() {
-            let _self = this;
-            _self.initHeight();
+        mounted() {
+            let that = this;
+            that.initHeight();
             window.addEventListener('resize', function() {
-                _self.initHeight();
+                that.initHeight();
             })
-            var orgId = this.$route.query.orgId;
-            if (orgId !== undefined || orgId !== null) {
-              this.$refs.tree.setNodeActive(orgId, 'orgId');
+            var orgId = that.$route.query.orgId;
+            if (orgId !== undefined && orgId !== null) {
+              that.$refs.tree.setNodeActive(orgId, 'orgId');
             }
+           
         },
         methods: {
-            downFile(id) {
+                downFile(id) {
                     downloadFile('/system/attachment/downloadFile', {
                         attachmentId: id
                     });
                 },
                 //company license 是图片就放大展示
                 showBig(ev) {
-                    // debugger;
                     var box = document.getElementById('license-box');
                     this.showPic = ev.target.src;
                     box.style.display = 'block';
@@ -697,12 +691,12 @@ export default {
                     params = params || {
                         'oid': this.currentOrg.orgId
                     };
-                    this.$router.go({
+                    this.$router.push({
                         name: pathName,
                         params: params
                     });
 
-                    this.$router.go({
+                    this.$router.push({
                         name: pathName,
                         params: params
                     });
@@ -718,8 +712,32 @@ export default {
                     });
                     return false;
                 },
+                changeTab(tabId) {
+                    switch (tabId) {
+                        case 'org-details':
+                            // this.loadNodeDetail(this.currentOrg.orgId);
+                            this.curTab = 'org-details';
+                            break;
+                        case 'positions':
+                            this.positionsUrl = `/org/orgs/${this.currentOrg.orgId}/positions`;
+                            this.curTab = 'positions';
+                            break;
+                        case 'members':
+                            this.memUrl = `/org/orgs/${this.currentOrg.orgId}/members`;
+                            this.curTab = 'members';
+                            break;
+                        case 'history-records':
+                            this.hisRecUrl = `/org/orgs/${this.currentOrg.orgId}/historyrecords`;
+                            this.curTab = 'history-records';
+                            break;
+                        default:
+                            Message({
+                                type: 'error',
+                                message: this.$t('organization.message.orgSettingServerError')
+                            });
+                    }
+                },
                 menuOptionSelected(option) {
-
                     if (!this.checkIsSelectNode()) return;
 
                     option = option || null;
@@ -777,31 +795,6 @@ export default {
                 },
         },
         events: {
-            'active-tab-changed': function(tabId) {
-                switch (tabId) {
-                    case 'org-details':
-                        // this.loadNodeDetail(this.currentOrg.orgId);
-                        this.curTab = 'org-details';
-                        break;
-                    case 'positions':
-                        this.positionsUrl = `/org/orgs/${this.currentOrg.orgId}/positions`;
-                        this.curTab = 'positions';
-                        break;
-                    case 'members':
-                        this.memUrl = `/org/orgs/${this.currentOrg.orgId}/members`;
-                        this.curTab = 'members';
-                        break;
-                    case 'history-records':
-                        this.hisRecUrl = `/org/orgs/${this.currentOrg.orgId}/historyrecords`;
-                        this.curTab = 'history-records';
-                        break;
-                    default:
-                        Message({
-                            type: 'error',
-                            message: this.$t('organization.message.orgSettingServerError')
-                        });
-                }
-            },
             'vuetable:action': function(action, data) {
                 if (action == 'view-item') {
                     this.viewProfile(data.id)

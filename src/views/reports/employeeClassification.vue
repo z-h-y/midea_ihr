@@ -73,36 +73,36 @@
 </style>
 
 <template lang="html">
-
-<div class="content-wrap bg-w ihr-reports-employeeClassification pt20">
-    <div class="search-area">
-        <v-form v-ref:classificationform :model="classification" :schema="classificationSchema" label-width="124" label-suffix="" :cols="3" form-style="indicator-form">
-            <select-field property='year' editor-width="200"></select-field>
-            <select-field property='month' editor-width="200"></select-field>
-            <text-field property="orgUnitName" type="selector" :show.sync="org" editor-width="200"></text-field>
-        </v-form>
-        <!-- 组织选择器 -->
-        <div class="query-btn">
-            <ui-button class="query-btn-search mr10" color="primary" @click="search">Search</ui-button>
-            <ui-button class="query-btn-reset btn-default-bd" type="flat" @click="reset">Reset</ui-button>
-        </div>
-    </div>
-    <div class="group"></div>
-    <div class="leftRight-panel bg-f5f5f5 mt16 fix">
-        <div id="classRightPanel" class="right-panel pl16 pr16">
-            <div class="right-panel-tit pb16 tc">
-                <span>Employee Classification</span>
-            </div>
-            <ui-button class="dis-tc-t btn-default-bd download" icon="fa-download" type="flat" text="Download" @click="download"></ui-button>
-            <div class="vuetable-wrapper">
-                <vuetable api-url="/report/EmpClassification" v-ref:annualtable :selected-to="selectedRow" :append-params="queryParams" :fields="columns" pagination-path="" table-wrapper=".vuetable-wrapper" :sort-order="sortOrder" :item-actions="itemActions" per-page="10">
-                </vuetable>
+<div>
+    <div class="content-wrap bg-w ihr-reports-employeeClassification pt20">
+        <div class="search-area">
+            <v-form ref="classificationform" :model="classification" :schema="classificationSchema" label-width="124" label-suffix="" :cols="3" form-style="indicator-form">
+                <select-field property='year' editor-width="200"></select-field>
+                <select-field property='month' editor-width="200"></select-field>
+                <text-field property="orgUnitName" type="selector" :show.sync="org" editor-width="200"></text-field>
+            </v-form>
+            <!-- 组织选择器 -->
+            <div class="query-btn">
+                <ui-button class="query-btn-search mr10" color="primary" @click="search">{{$t('button.search')}}</ui-button>
+                <ui-button class="query-btn-reset btn-default-bd" type="flat" @click="reset">{{$t('button.reset')}}</ui-button>
             </div>
         </div>
+        <div class="group"></div>
+        <div class="leftRight-panel bg-f5f5f5 mt16 fix">
+            <div id="classRightPanel" class="right-panel pl16 pr16">
+                <div class="right-panel-tit pb16 tc">
+                    <span>{{$t('reports.labelText.employeeClassification')}}</span>
+                </div>
+                <ui-button class="dis-tc-t btn-default-bd download" icon="fa-download" type="flat" :text="$t('button.download')" @click="download"></ui-button>
+                <div class="vuetable-wrapper">
+                    <vuetable api-url="/report/EmpClassification" ref="annualtable" :selected-to="selectedRow" :append-params="queryParams" :fields="columns" pagination-path="" table-wrapper=".vuetable-wrapper" :sort-order="sortOrder" :item-actions="itemActions" per-page="10">
+                    </vuetable>
+                </div>
+            </div>
+        </div>
     </div>
+    <organization-selector :show.sync="org"></organization-selector>
 </div>
-<organization-selector :show.sync="org"></organization-selector>
-
 </template>
 
 <script>
@@ -119,33 +119,35 @@ import {
     getDictMapping, downloadFile
 }
 from '../../util/assist.js';
-let classificationSchema = new Schema({
-    orgUnitName: {
-        label: 'Organization',
-        required: true,
-        whitespace: false
-    },
-    unitId: {},
-    year: {
-        label: 'Year',
-        required: true,
-        whitespace: false,
-        mapping: function() {
-            return getDictMapping('CLASSIFICATION_YEAR');
-        }
-    },
-    month: {
-        label: 'Month',
-        required: true,
-        whitespace: false,
-        mapping: function() {
-            return getDictMapping('SCHEME_CYCLE_MONTHLY');
-        }
-    }
 
-});
 export default {
     data() {
+        let self = this;
+        let classificationSchema = new Schema({
+                orgUnitName: {
+                    label: self.$t('reports.labelText.organization'),
+                    required: true,
+                    whitespace: false
+                },
+                unitId: {},
+                year: {
+                    label: self.$t('reports.labelText.year'),
+                    required: true,
+                    whitespace: false,
+                    mapping: function() {
+                        return getDictMapping('CLASSIFICATION_YEAR');
+                    }
+                },
+                month: {
+                    label: self.$t('reports.labelText.month'),
+                    required: true,
+                    whitespace: false,
+                    mapping: function() {
+                        return getDictMapping('SCHEME_CYCLE_MONTHLY');
+                    }
+                }
+
+            });
             return {
                 paginationComponent: 'vuetable-pagination',
                 org: {
@@ -169,62 +171,62 @@ export default {
                     titleClass: 'dn'
                 }, {
                     name: 'tlS',
-                    title: 'Start of Month',
+                    title: self.$t('reports.labelText.startMonth'),
                     dataClass: 'tr',
                     sortField: 'tlS'
                 }, {
                     name: 'tlE',
-                    title: 'End of Month',
+                    title: self.$t('reports.labelText.endMonth'),
                     dataClass: 'tr',
                     sortField: 'tlE'
                 }, {
                     name: 'tlAvg',
-                    title: 'Average',
+                    title: self.$t('reports.labelText.average'),
                     dataClass: 'tr',
                     sortField: 'tlAvg'
                 }, {
                     name: 'icS',
-                    title: 'Start of Month',
+                    title: self.$t('reports.labelText.startMonth'),
                     dataClass: 'tr',
                     sortField: 'icS'
                 }, {
                     name: 'icE',
-                    title: 'End of Month',
+                    title: self.$t('reports.labelText.endMonth'),
                     dataClass: 'tr',
                     sortField: 'icE'
                 }, {
                     name: 'icAvg',
-                    title: 'Average',
+                    title: self.$t('reports.labelText.average'),
                     dataClass: 'tr',
                     sortField: 'icAvg'
                 }, {
                     name: 'wnflS',
-                    title: 'Start of Month',
+                    title: self.$t('reports.labelText.startMonth'),
                     dataClass: 'tr',
                     sortField: 'wnflS'
                 }, {
                     name: 'wnflE',
-                    title: 'End of Month',
+                    title: self.$t('reports.labelText.endMonth'),
                     dataClass: 'tr',
                     sortField: 'wnflE'
                 }, {
                     name: 'wnflAvg',
-                    title: 'Average',
+                    title: self.$t('reports.labelText.average'),
                     dataClass: 'tr',
                     sortField: 'wnflAvg'
                 }, {
                     name: 'wflS',
-                    title: 'Start of Month',
+                    title: self.$t('reports.labelText.startMonth'),
                     dataClass: 'tr',
                     sortField: 'wflS'
                 }, {
                     name: 'wflE',
-                    title: 'End of Month',
+                    title: self.$t('reports.labelText.endMonth'),
                     dataClass: 'tr',
                     sortField: 'wflE'
                 }, {
                     name: 'wflAvg',
-                    title: 'Average',
+                    title: self.$t('reports.labelText.average'),
                     dataClass: 'tr',
                     sortField: 'wflAvg'
                 }, {
@@ -352,8 +354,62 @@ export default {
         },
         ready() {
             let oThead = document.getElementsByTagName('thead')[0];
+            let self = this;
             // let html = oThead.innerHTML;
-            let oTr = '<thead><tr><th rowspan="2">Organization</th><th rowspan="2">In Total</th><th colspan="3">Team Leader</th><th colspan="3">Individual Contributor</th><th colspan="3">Worker(Non-Front Line)</th><th colspan="3">Worker(Front Line)</th><th colspan="6">Team Leader</th><th colspan="6">Individual Contributor</th><th colspan="6">Worker(Non-Front Line)</th><th colspan="6">Worker(Front Line)</th></tr><tr><th id="_unitShortName"class="dn sortable"></th><th id="_unitSize"class="dn sortable"></th><th id="_tlS"class=" sortable">Start of Month</th><th id="_tlE"class=" sortable">End of Month</th><th id="_tlAvg"class=" sortable">Average</th><th id="_icS"class=" sortable">Start of Month</th><th id="_icE"class=" sortable">End of Month</th><th id="_icAvg"class=" sortable">Average</th><th id="_wnflS"class=" sortable">Start of Month</th><th id="_wnflE"class=" sortable">End of Month</th><th id="_wnflAvg"class=" sortable">Average</th><th id="_wflS"class=" sortable">Start of Month</th><th id="_wflE"class=" sortable">End of Month</th><th id="_wflAvg"class=" sortable">Average</th><th id="_tl1"class=" sortable">G0</th><th id="_tl2"class=" sortable">G1</th><th id="_tl3"class=" sortable">G2</th><th id="_tl4"class=" sortable">G3</th><th id="_tl5"class=" sortable">G4</th><th id="_tl6"class=" sortable">G5</th><th id="_ic1"class=" sortable">G0</th><th id="_ic2"class=" sortable">G1</th><th id="_ic3"class=" sortable">G2</th><th id="_ic4"class=" sortable">G3</th><th id="_ic5"class=" sortable">G4</th><th id="_ic6"class=" sortable">G5</th><th id="_wnfl1"class=" sortable">G0</th><th id="_wnfl2"class=" sortable">G1</th><th id="_wnfl3"class=" sortable">G2</th><th id="_wnfl4"class=" sortable">G3</th><th id="_wnfl5"class=" sortable">G4</th><th id="_wnfl6"class=" sortable">G5</th><th id="_wfl1"class=" sortable">G0</th><th id="_wfl2"class=" sortable">G1</th><th id="_wfl3"class=" sortable">G2</th><th id="_wfl4"class=" sortable">G3</th><th id="_wfl5"class=" sortable">G4</th><th id="_wfl6"class=" sortable">G5</th></tr></thead>'
+            let oTr = `<thead>
+                            <tr>
+                                <th rowspan="2">${self.$t('reports.labelText.organization')}</th>
+                                <th rowspan="2">${self.$t('reports.labelText.inTotal')}</th>
+                                <th colspan="3">${self.$t('reports.labelText.teamLeader')}</th>
+                                <th colspan="3">${self.$t('reports.labelText.individualContributor')}</th>
+                                <th colspan="3">${self.$t('reports.labelText.nonFrontLine')}</th>
+                                <th colspan="3">${self.$t('reports.labelText.frontLine')}</th>
+                                <th colspan="6">${self.$t('reports.labelText.teamLeader')}</th>
+                                <th colspan="6">${self.$t('reports.labelText.individualContributor')}</th>
+                                <th colspan="6">${self.$t('reports.labelText.nonFrontLine')}</th>
+                                <th colspan="6">${self.$t('reports.labelText.frontLine')}</th>
+                            </tr>
+                            <tr>
+                                <th id="_unitShortName"class="dn sortable"></th>
+                                <th id="_unitSize"class="dn sortable"></th>
+                                <th id="_tlS"class=" sortable">${self.$t('reports.labelText.startMonth')}</th>
+                                <th id="_tlE"class=" sortable">${self.$t('reports.labelText.endMonth')}</th>
+                                <th id="_tlAvg"class=" sortable">${self.$t('reports.labelText.average')}</th>
+                                <th id="_icS"class=" sortable">${self.$t('reports.labelText.startMonth')}</th>
+                                <th id="_icE"class=" sortable">${self.$t('reports.labelText.endMonth')}</th>
+                                <th id="_icAvg"class=" sortable">${self.$t('reports.labelText.average')}</th>
+                                <th id="_wnflS"class=" sortable">${self.$t('reports.labelText.startMonth')}</th>
+                                <th id="_wnflE"class=" sortable">${self.$t('reports.labelText.endMonth')}</th>
+                                <th id="_wnflAvg"class=" sortable">${self.$t('reports.labelText.average')}</th>
+                                <th id="_wflS"class=" sortable">${self.$t('reports.labelText.startMonth')}</th>
+                                <th id="_wflE"class=" sortable">${self.$t('reports.labelText.endMonth')}</th>
+                                <th id="_wflAvg"class=" sortable">${self.$t('reports.labelText.average')}</th>
+                                <th id="_tl1"class=" sortable">G0</th>
+                                <th id="_tl2"class=" sortable">G1</th>
+                                <th id="_tl3"class=" sortable">G2</th>
+                                <th id="_tl4"class=" sortable">G3</th>
+                                <th id="_tl5"class=" sortable">G4</th>
+                                <th id="_tl6"class=" sortable">G5</th>
+                                <th id="_ic1"class=" sortable">G0</th>
+                                <th id="_ic2"class=" sortable">G1</th>
+                                <th id="_ic3"class=" sortable">G2</th>
+                                <th id="_ic4"class=" sortable">G3</th>
+                                <th id="_ic5"class=" sortable">G4</th>
+                                <th id="_ic6"class=" sortable">G5</th>
+                                <th id="_wnfl1"class=" sortable">G0</th>
+                                <th id="_wnfl2"class=" sortable">G1</th>
+                                <th id="_wnfl3"class=" sortable">G2</th>
+                                <th id="_wnfl4"class=" sortable">G3</th>
+                                <th id="_wnfl5"class=" sortable">G4</th>
+                                <th id="_wnfl6"class=" sortable">G5</th>
+                                <th id="_wfl1"class=" sortable">G0</th>
+                                <th id="_wfl2"class=" sortable">G1</th>
+                                <th id="_wfl3"class=" sortable">G2</th>
+                                <th id="_wfl4"class=" sortable">G3</th>
+                                <th id="_wfl5"class=" sortable">G4</th>
+                                <th id="_wfl6"class=" sortable">G5</th>
+                            </tr>
+                        </thead>`;
             setTBodyInnerHTML(oThead, oTr);
 
             function setTBodyInnerHTML(thead, html) {

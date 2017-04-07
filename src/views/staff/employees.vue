@@ -1,7 +1,7 @@
 <template lang="html">
-  <tree :data="regions" :level-config="levelConfig" :show-checkbox="showCheckbox" v-ref:tree :click-node.sync="clickNode"></tree>
-  <button @click="getCheckedNodes">getCheckedNodes</button>
-  {{clickNode | json}}
+  <div>
+      <button @click="getCheckedNodes">getCheckedNodes</button>
+  </div>
 </template>
 
 <script>
@@ -18,9 +18,8 @@ export default {
     };
   },
   computed: {},
-  ready() {
+  mounted() {
   },
-  attached() {},
   methods: {
     getCheckedNodes() {
       console.log(this.$refs.tree.getCheckedNodes(true));

@@ -1,13 +1,13 @@
 <style lang="less">
-.ihr-system-userPermissions{
-  *{
-    box-sizing: border-box;
-  }
-  .group{
-    border: none;
-  }
-}
 
+.ihr-system-userPermissions {
+    * {
+        box-sizing: border-box;
+    }
+    .group {
+        border: none;
+    }
+}
 
 </style>
 
@@ -15,8 +15,8 @@
 
 <div class="content-wrap bg-w ihr-system-userPermissions">
     <div class="group">
-        <ui-button class="mr10 dis-tc btn-primary-bd" icon="fa-plus" color="primary" text="Add" @click="add" button-type="button"></ui-button>
-        <ui-button class="mr10 dis-tc btn-default-bd" icon="fa-pencil-square-o" type="flat" text="Edit" @click="edit" button-type="button"></ui-button>
+        <ui-button class="mr10 dis-tc btn-primary-bd" icon="fa-plus" color="primary" :text="$t('button.add')" @click="add" button-type="button"></ui-button>
+        <ui-button class="mr10 dis-tc btn-default-bd" icon="fa-pencil-square-o" type="flat" :text="$t('button.edit')" @click="edit" button-type="button"></ui-button>
     </div>
     <div class="pl16 pr16 pb16">
         <vuetable :api-url="usersUrl" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="tableColumns" :sort-order="sortOrder" :item-actions="itemActions" per-page="10">
@@ -52,19 +52,19 @@ export default {
                     title: ''
                 }, {
                     name: 'userName',
-                    title: 'Username',
+                    title: this.$t('system.userPermissions.userName'),
                     sortField: 'userName'
                 }, {
                     name: 'loginId',
-                    title: 'LoginId ID',
+                    title: this.$t('system.userPermissions.loginId'),
                     sortField: 'loginId'
                 }, {
                     name: 'email',
-                    title: 'Email',
+                    title: this.$t('system.userPermissions.email'),
                     sortField: 'email'
                 }, {
                     name: 'isEnabled',
-                    title: 'Account Status',
+                    title: this.$t('system.userPermissions.isEnabled'),
                     sortField: 'isEnabled',
                     callback: function(value) {
                         return _self.fixIS_ENABLED(value);

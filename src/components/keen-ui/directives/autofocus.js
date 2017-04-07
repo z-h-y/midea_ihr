@@ -1,3 +1,7 @@
-export default function(el, binding) {
-    el.autofocus = Boolean(binding.value);
-}
+export default {
+    inserted(el, { value }) {
+        if (value) {
+            el.focus();
+        }
+    }
+};

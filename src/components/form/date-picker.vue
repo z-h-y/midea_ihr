@@ -158,7 +158,7 @@
 
     <div class="datepicker-body">
         <div :class="{ hidden: currentView !== 'time' }" class="datepicker-time-wrap" v-if="showTime">
-            <time-picker v-ref:time-picker @pick="handleTimePick" @close="currentView = 'date'"></time-picker>
+            <time-picker ref="time-picker" @pick="handleTimePick" @close="currentView = 'date'"></time-picker>
         </div>
         <table :class="{ hidden: currentView !== 'date' }" @click="handleDateTableClick" cellspacing="0">
             <tbody>
@@ -171,8 +171,8 @@
                     <th>{{ $t('datepicker.weeks.fri') }}</th>
                     <th>{{ $t('datepicker.weeks.sat') }}</th>
                 </tr>
-                <tr v-for="row in 6" class="datepicker-dayrow" :class="{ current:isWeekActive(cells[row * 7 + 1]) }">
-                    <td v-for="column in 7" class="{{isClickAble(cells[row * 7 +column].text, cells[row * 7 + column].type) ? 'dis-click-able' : ''}} {{ cells[row * 7 + column].type }} {{selectionMode === 'day' && cells[row * 7 + column].type === 'normal' && monthDate == cells[row * 7 + column].text ? 'current' : ''}}">{{ cells[row * 7 +column].text }}</td>
+                <tr v-for="row in 6" class="datepicker-dayrow" :class="{ current:isWeekActive(cells[(row - 1) * 7 + 1]) }">
+                    <td v-for="column in 7" :class="[isClickAble(cells[(row - 1) * 7 + (column - 1)].text, cells[(row - 1) * 7 + (column - 1)].type) ? 'dis-click-able' : '', cells[(row - 1) * 7 + (column - 1)].type, selectionMode === 'day' && cells[(row - 1) * 7 + (column - 1)].type === 'normal' && monthDate == cells[(row - 1) * 7 + (column - 1)].text ? 'current' : '']">{{ cells[(row - 1) * 7 +(column - 1)].text }}</td>
                 </tr>
             </tbody>
         </table>
@@ -181,22 +181,22 @@
             <tbody>
                 <tr>
                     <td @click="prevTenYear" class="icon icon-arrow-left"></td>
-                    <td :class="{ current: year === startYear }">{{startYear}}</td>
-                    <td :class="{ current: year === startYear}">{{startYear + 1}}</td>
+                    <td :class="{ current: isYearActive(startYear) }">{{startYear}}</td>
+                    <td :class="{ current: isYearActive(startYear + 1) }">{{startYear + 1}}</td>
                 </tr>
                 <tr>
-                    <td :class="{ current: year === startYear}">{{startYear + 2}}</td>
-                    <td :class="{ current: year === startYear}">{{startYear + 3}}</td>
-                    <td :class="{ current: year === startYear}">{{startYear + 4}}</td>
+                    <td :class="{ current: isYearActive(startYear + 2) }">{{startYear + 2}}</td>
+                    <td :class="{ current: isYearActive(startYear + 3) }">{{startYear + 3}}</td>
+                    <td :class="{ current: isYearActive(startYear + 4) }">{{startYear + 4}}</td>
                 </tr>
                 <tr>
-                    <td :class="{ current: year === startYear}">{{startYear + 5}}</td>
-                    <td :class="{ current: year === startYear }">{{startYear + 6}}</td>
-                    <td :class="{ current: year === startYear}">{{startYear + 7}}</td>
+                    <td :class="{ current: isYearActive(startYear + 5) }">{{startYear + 5}}</td>
+                    <td :class="{ current: isYearActive(startYear + 6) }">{{startYear + 6}}</td>
+                    <td :class="{ current: isYearActive(startYear + 7) }">{{startYear + 7}}</td>
                 </tr>
                 <tr>
-                    <td :class="{ current: year === startYear}">{{startYear + 8}}</td>
-                    <td :class="{ current: year === startYear }">{{startYear + 9}}</td>
+                    <td :class="{ current: isYearActive(startYear + 8) }">{{startYear + 8}}</td>
+                    <td :class="{ current: isYearActive(startYear + 9) }">{{startYear + 9}}</td>
                     <td @click="nextTenYear" class="icon icon-arrow-right"></td>
                 </tr>
             </tbody>
@@ -283,7 +283,9 @@
       },
 
       date: {
-        default: new Date()
+        default() {
+          return new Date()
+        }
       },
 
       minDate: {},
@@ -371,6 +373,10 @@
         } else {
           return this.value === date.getFullYear() + '-' + month;
         }
+      },
+      isYearActive(year) {
+        var date = this.date;
+        return date.getFullYear() === year;
       },
 
       isWeekActive(cell) {

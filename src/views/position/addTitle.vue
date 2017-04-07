@@ -36,8 +36,11 @@
         label {
             display: none;
         }
-        .field-hint{
-          width: 442px;
+        .field-hint {
+            width: 442px;
+        }
+        .field-content {
+            margin-left: 0 !important;
         }
     }
     .mibGrade1-line {
@@ -47,8 +50,8 @@
         float: left;
         margin: 14px 10px 0 12px;
     }
-    .field-hint{
-      width: 245px;
+    .field-hint {
+        width: 245px;
     }
 }
 
@@ -58,27 +61,27 @@
 
 <div class="content-wrap ihr-position-addTitle">
     <panel :title="panelTitle" class=" panel-b" id="panelB" header="panel-header">
-        <v-form v-ref:titleform :model="title" :schema="titleSchema" label-width="150" label-suffix="" :cols="1" form-style="org-form">
-            <text-field v-ref:standardjobname property='standardJobName' editor-width="400"></text-field>
+        <v-form ref="titleform" :model="title" :schema="titleSchema" label-width="150" label-suffix="" :cols="1" form-style="org-form">
+            <text-field ref="standardjobname" property='standardJobName' editor-width="400"></text-field>
             <text-increment property='jobFamilyName' editor-width="400"></text-increment>
             <!-- <select-field property='jobLevelStart' editor-width="400"></select-field>
             <select-field property='jobLevelEnd' editor-width="400"></select-field> -->
             <div class="field-content">
                 <div class="field-row fix">
                     <div class="mibGrade1">
-                        <select-field property='jobLevelStart' editor-width="150"></select-field>
+                        <select-field property='jobLevelStart' :mapping="dictList.jobStartMapping" editor-width="150"></select-field>
                     </div>
                     <div class="mibGrade1-line"></div>
                     <div class="mibGrade2">
-                        <select-field property='jobLevelEnd' editor-width="150" label-width="0"></select-field>
+                        <select-field property='jobLevelEnd' :mapping="dictList.jobEndMapping" editor-width="150" label-width="0" :hide-label="true"></select-field>
                     </div>
                 </div>
             </div>
         </v-form>
     </panel>
     <div class="btn-group" style="height:73px;">
-        <ui-button @click="submit" color="primary mr10">Submit</ui-button>
-        <ui-button @click="cancel" class="btn-default-bd" type="flat">Cancel</ui-button>
+        <ui-button @click="submit" color="primary mr10">{{ $t('button.submit') }}</ui-button>
+        <ui-button @click="cancel" class="btn-default-bd" type="flat">{{ $t('button.cancel') }}</ui-button>
     </div>
 </div>
 
@@ -91,7 +94,8 @@ import {
 }
 from '../../schema/index';
 import {
-    getDictMapping
+    getDictMapping,
+    transformDict
 }
 from '../../util/assist';
 
@@ -106,7 +110,7 @@ export default {
     data() {
             let titleSchema = new Schema({
                 standardJobName: {
-                    label: 'Title Name',
+                    label: this.$t('position.label.titleName'),
                     required: true,
                     whitespace: false,
                     rules: {
@@ -123,11 +127,8 @@ export default {
                     }
                 },
                 jobLevelStart: {
-                    label: 'MIB Grade',
+                    label: this.$t('position.label.mibGradeStart'),
                     required: true,
-                    mapping: function() {
-                        return getDictMapping('MIB_RANK');
-                    },
                     rules: {
                         type: 'custom',
                         message: this.$t('position.message.jobLevelEnd'),
@@ -144,11 +145,8 @@ export default {
                     }
                 },
                 jobLevelEnd: {
-                    label: 'MIB Grade',
+                    label: this.$t('position.label.mibGradeEnd'),
                     required: true,
-                    mapping: function() {
-                        return getDictMapping('MIB_RANK');
-                    },
                     rules: {
                         type: 'custom',
                         message: this.$t('position.message.jobLevelEnd'),
@@ -165,7 +163,7 @@ export default {
                     }
                 },
                 remark: {
-                    label: 'remark',
+                    label: this.$t('position.label.remark'),
                     required: false,
                     whitespace: false
                 },
@@ -173,7 +171,7 @@ export default {
 
                 },
                 jobFamilyName: {
-                    label: 'Family',
+                    label: this.$t('position.label.family'),
                 },
                 standardJobId: {
 
@@ -182,15 +180,38 @@ export default {
             return {
                 panelTitle: '',
                 titleSchema: titleSchema,
-                title: titleSchema.newModel()
+                title: titleSchema.newModel(),
+                dictList: {
+                    jobStartMapping: {},
+                    jobEndMapping: {}
+                }
             }
         },
-        ready() {
+        mounted() {
             var _self = this;
             _self.initHeight();
             window.addEventListener('resize', function() {
                 _self.initHeight();
             })
+        },
+        created() {
+            var self = this;
+            let dictionaryArr = ['MIB_RANK'];
+            this.$http.post('/public-access/dicts/items', {
+                dictCodes: dictionaryArr
+            }, {
+                emulateJSON: true
+            }).then((response) => {
+                let resData = response.data;
+                resData.forEach(function(item) {
+                    let dictionary = item.dictName;
+                    if (dictionary === "MIB_RANK") {
+                        self.dictList.jobStartMapping = transformDict(item.dict);
+                        self.dictList.jobEndMapping = transformDict(item.dict);
+                    }
+                });
+            });
+            this.fetchData();
         },
         methods: {
             initHeight() {
@@ -207,7 +228,7 @@ export default {
                     let _jobGroupModel = this.title,
                         _self = this
 
-                    let passed = this.title.$schema.isFormValidate(this.$refs.titleform);
+                    let passed = this.$refs.titleform.isFormValidate();
                     if (!passed) return;
 
                     if (_self.$route.name === 'addTitle') {
@@ -221,9 +242,11 @@ export default {
                         }, {
                             emulateJSON: true
                         }).then((response) => {
-                            _self.$router.go({
+                            _self.$router.push({
                                 name: 'title',
-                                query: {jobFamilyId: this.title.jobFamilyId}
+                                query: {
+                                    jobFamilyId: this.title.jobFamilyId
+                                }
                             });
                             Message({
                                 type: 'success',
@@ -244,9 +267,11 @@ export default {
                             emulateJSON: true
                         }).then((response) => {
                             if (response)
-                                _self.$router.go({
+                                _self.$router.push({
                                     name: 'title',
-                                    query: {jobFamilyId: this.title.jobFamilyId}
+                                    query: {
+                                        jobFamilyId: this.title.jobFamilyId
+                                    }
                                 });
                             Message({
                                 type: 'success',
@@ -258,10 +283,35 @@ export default {
                 },
                 cancel() {
                     let _self = this;
-                    _self.$router.go({
+                    _self.$router.push({
                         name: 'title',
-                        query: {jobFamilyId: this.title.jobFamilyId}
+                        query: {
+                            jobFamilyId: this.title.jobFamilyId
+                        }
                     });
+                },
+                fetchData() {
+                    let _self = this;
+
+                    _self.title.standardJobId = _self.$route.params.standardJobId;
+                    _self.title.jobFamilyName = _self.$route.params.jobFamilyName;
+                    if (_self.$route.name === 'addTitle') {
+                        _self.panelTitle = _self.$t('position.addTitle');
+                        _self.title.jobFamilyId = _self.$route.params.jobFamilyId;
+
+
+                    } else if (_self.$route.name === 'editTitle') {
+                        _self.panelTitle = _self.$t('position.editTitle');
+
+                        _self.$http.get(`/pos/standardJobs/${_self.title.standardJobId}`).then((response) => {
+                            let props = response.json();
+                            for (let prop in props) {
+                                if (props.hasOwnProperty(prop)) {
+                                    _self.title[prop] = props[prop];
+                                }
+                            }
+                        });
+                    }
                 }
         },
         watch: {
@@ -283,36 +333,12 @@ export default {
                         });
                     }
                 }
-            }
+            },
+            '$route': 'fetchData' // 如果路由有变化，会再次执行该方法
         },
-        route: {
-            data(transition) {
 
-                let _self = this;
-
-                _self.title.standardJobId = transition.to.params.standardJobId;
-                _self.title.jobFamilyName = transition.to.params.jobFamilyName;
-                if (_self.$route.name === 'addTitle') {
-                    _self.panelTitle = 'Add Title';
-                    _self.title.jobFamilyId = transition.to.params.jobFamilyId;
-
-
-                } else if (_self.$route.name === 'editTitle') {
-                    _self.panelTitle = 'Edit Title';
-
-                    _self.$http.get(`/pos/standardJobs/${_self.title.standardJobId}`).then((response) => {
-                        let props = response.json();
-                        for (let prop in props) {
-                            if (props.hasOwnProperty(prop)) {
-                                _self.title[prop] = props[prop];
-                            }
-                        }
-                    });
-                }
-            }
-        },
         components: {
-          Panel: require('../../components/basic/panel.vue')
+            Panel: require('../../components/basic/panel.vue')
         }
 }
 

@@ -12,14 +12,14 @@
 
 <div class="content-wrap ihr-system-roleAdd">
     <panel :title="panelTitle" class="panel-b mt20 ml20 mb20 mr20" header="panel-header">
-        <v-form v-ref:roleform :model="role" :schema="roleSchema" label-width="150" label-suffix="" :cols="1" form-style="">
+        <v-form ref="roleform" :model="role" :schema="roleSchema" label-width="150" label-suffix="" :cols="1" form-style="">
             <text-field property="roleName" editor-width="400"></text-field>
             <select-field property="roleType" editor-width="400"></select-field>
             <text-field property="description" editor-width="400"></text-field>
         </v-form>
         <div class="btn-group">
-            <ui-button @click="submit" color="primary mr10">Submit</ui-button>
-            <ui-button @click="cancel" class="btn-default-bd" type="flat">Cancel</ui-button>
+            <ui-button @click="submit" color="primary mr10">{{$t('button.submit')}}</ui-button>
+            <ui-button @click="cancel" class="btn-default-bd" type="flat">{{$t('button.cancel')}}</ui-button>
         </div>
     </panel>
 </div>
@@ -40,30 +40,31 @@ import {
     default as Message
 }
 from '../../components/basic/message';
-let roleSchema = new Schema({
-    roleName: {
-        label: 'System Role Name',
-        required: true,
-        whitespace: false
-    },
-    roleType: {
-        label: 'System Role Type',
-        required: true,
-        mapping: function() {
-            return getDictMapping('SYS_ROLE_TYPE');
-        }
-    },
-    description: {
-        label: 'description',
-        required: true,
-        whitespace: false
-    },
-    roleId: {
 
-    }
-});
 export default {
     data() {
+            let roleSchema = new Schema({
+                roleName: {
+                    label: this.$t('system.role.roleName'),
+                    required: true,
+                    whitespace: false
+                },
+                roleType: {
+                    label: this.$t('system.role.roleType'),
+                    required: true,
+                    mapping: function() {
+                        return getDictMapping('SYS_ROLE_TYPE');
+                    }
+                },
+                description: {
+                    label: this.$t('system.role.roleType'),
+                    required: true,
+                    whitespace: false
+                },
+                roleId: {
+
+                }
+            });
             return {
                 panelTitle: 'Add System Role',
                 roleSchema: roleSchema,
@@ -125,18 +126,18 @@ export default {
                 }
         },
         components: {
-          Panel: require('../../components/basic/panel.vue')
+            Panel: require('../../components/basic/panel.vue')
         },
         route: {
             data(transition) {
                 let _self = this;
                 _self.role.roleId = transition.to.params.roleId;
                 if (_self.$route.name === 'addRole') {
-                    _self.panelTitle = 'Add System Role';
+                    _self.panelTitle =  _self.$t('system.role.addTitle');
 
 
                 } else if (_self.$route.name === 'editRole') {
-                    _self.panelTitle = 'Edit System Role';
+                    _self.panelTitle =  _self.$t('system.role.editTitle');
                     _self.$http.get(`/pos/standardJobs/${_self.role.roleId}`).then((response) => {
                         let props = response.json();
                         for (let prop in props) {

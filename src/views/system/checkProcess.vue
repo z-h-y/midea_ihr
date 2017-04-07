@@ -19,7 +19,7 @@
         color: #2a3c59;
         font-size: 18px;
         line-height: 60px;
-        border-bottom: solid 1px #e8e8e8;
+        border-bottom: 1px solid #e8e8e8;
     }
     .update-interns-rolecoll {
         width: 80%;
@@ -130,19 +130,19 @@
         text-overflow: ellipsis;
         white-space: nowrap;
     }
-
 }
+
 </style>
 
 <template lang="html">
 
 <div class="content-wrap ihr-system-processSettingsView">
 
-    <panel title="View Process Template" class="panel-b" header="panel-header">
-        <v-form v-ref:processform :model="processData" :schema="processSchema" class="mt20 mb10 pl20" label-width="125" label-suffix="" :cols="" form-style="update-process-form">
+    <panel :title="$t('system.checkProcess.view')"  class="panel-b" header="panel-header">
+        <v-form ref="processform" :model="processData" :schema="proSchema" class="mt20 mb10 pl20" label-width="125" label-suffix="" form-style="update-process-form">
             <text-increment class="templateName" property='templateName' editor-width="140"></text-increment>
         </v-form>
-        <ui-collapsible header="Performance Plan Process" :open.sync="collapsible.arolecoll" id="arolecoll-info">
+        <!-- <ui-collapsible :header="$t('system.checkProcess.hPlan')" :open.sync="collapsible.arolecoll" id="arolecoll-info">
             <div class="update-interns">
                 <div class="p20">
                     <template v-for="item in aroleList">
@@ -157,7 +157,7 @@
                 </div>
             </div>
         </ui-collapsible>
-        <ui-collapsible header="Performance Evaluation Process" :open.sync="collapsible.prolecoll" id="prolecoll-info">
+        <ui-collapsible :header="$t('system.checkProcess.hEvaluation')"  :open.sync="collapsible.prolecoll" id="prolecoll-info">
             <div class="update-interns">
                 <div class="p20">
                     <template v-for="item in proleList">
@@ -171,13 +171,12 @@
                     </template>
                 </div>
             </div>
-        </ui-collapsible>
+        </ui-collapsible> -->
 
     </panel>
 
     <div class="btn-group">
-
-        <ui-button @click="cancel" class="btn-default-bd" type="flat">Back</ui-button>
+      <ui-button @click="cancel" class="btn-default-bd" type="flat">{{$t('button.back')}}</ui-button>
     </div>
 </div>
 
@@ -199,29 +198,29 @@ import {
 }
 from '../../util/assist';
 
-let processSchema = new Schema({
-    templateName: {
-        label: 'Template Name',
-        required: true,
-        whitespace: false
-    }
-});
+
 export default {
     data() {
 
             let _self = this;
             let processSchema = new Schema({
                 orderNo: {
-                    label: 'Order No',
+                    label: this.$t('system.checkProcess.orderNo'),
                 },
                 approveRole: {
-                    label: 'Approve Role',
+                    label: this.$t('system.checkProcess.approveRole'),
                 },
                 nodeName: {
-                    label: 'Node Name',
+                    label: this.$t('system.checkProcess.nodeName'),
                 }
             });
-
+            let proSchema = new Schema({
+                templateName: {
+                    label: this.$t('system.checkProcess.templateName'),
+                    required: true,
+                    whitespace: false
+                }
+            })
             return {
                 processSchema: processSchema,
                 processData: processSchema.newModel(),
@@ -293,7 +292,7 @@ export default {
             }
         },
         components: {
-          Panel: require('../../components/basic/panel.vue')
+            Panel: require('../../components/basic/panel.vue')
         }
 
 };

@@ -33,27 +33,38 @@
           </v-form>
           <ui-icon-button :class="[{expended: expended},'expend-btn']" :icon="expendIcon" @click="expendSearch"></ui-icon-button>
           <div class="query-btn">
-              <ui-button class="query-btn-search mr10" color="primary" @click="searchTable">Search</ui-button>
-              <ui-button class="query-btn-reset btn-default-bd" type="flat" @click="resetTable">Reset</ui-button>
+              <ui-button class="query-btn-search mr10" color="primary" @click="searchTable">{{$t('button.search')}}</ui-button>
+              <ui-button class="query-btn-reset btn-default-bd" type="flat" @click="resetTable">{{$t('button.reset')}}</ui-button>
           </div>
       </div>
       <div class="group">
-          <ui-button class="mr10 dis-tc btn-primary-bd" @click="goAdd" color="primary" icon="fa-plus" text="Add" button-type="button"></ui-button>
-          <ui-button class="mr10 dis-tc btn-default-bd" @click="goEdit" icon="fa-pencil-square-o" type="flat" text="Edit" button-type="button"></ui-button>
-          <ui-button class="mr10 dis-tc btn-default-bd" @click="delete" icon="fa-remove" type="flat" text="Delete" button-type="button"></ui-button>
-          <ui-button class="mr10 dis-tc btn-default-bd" @click="goActivate" type="flat" text="Activate" button-type="button"></ui-button>
-          <ui-button class="dis-tc-t btn-default-bd" type="flat" show-menu-icons has-dropdown-menu button-type="button" :menu-options="shareMenuOptions" icon="fa-caret-down" :icon-right="true" open-dropdown-on="click" @menu-option-selected="menuOptionSelected" text="More"></ui-button>
+          <ui-button class="mr10 dis-tc btn-primary-bd" @click="goAdd" color="primary" icon="fa-plus" button-type="button">{{$t('button.add')}}</ui-button>
+          <ui-button class="mr10 dis-tc btn-default-bd" @click="goEdit" icon="fa-pencil-square-o" type="flat" button-type="button">{{$t('button.edit')}}</ui-button>
+          <ui-button class="mr10 dis-tc btn-default-bd" @click="deleteBtn" icon="fa-remove" type="flat" button-type="button">{{$t('button.delete')}}</ui-button>
+          <ui-button class="mr10 dis-tc btn-default-bd" @click="goActivate" type="flat" button-type="button">{{$t('button.activate')}}</ui-button>
+          <ui-button class="dis-tc-t btn-default-bd" icon="fa-caret-down" has-dropdown ref="dropdownButton" size="normal" iconPosition="right">
+                  <ui-menu
+                      contain-focus
+                      has-icons
+                      has-secondary-text
+                      slot="dropdown"
+                      :options="shareMenuOptions"
+                      @select="menuOptionSelected"
+                      @close="$refs.dropdownButton.closeDropdown()"
+                  ></ui-menu>
+                  {{$t('button.more')}}
+              </ui-button>
           <!-- 询问框 -->
-          <ui-confirm header="Delete" @confirmed="delConfirmed" :show.sync="show.delConfirm" close-on-confirm autofocus="confirm-button">
-              Do you want to delete this?
+          <ui-confirm ref="uidelconfirm" :title="$t('button.delete')" @confirm="delConfirmed" :show="show.delConfirm" close-on-confirm autofocus="confirm-button">
+              {{$t('common.deleteConfirm')}}
           </ui-confirm>
       </div>
       <div class="vuetable-wrapper pl16 pr16 pb16">
-        <vuetable :api-url="tableUrl" v-ref:orgschemetable :selected-to="selectedRow" :append-params="queryParams"  :fields="columns"  pagination-path = "" table-wrapper=".vuetable-wrapper pl16 pr16 pb16" :sort-order="sortOrder" :item-actions="itemActions" per-page="10">
+        <vuetable ref="vuetable" :api-url="tableUrl" :selected-to="selectedRow" :append-params="queryParams"  :fields="columns"  pagination-path = "" table-wrapper=".vuetable-wrapper pl16 pr16 pb16" :sort-order="sortOrder" :item-actions="itemActions" per-page="10">
         </vuetable>
       </div>
     </div>
-    <ui-confirm @confirmed="confirm.confirmedFunc" :show.sync="show.schemeConfirm" :header="confirm.confirmTitle" close-on-confirm>
+    <ui-confirm $refs="schemeconfirm" @confirm="confirm.confirmedFunc" :show="show.schemeConfirm" :title="confirm.confirmTitle" close-on-confirm>
       {{confirm.confirmText}}
     </ui-confirm>
   </div>
@@ -67,38 +78,40 @@ import {default as Message} from '../../components/basic/message';
 
 // import { formatDate } from '../util/assist';
 
-let orgSchemeSchema = new Schema({
-    schemeName: {
-        label: 'Scheme Name'
-    },
-    restrictYear: {
-        label: 'Restrict To Year',
-        mapping: function() {
-          return getDictMapping('YEAR');
-        }
-    },
-    restrictYear: {
-        label: 'Restrict To Year',
-        mapping: function() {
-          return getDictMapping('YEAR');
-        }
-    },
-    frequency: {
-        label: 'Frequency',
-        mapping: function() {
-          return getDictMapping('SCHEME_CYCLE');
-        }
-    },
-    validStatus: {
-        label: 'Status',
-        mapping: function() {
-          return getDictMapping('SCHEME_VALID_STATUS');
-        }
-    }
-});
 
 export default {
     data() {
+      let self = this;
+      let orgSchemeSchema = new Schema({
+          schemeName: {
+              label: self.$t('performance.schemeName')
+          },
+          restrictYear: {
+              label: self.$t('performance.restrictToYear'),
+              mapping: function() {
+                return getDictMapping('YEAR');
+              }
+          },
+          restrictYear: {
+              label: self.$t('performance.restrictToYear'),
+              mapping: function() {
+                return getDictMapping('YEAR');
+              }
+          },
+          frequency: {
+              label: self.$t('performance.frequency'),
+              mapping: function() {
+                return getDictMapping('SCHEME_CYCLE');
+              }
+          },
+          validStatus: {
+              label: self.$t('performance.status'),
+              mapping: function() {
+                return getDictMapping('SCHEME_VALID_STATUS');
+              }
+          }
+      });
+
           return {
               tableUrl:'/performance/personal/schemeInfos',
               orgSchemeSchema:orgSchemeSchema,
@@ -123,71 +136,61 @@ export default {
                   },
                   {
                     name: 'schemeName',
-                    title: 'Scheme Name',
+                    title: this.$t('performance.schemeName'),
                     callback: 'viewLink'
                   },
                   {
                     name: 'restrictYear',
                     dataClass: 'tr',
-                    title: 'Restrict To Year'
+                    title: this.$t('performance.restrictToYear')
                   },
                   {
                     name: 'frequencyName',
-                    title: 'Frequency'
+                    title: this.$t('performance.frequency')
                   },
                   {
                     name: 'schemePeriodName',
-                    title: 'Period'
+                    title: this.$t('performance.period')
                   },
                   {
                     name: 'startDate',
                     dataClass: 'tr',
                     titleClass: 'mw80',
-                    title: 'Start Date',
+                    title: this.$t('staff.startDate'),
                     callback:'orgFormatDate'
                   },
                   {
                     name: 'endDate',
                     dataClass: 'tr',
                     titleClass: 'mw80',
-                    title: 'End Date',
+                    title: this.$t('staff.endDate'),
                     callback:'orgFormatDate'
                   },
                   {
                     name: 'validStatusName',
-                    title: 'Status'
+                    title: this.$t('performance.status')
                   }
               ],
               shareMenuOptions: [
                 {
                     id: 'copy',
-                    text: 'Copy',
-                    icon: 'copy',
-                    secondaryText: 'Ctrl+E'
+                    label: this.$t('performance.copy')
                 },
                 {
                     id: 'inactivate',
-                    text: 'Inactivate',
-                    icon: 'inactivate',
-                    secondaryText: 'Ctrl+E'
+                    label: this.$t('performance.inactivate')
                 },
                 {
                     id: 'manageScheme',
-                    text: 'Manage Scheme',
-                    icon: 'manageScheme',
-                    secondaryText: 'Ctrl+E'
+                    label: this.$t('performance.manageScheme')
                 },
                 {
                     id: 'viewPlanStatistics',
-                    text: 'View Plan Statistics',
-                    icon: 'viewPlanStatistics',
-                    secondaryText: 'Ctrl+E'
+                    label: this.$t('performance.viewPlanStatistics')
                 },
                 {
                     id: 'viewResultStatistics',
-                    text: 'View Result Statistics',
-                    icon: 'viewResultStatistics',
-                    secondaryText: 'Ctrl+E'
+                    label: this.$t('performance.viewResultStatistics')
                 }
               ]
             }
@@ -207,7 +210,7 @@ export default {
             ]
           },
           checkedRows() {
-            let tableData = this.$refs.orgschemetable.tableData;
+            let tableData = this.$refs.vuetable.tableData;
             let result = [];
             for(let item of this.selectedRow) {
               result.push(tableData[item]);
@@ -222,25 +225,23 @@ export default {
             return ids;
           }
         },
-        ready() {},
-        attached() {},
         methods: {
           searchTable() {
-            this.$broadcast('vuetable:refresh');
+            this.$refs.vuetable.reloadData();
           },
           resetTable() {
             this.orgScheme.reset();
             this.$nextTick(()=>{
-              this.$broadcast('vuetable:refresh');
+              this.$refs.vuetable.reloadData();
             })
           },
           expendSearch() {
             this.expended = !this.expended;
             this.expendIcon = this.expended ? 'fa-angle-double-up' : 'fa-angle-double-down';
-            this.$broadcast('vuetable:refresh');
+            this.$refs.vuetable.reloadData();
           },
           goAdd() {
-            this.$router.go({
+            this.$router.push({
                 name: 'addIndividualScheme',
                 params: { step: 'basic',id:0 }
             });
@@ -249,7 +250,7 @@ export default {
             let _self = this;
             if(!this.checkSelected('edit')) return ;
             if (_self.checkedRows[0].schemeInfoId) {
-                _self.$router.go({
+                _self.$router.push({
                     name: 'editIndividualScheme',
                     params: {
                         id: _self.checkedRows[0].schemeInfoId,
@@ -262,27 +263,9 @@ export default {
             if(!this.checkSelected('activate')) return ;
             this.confirmAction('activate');
           },
-          // delete() {
-          //
-          //   this.show.delConfirm = true;
-          // },
-          // delConfirmed() {
-          //   if(!this.checkSelected('delete')) return;
-          //
-          //       this.$http.delete(`/performance/schemeInfo/delete`,{
-          //         params:{
-          //           schemeInfoIds:this.selectedRow
-          //         }
-          //       }).then((response) => {
-          //         this.show.delConfirm = false;
-          //         Message({type: 'error',message: this.$t('common.deleteSuccess')});
-          //         this.$broadcast('vuetable:refresh');
-          //       });
-          // },
-          delete() {
-            // debugger;
+          deleteBtn() {
             if(!this.checkSelected('delete')) return;
-            this.show.delConfirm = true;
+            this.$refs.uidelconfirm.open()
           },
           delConfirmed() {
             let _self = this;
@@ -291,14 +274,14 @@ export default {
               ids.push(item.schemeInfoId);
             }
             _self.$http.delete(`/performance/schemeInfo/delete`,{params:{schemeInfoIds:ids}}).then((response) => {
-              _self.show.delConfirm = false;
+              this.$refs.uidelconfirm.close()
               Message({type: 'success',message:this.$t('common.deleteSuccess')});
-              _self.$broadcast('vuetable:refresh');
+              _self.$refs.vuetable.reloadData();
             });
           },
           forwardUrl(pathName, params) {
               params = params || {};
-              this.$router.go({
+              this.$router.push({
                   name: pathName,
                   params: params
               });
@@ -343,39 +326,39 @@ export default {
           },
           confirmAction(actionCode) {
             if(actionCode=="inActivate") {
-              this.confirm.confirmTitle = "Important Tip";
-              this.confirm.confirmText = "Once scheme(s) get inactivated, all employees in the scheme(s) will lose their performance record. Are you sure to inactivate the scheme(s)?";
+              this.confirm.confirmTitle = this.$t('performance.header.importantTip');
+              this.confirm.confirmText = this.$t('performance.message.schemeInactivated1');
               this.confirm.confirmedFunc = this.handleInactivate;
             } else if (actionCode=="activate") {
-              this.confirm.confirmTitle = "Important Tip";
+              this.confirm.confirmTitle = this.$t('performance.header.importantTip');
               if(this.checkedRows[0].validStatus == 0) {
-                this.confirm.confirmText = "Once scheme(s) get activated,  all employees in this scheme would continue to do their performance task. Are you sure to activate scheme(s)?";
+                this.confirm.confirmText = this.$t('performance.message.schemeInactivated2');
               } else if (this.checkedRows[0].validStatus == 2) {
-                this.confirm.confirmText = "Once scheme(s) get activated, it would neither be edited nor deleted. Are you sure to activate scheme(s)?";
+                this.confirm.confirmText = this.$t('performance.message.schemeInactivated3');
               }
               this.confirm.confirmedFunc = this.handleActivate;
             }
             this.$nextTick(function(){
-              this.show.schemeConfirm = true;
+              this.$refs.schemeconfirm.open();
             })
           },
           handleCopy() {
             let schemeId = this.checkedRows[0].schemeInfoId;
             this.$http.post(`/performance/schemes/${schemeId}/copy`).then((response) => {
               Message({type: 'success',message: this.$t('performance.message.copySuccess')})
-              this.$broadcast('vuetable:reload');
+              this.$refs.vuetable.reloadData();
             });
           },
           handleActivate() {
             this.$http.put(`/performance/schemes/activate`,{schemeIds:this.checkedIds},{emulateJSON: true}).then((response) => {
                 Message({type: 'success',message: this.$t('performance.message.activateSuccess')})
-                this.$broadcast('vuetable:reload');
+                this.$refs.vuetable.reloadData();
             });
           },
           handleInactivate() {
             this.$http.put(`/performance/schemes/inactivate`,{schemeIds:this.checkedIds},{emulateJSON: true}).then((response) => {
               Message({type: 'success',message: this.$t('performance.message.InactivateSuccess')})
-              this.$broadcast('vuetable:reload');
+              this.$refs.vuetable.reloadData();
             });
           },
           handleManageScheme() {

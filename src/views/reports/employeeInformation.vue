@@ -47,51 +47,51 @@
     .vuetable-pagination {
         margin: 16px 0;
     }
-
 }
 
 </style>
 
 <template lang="html">
+<div>
+    <div class="content-wrap bg-w ihr-reports-employeeInformation pt20">
 
-<div class="content-wrap bg-w ihr-reports-employeeInformation pt20">
-    <position-selector :show.sync="show"></position-selector>
-    <div class="search-area">
-        <v-form :model="information" :schema="informationSchema" label-width="170" label-suffix="" :cols="3" form-style="indicator-form">
-            <text-field property='empInfo' editor-width="175" placeholder="Search by Employee Name,ID"></text-field>
-            <text-field property="positionName" type="selector" :show.sync="show" :hide-label="false" editor-width="175"></text-field>
-            <select-field property='employeeStatus' :mapping="dist.currentStatus" editor-width="175"></select-field>
-            <select-field v-show="expended" property='gender' :mapping="dist.gender" editor-width="175"></select-field>
-            <select-field v-show="expended" property='mibGrade' :mapping="dist.mibrank" editor-width="175"></select-field>
-            <select-field v-show="expended" property='highestEducationLevel' :mapping="dist.degree" editor-width="175"></select-field>
-            <text-field v-show="expended" property='major' editor-width="175"></text-field>
-            <text-field v-show="expended" property='institution' editor-width="175"></text-field>
-            <select-field v-show="expended" property='positionCategory' :mapping="dist.positionCategory" editor-width="175"></select-field>
-            <text-field v-show="expended" property="orgUnitName" type="selector" :show.sync="org" editor-width="175"></text-field>
-            <select-field v-show="expended" property='employementCategory' :mapping="dist.employmentCategory" editor-width="175"></select-field>
-        </v-form>
-        <ui-icon-button :class="['expend-btn']" :icon="expendIcon" @click="expendSearch"></ui-icon-button>
-        <div class="query-btn">
-            <ui-button class="query-btn-search mr10" color="primary" @click="search">Search</ui-button>
-            <ui-button class="query-btn-reset btn-default-bd" type="flat" @click="reset">Reset</ui-button>
-        </div>
-    </div>
-    <div class="group"></div>
-    <div class="leftRight-panel bg-f5f5f5 mt16 fix">
-        <div class="right-panel pl16 pr16">
-            <div class="right-panel-tit pb16 tc">
-                <span>Basic Information</span>
-            </div>
-            <ui-button class="dis-tc-t btn-default-bd download" icon="fa-download" type="flat" text="Download" @click="download"></ui-button>
-            <div class="vuetable-wrapper">
-                <vuetable api-url="/report/EmpBasicInfo" :selected-to="selectedRow" :append-params="moreParams" :fields="columns" pagination-path="" table-wrapper=".vuetable-wrapper" :sort-order="sortOrder" :item-actions="itemActions" per-page="10">
-                </vuetable>
+        <position-selector :show.sync="show"></position-selector>
+        <div class="search-area">
+            <v-form :model="information" :schema="informationSchema" label-width="170" label-suffix="" :cols="3" form-style="indicator-form">
+                <text-field property='empInfo' editor-width="175" :placeholder="$t('reports.message.searchPlaceholder')"></text-field>
+                <text-field property="positionName" type="selector" :show.sync="show" :hide-label="false" editor-width="175"></text-field>
+                <select-field property='employeeStatus' :mapping="dist.currentStatus" editor-width="175"></select-field>
+                <select-field v-show="expended" property='gender' :mapping="dist.gender" editor-width="175"></select-field>
+                <select-field v-show="expended" property='mibGrade' :mapping="dist.mibrank" editor-width="175"></select-field>
+                <select-field v-show="expended" property='highestEducationLevel' :mapping="dist.degree" editor-width="175"></select-field>
+                <text-field v-show="expended" property='major' editor-width="175"></text-field>
+                <text-field v-show="expended" property='institution' editor-width="175"></text-field>
+                <select-field v-show="expended" property='positionCategory' :mapping="dist.positionCategory" editor-width="175"></select-field>
+                <text-field v-show="expended" property="orgUnitName" type="selector" :show.sync="org" editor-width="175"></text-field>
+                <select-field v-show="expended" property='employementCategory' :mapping="dist.employmentCategory" editor-width="175"></select-field>
+            </v-form>
+            <ui-icon-button :class="['expend-btn']" :icon="expendIcon" @click="expendSearch"></ui-icon-button>
+            <div class="query-btn">
+                <ui-button class="query-btn-search mr10" color="primary" @click="search">{{$t('button.search')}}</ui-button>
+                <ui-button class="query-btn-reset btn-default-bd" type="flat" @click="reset">{{$t('button.reset')}}</ui-button>
             </div>
         </div>
+        <div class="group"></div>
+        <div class="leftRight-panel bg-f5f5f5 mt16 fix">
+            <div class="right-panel pl16 pr16">
+                <div class="right-panel-tit pb16 tc">
+                    <span>{{$t('reports.labelText.basicInformation')}}</span>
+                </div>
+                <ui-button class="dis-tc-t btn-default-bd download" icon="fa-download" type="flat" :text="$t('button.download')" @click="download"></ui-button>
+                <div class="vuetable-wrapper">
+                    <vuetable api-url="/report/EmpBasicInfo" :selected-to="selectedRow" :append-params="moreParams" :fields="columns" pagination-path="" table-wrapper=".vuetable-wrapper" :sort-order="sortOrder" :item-actions="itemActions" per-page="10">
+                    </vuetable>
+                </div>
+            </div>
+        </div>
     </div>
+    <organization-selector :show.sync="org"></organization-selector>
 </div>
-<organization-selector :show.sync="org"></organization-selector>
-
 </template>
 
 <script>
@@ -109,54 +109,57 @@ import {
 }
 from '../../schema/index';
 
-let informationSchema = new Schema({
-    empInfo: {
-        label: 'Employee',
-        required: false,
-        whitespace: false,
-    },
-    positionId: {},
-    positionName: {
-        label: 'Position',
-        required: false,
-        whitespace: false,
-    },
-    employeeStatus: {
-        label: 'Current Status'
-    },
-    gender: {
-        label: 'Gender'
-    },
-    mibGrade: {
-        label: 'MIB Grade'
-    },
-    highestEducationLevel: {
-        label: 'Highest Level Education'
-    },
-    major: {
-        label: 'Major',
-        required: false,
-        whitespace: false,
-    },
-    institution: {
-        label: 'Insitution',
-        required: false,
-        whitespace: false,
-    },
-    positionCategory: {
-        label: 'Position Category'
-    },
-    orgUnitName: {
-        label: 'Organization'
-    },
-    unitId: {},
-    employementCategory: {
-        label: 'Employment Category'
-    }
-});
+
 export default {
     data() {
             let _self = this;
+
+            let informationSchema = new Schema({
+                empInfo: {
+                    label: _self.$t('reports.labelText.employee'),
+                    required: false,
+                    whitespace: false,
+                },
+                positionId: {},
+                positionName: {
+                    label: _self.$t('reports.labelText.position'),
+                    required: false,
+                    whitespace: false,
+                },
+                employeeStatus: {
+                    label: _self.$t('reports.labelText.employee')
+                },
+                gender: {
+                    label: _self.$t('reports.labelText.gender')
+                },
+                mibGrade: {
+                    label: _self.$t('reports.labelText.MIBGrade')
+                },
+                highestEducationLevel: {
+                    label: _self.$t('reports.labelText.highestEducationLevel')
+                },
+                major: {
+                    label: _self.$t('reports.labelText.major'),
+                    required: false,
+                    whitespace: false,
+                },
+                institution: {
+                    label: _self.$t('reports.labelText.institution'),
+                    required: false,
+                    whitespace: false,
+                },
+                positionCategory: {
+                    label: _self.$t('reports.labelText.positionCategory')
+                },
+                orgUnitName: {
+                    label: _self.$t('reports.labelText.organization')
+                },
+                unitId: {},
+                employementCategory: {
+                    label: _self.$t('reports.labelText.employmentCategory')
+                }
+            });
+
             return {
                 show: {
                     modal: false
@@ -170,15 +173,6 @@ export default {
                     modal: false
                 },
                 tableTotal: '',
-                dist: {
-                    gender: {},
-                    currentStatus: {},
-                    employmentCategory: {},
-                    mibrank: {},
-                    degree: {},
-                    positionCategory: {},
-                    employeeCategory: {},
-                },
                 tableUrl: '', //vuetable url
                 unitId: '0', //root node Object
                 levelConfig: {
@@ -208,109 +202,145 @@ export default {
                 showCheckbox: false,
                 columns: [{
                     name: 'fullName',
-                    title: 'Name',
+                    title: _self.$t('reports.labelText.name'),
                     sortField: 'fullName'
                 }, {
                     name: 'idType',
-                    title: ' ID Type',
-                    sortField: 'idType'
+                    title: _self.$t('reports.labelText.IDType'),
+                    sortField: 'idType',
+                    callback: function(value) {
+                        return _self.fixidType(value);
+                    }
                 }, {
                     name: 'idNo',
-                    title: 'ID NO.',
+                    title: _self.$t('reports.labelText.IDNumber'),
                     sortField: 'idNo'
                 }, {
                     name: 'gender',
-                    title: 'Gender',
-                    sortField: 'gender'
+                    title: _self.$t('reports.labelText.gender'),
+                    sortField: 'gender',
+                    callback: function(value) {
+                        return _self.fixgender(value);
+                    }
                 }, {
                     name: 'unitShortName',
-                    title: 'Organization',
+                    title: _self.$t('reports.labelText.organization'),
                     sortField: 'unitShortName'
                 }, {
                     name: 'abbreviation',
-                    title: 'Abbreviation',
+                    title: _self.$t('reports.labelText.abbreviation'),
                     sortField: 'abbreviation'
                 }, {
                     name: 'positionName',
-                    title: 'Position',
+                    title: _self.$t('reports.labelText.position'),
                     sortField: 'positionName'
                 }, {
                     name: 'mibGrade',
-                    title: 'MIB Grade',
+                    title: _self.$t('reports.labelText.MIBGrade'),
                     sortField: 'mibGrade'
                 }, {
                     name: 'localGrade',
-                    title: 'Local Grade',
+                    title: _self.$t('reports.labelText.localGrade'),
                     sortField: 'localGrade'
                 }, {
                     name: 'employeeStatus',
-                    title: 'Current Status',
-                    sortField: 'employeeStatus'
+                    title: _self.$t('reports.labelText.currentStatus'),
+                    sortField: 'employeeStatus',
+                    callback: function(value) {
+                        return _self.fixemployeeStatus(value);
+                    }
                 }, {
                     name: 'hireDate',
-                    title: 'Employement Date',
+                    title: _self.$t('reports.labelText.employementDate'),
                     dataClass: 'tr',
                     titleClass: 'mw80',
                     sortField: 'hireDate'
                 }, {
                     name: 'takeWorkTime',
-                    title: 'Take Work Time',
+                    title: _self.$t('reports.labelText.takeWorkTime'),
                     dataClass: 'tr',
                     titleClass: 'mw80',
                     sortField: 'takeWorkTime'
                 }, {
                     name: 'highestEducationLevel',
-                    title: 'Highest Education Level',
-                    sortField: 'highestEducationLevel'
+                    title: _self.$t('reports.labelText.highestEducationLevel'),
+                    sortField: 'highestEducationLevel',
+                    callback: function(value) {
+                        return _self.fixeducationLevel(value);
+                    }
                 }, {
                     name: 'institution',
-                    title: 'Institution',
+                    title: _self.$t('reports.labelText.institution'),
                     sortField: 'institution'
                 }, {
                     name: 'major',
-                    title: 'Major',
+                    title: _self.$t('reports.labelText.major'),
                     sortField: 'major'
                 }, {
                     name: 'graduationDate',
-                    title: 'Graduation Date',
+                    title: _self.$t('reports.labelText.graduationDate'),
                     dataClass: 'tr',
                     titleClass: 'mw80',
                     sortField: 'graduationDate'
                 }, {
                     name: 'positionCategory',
-                    title: 'Position Category',
-                    sortField: 'positionCategory'
+                    title: _self.$t('reports.labelText.positionCategory'),
+                    sortField: 'positionCategory',
+                    callback: function(value) {
+                        return _self.fixpositionCategory(value);
+                    }
                 }, {
                     name: 'employementCategory',
-                    title: 'Employment Category',
-                    sortField: 'employementCategory'
+                    title: _self.$t('reports.labelText.employmentCategory'),
+                    sortField: 'employementCategory',
+                    callback: function(value) {
+                        return _self.fixemployeeCategory(value);
+                    }
                 }],
+                dist: {
+                    idType: {},
+                    gender: {},
+                    employeeStatus: {},
+                    positionCategory: {},
+                    employeeCategory: {},
+                    currentStatus: {},
+                    employmentCategory: {},
+                    mibrank: {},
+                    degree: {},
+                    employeeCategory: {},
+                },
                 moreParams: [],
                 moreParamsKeys: ['empInfo', 'positionName', 'employeeStatus', 'gender', 'mibGrade', 'highestEducationLevel', 'major', 'institution', 'positionCategory', 'unitId', 'employementCategory']
             }
         },
         created() {
-            let dictCodes = ['GENDER', 'MIB_RANK', 'DEGREE', 'POSITION_CATEGORY', 'EMPLOYEE_CATEGORY'];
+            let dictCodes = ['ID_TYPE', 'GENDER', 'EMPLOYEE_STATUS', 'POSITION_CATEGORY', 'EMPLOYEE_CATEGORY', 'MIB_RANK', 'DEGREE'];
             this.$http.post('/public-access/dicts/items', {
                 dictCodes
             }, {
                 emulateJSON: true
             }).then((response) => {
                 for (var d of response.data) {
+                    if (d.dictName === 'ID_TYPE') {
+                        this.dist.idType = transformDict(d.dict);
+                    }
                     if (d.dictName === 'GENDER') {
                         this.dist.gender = transformDict(d.dict);
                     }
-                    if (d.dictName === 'MIB_RANK') {
-                        this.dist.mibrank = transformDict(d.dict);
-                    }
-                    if (d.dictName === 'DEGREE') {
-                        this.dist.degree = transformDict(d.dict);
+                    if (d.dictName === 'EMPLOYEE_STATUS') {
+                        this.dist.employeeStatus = transformDict(d.dict);
                     }
                     if (d.dictName === 'POSITION_CATEGORY') {
                         this.dist.positionCategory = transformDict(d.dict);
                     }
                     if (d.dictName === 'EMPLOYEE_CATEGORY') {
                         this.dist.employeeCategory = transformDict(d.dict);
+                    }
+                    if (d.dictName === 'MIB_RANK') {
+                        this.dist.mibrank = transformDict(d.dict);
+                    }
+                    if (d.dictName === 'DEGREE') {
+                        this.dist.degree = transformDict(d.dict);
                     }
                 }
             })
@@ -337,7 +367,58 @@ export default {
             })
         },
         methods: {
-            handleMoreParams() {
+            fixDist(value, option) {
+                    var dist = {};
+                    switch (option) {
+                        case 'ID_TYPE':
+                            dist = this.dist.idType || {};
+                            break;
+                        case 'GENDER':
+                            dist = this.dist.gender || {};
+                            break;
+                        case 'EMPLOYEE_STATUS':
+                            dist = this.dist.employeeStatus || {};
+                            break;
+                        case 'POSITION_CATEGORY':
+                            dist = this.dist.positionCategory || {};
+                            break;
+                        case 'EMPLOYEE_CATEGORY':
+                            dist = this.dist.employeeCategory || {};
+                            break;
+                        case 'DEGREE':
+                            dist = this.dist.degree || {};
+                            break;
+                    }
+                    for (let key of Object.keys(dist)) {
+                        if (dist[key] === value) {
+                            value = key;
+                            break;
+                        }
+                    }
+                    return value;
+                },
+                fixidType(value) {
+                    return this.fixDist(value, 'ID_TYPE');
+                },
+                fixgender(value) {
+                    return this.fixDist(value, 'GENDER');
+                },
+                fixemployeeStatus(value) {
+                    return this.fixDist(value, 'EMPLOYEE_STATUS');
+                },
+                fixpositionCategory(value) {
+                    return this.fixDist(value, 'POSITION_CATEGORY');
+                },
+                fixemployeeCategory(value) {
+                    if (value === "1" || value === "4") {
+                        return;
+                    }
+                    return this.fixDist(value, 'EMPLOYEE_CATEGORY');
+                },
+                fixeducationLevel(value) {
+                    return this.fixDist(value, 'DEGREE');
+                },
+                handleMoreParams() {
                     this.moreParams = [];
                     for (let i = 0, len = this.moreParamsKeys.length; i < len; i++) {
                         let key = this.moreParamsKeys[i];

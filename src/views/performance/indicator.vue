@@ -12,12 +12,9 @@
 
     .indicator-form {
       height: 46px;
-      overflow: hidden;
-      transition: height .3s linear;
     }
     .indicator-form.expended {
       height: 92px;
-      transition: height .3s linear;
     }
 
     .mr20 {
@@ -31,38 +28,49 @@
   <div class="content-wrap bg-w ihr-staff-indicator">
     <div class="mb20 pt20">
       <div class="search-area">
-          <v-form :class="{expended: expended}" :model="indicator" :schema="indicatorSchema" label-width="130" :cols="3">
+          <v-form :class="{expended: expended}" :model="indicator" :schema="indicatorSchema" label-width="130" :cols="3" form-style="indicator-form">
               <text-field property='indicatorName' editor-width="150"></text-field>
               <select-field property='indicatorCategory' editor-width="150"></select-field>
               <select-field property='indicatorFunction' editor-width="150"></select-field>
-              <select-field v-show = "expended" property='subFunction' editor-width="150"></select-field>
+              <select-field v-show="expended" property='subFunction' editor-width="150"></select-field>
           </v-form>
           <ui-icon-button :class="[{expended: expended},'expend-btn']" :icon="expendIcon" @click="expendSearch"></ui-icon-button>
           <div class="query-btn">
-              <ui-button class="query-btn-search mr10" color="primary" @click="searchTable">Search</ui-button>
-              <ui-button class="query-btn-reset btn-default-bd" type="flat" @click="resetTable">Reset</ui-button>
+              <ui-button class="query-btn-search mr10" color="primary" @click="searchTable">{{$t('button.search')}}</ui-button>
+              <ui-button class="query-btn-reset btn-default-bd" type="flat" @click="resetTable">{{$t('button.reset')}}</ui-button>
           </div>
       </div>
       <div class="group">
-          <ui-button class="mr10 dis-tc btn-primary-bd" @click="goAdd" color="primary" icon="fa-plus" text="Add" button-type="button"></ui-button>
-          <ui-button class="mr10 dis-tc btn-default-bd" @click="goEdit" icon="fa-pencil-square-o" type="flat" text="Edit" button-type="button"></ui-button>
-          <ui-button class="mr10 dis-tc btn-default-bd" @click="delete" icon="fa-remove" type="flat" text="Delete" button-type="button"></ui-button>
-          <ui-button class="dis-tc-t btn-default-bd" type="flat" @opened="openMenu" show-menu-icons has-dropdown-menu button-type="button" :menu-options="shareMenuOptions" icon="fa-caret-down" :icon-right="true" open-dropdown-on="click" @menu-option-selected="menuOptionSelected" text="More"></ui-button>
-          <file-upload title="upload" id="excelFile" class="menu-option-upload file-upload" name="file" :post-action="files.url" :extensions="files.extensions" :accept="files.accept" :multiple="files.multiple" :size="files.size" v-ref:upload :drop="files.drop"></file-upload>
+          <ui-button class="mr10 dis-tc btn-primary-bd" @click="goAdd" color="primary" icon="fa-plus" button-type="button">{{$t('button.add')}}</ui-button>
+          <ui-button class="mr10 dis-tc btn-default-bd" @click="goEdit" icon="fa-pencil-square-o" type="flat" button-type="button">{{$t('button.edit')}}</ui-button>
+          <ui-button class="mr10 dis-tc btn-default-bd" @click="deleteBtn" icon="fa-remove" type="flat" button-type="button">{{$t('button.delete')}}</ui-button>
+          <ui-button class="dis-tc-t btn-default-bd" icon="fa-caret-down" @dropdown-open="openMenu"  has-dropdown ref="dropdownButton" size="normal" iconPosition="right">
+                  <ui-menu
+                      contain-focus
+                      has-icons
+                      has-secondary-text
+                      slot="dropdown"
+                      :options="shareMenuOptions"
+                      @select="menuOptionSelected"
+                      @close="$refs.dropdownButton.closeDropdown()"
+                  ></ui-menu>
+                  {{$t('button.more')}}
+              </ui-button>
+          <file-upload @addFileUpload="addFileUpload" @afterFileUpload="afterFileUpload" :title="$t('button.upload')" id="excelFile" class="menu-option-upload file-upload" name="file" :post-action="files.url" :extensions="files.extensions" :accept="files.accept" :multiple="files.multiple" :size="files.size" ref="upload" :drop="files.drop"></file-upload>
           <!-- 询问框 -->
-          <ui-confirm header="Delete Indicator" @confirmed="delConfirmed" :show.sync="show.delConfirm" close-on-confirm autofocus="confirm-button">
-              Do you want to delete this?
+          <ui-confirm ref="delconfirm" :title="$t('button.delete')" @confirm="delConfirmed" :show="show.delConfirm" close-on-confirm autofocus="confirm-button">
+              {{$t('common.deleteConfirm')}}
           </ui-confirm>
       </div>
       <div class="vuetable-wrapper pl16 pr16 pb16">
-        <vuetable :api-url="tableUrl" :selected-to="selectedRow" :append-params="queryParams"  :fields="columns"  pagination-path = "" table-wrapper=".vuetable-wrapper pl16 pr16 pb16" :sort-order="sortOrder" :item-actions="itemActions" per-page="10">
+        <vuetable ref="vuetable" :api-url="tableUrl" :selected-to="selectedRow" :append-params="queryParams"  :fields="columns"  pagination-path = "" table-wrapper=".vuetable-wrapper pl16 pr16 pb16" :sort-order="sortOrder" :item-actions="itemActions" per-page="10">
         </vuetable>
       </div>
     </div>
     <!--上传-->
     <div class = "uploadInput dn">
-      <form v-el:fileform>
-        <input v-el:excelupload type="file" name="messageAttachment" value="" @change="changeFile($event)">
+      <form ref="fileform">
+        <input ref="excelupload" type="file" name="messageAttachment" value="" @change="changeFile($event)">
       </form>
     </div>
   </div>
@@ -78,32 +86,34 @@ from '../../schema/index';
 import { getDictMapping,downloadFile } from '../../util/assist';
 import {default as Message} from '../../components/basic/message';
 
-let indicatorSchema = new Schema({
-    indicatorName: {
-        label: ' Indicator Name'
-    },
-    indicatorCategory: {
-        label: 'Indicator Type',
-        mapping: function(){
-          return getDictMapping('INDICATOR_CATEGORY');
-        },
-    },
-    indicatorFunction: {
-        label: 'Function',
-        mapping: function(){
-          return getDictMapping('INDICATOR_FUNCTION');
-        }
-    },
-    subFunction: {
-        label: 'Sub-Function',
-        mapping: function(){
-          return getDictMapping('SUB_FUNCTION');
-        }
-    }
-});
 
 export default {
     data() {
+      let self = this;
+      let indicatorSchema = new Schema({
+          indicatorName: {
+              label: self.$t('performance.indicatorName')
+          },
+          indicatorCategory: {
+              label: self.$t('performance.indicatorType'),
+              mapping: function(){
+                return getDictMapping('INDICATOR_CATEGORY');
+              },
+          },
+          indicatorFunction: {
+              label: self.$t('performance.function'),
+              mapping: function(){
+                return getDictMapping('INDICATOR_FUNCTION');
+              }
+          },
+          subFunction: {
+              label: self.$t('performance.subFunction'),
+              mapping: function(){
+                return getDictMapping('SUB_FUNCTION');
+              }
+          }
+      });
+
           return {
               tableUrl:'/performance/indicators/',
               indicatorSchema:indicatorSchema,
@@ -115,8 +125,6 @@ export default {
                 size: 1024 * 1024 * 2,
                 multiple: false,
                 extensions: '',
-                // extensions: ['gif','jpg','png'],
-                // extensions: /\.(gif|png|jpg)$/i,
                 files: [],
                 upload: {},
                 drop: true,
@@ -147,49 +155,43 @@ export default {
                   },
                   {
                     name: 'indicatorName',
-                    title: 'Indicator Name'
+                    title: this.$t('performance.indicatorName')
                   },
                   {
                     name: 'unit',
-                    title: 'Unit'
+                    title: this.$t('performance.unit')
                   },
                   {
                     name: 'indicatorCategoryName',
-                    title: 'Indicator Type'
+                    title: this.$t('performance.indicatorType')
                   },
                   {
                     name: 'indicatorFunctionName',
-                    title: 'Function'
+                    title: this.$t('performance.function')
                   },
                   {
                     name: 'subFunctionName',
-                    title: 'Sub-Function'
+                    title: this.$t('performance.subFunction')
                   },
                   {
                     name: 'formula',
-                    title: 'Criteria'
+                    title: this.$t('performance.criteria')
                   },
                   {
                     name: 'dataSources',
-                    title: 'Data Source'
+                    title: this.$t('performance.dataSources')
                   }
               ],
               shareMenuOptions: [
                 {
                     id: 'upload',
-                    text: this.$t('button.batchImport'),
-                    icon: 'content_copy',
-                    secondaryText: 'Ctrl+D'
+                    label: this.$t('button.batchImport')
                 }, {
                     id: 'downloadTemplate',
-                    text: 'Download template',
-                    icon: 'content_copy',
-                    secondaryText: 'Ctrl+D'
+                    label: this.$t('performance.downloadtemplate')
                 },{
                   id: 'download',
-                  text:  this.$t('button.download'),
-                  icon: 'edit',
-                  secondaryText: 'Ctrl+E'
+                  label:  this.$t('button.download')
                 }
               ]
             }
@@ -208,8 +210,6 @@ export default {
             ]
           }
         },
-        ready() {},
-        attached() {},
         methods: {
           openMenu() {
             var el = document.getElementById('excelFile');
@@ -217,21 +217,21 @@ export default {
             document.getElementsByClassName('ui-menu-option')[0].appendChild(el);
           },
           searchTable() {
-            this.$broadcast('vuetable:refresh');
+            this.$refs.vuetable.reloadData();
           },
           resetTable() {
             this.indicator.reset();
             this.$nextTick(()=>{
-              this.$broadcast('vuetable:refresh');
+              this.$refs.vuetable.reloadData();
             })
           },
           expendSearch() {
             this.expended = !this.expended;
             this.expendIcon = this.expended ? 'fa-angle-double-up' : 'fa-angle-double-down';
-            this.$broadcast('vuetable:refresh');
+            this.$refs.vuetable.reloadData();
           },
           goAdd() {
-            this.$router.go({
+            this.$router.push({
                 name: 'addIndicator',
             });
           },
@@ -239,7 +239,7 @@ export default {
             let _self = this;
             if(!this.checkSelected('edit')) return;
             if (_self.selectedRow[0]) {
-                _self.$router.go({
+                _self.$router.push({
                   name: 'editIndicator',
                   params: {
                       id: _self.selectedRow[0]
@@ -249,21 +249,21 @@ export default {
                 _self.show.genericConfirm = true;
             }
           },
-          delete() {
+          deleteBtn() {
             if(!this.checkSelected('delete')) return;
-            this.show.delConfirm = true;
+            this.$refs.delconfirm.open();
           },
           delConfirmed() {
             let _self = this;
             let selectedIds  =_self.selectedRow;
             if (selectedIds) {
                 this.$http.delete(`/performance/indicators/${selectedIds}`).then((response) => {
-                  _self.show.delConfirm = false;
+                  _self.$refs.delconfirm.close();
                   Message({
                       type: 'success',
                       message: this.$t('common.deleteSuccess')
                   });
-                  this.$broadcast('vuetable:refresh');
+                  this.$refs.vuetable.reloadData();
                 });
             }
           },
@@ -287,27 +287,6 @@ export default {
             }
             return true;
           },
-          // changeFile(e) {
-          //   let formdata =  new FormData();
-          //   let files = this.parseFiles(e.srcElement.files);
-          //   this.$els.fileform.reset();
-          //   formdata.append('file',files[0]);
-          //   this.$http.post('/performance/indicators/importIndicatorInfo',formdata).then((response)=>{
-          //     if(response.body === 'true' || response.body === true) {
-          //       Message({
-          //         type: 'success',
-          //         message: this.$t('performance.message.uploadSuccess')
-          //       });
-          //       this.$broadcast('vuetable:refresh');
-          //     } else {
-          //       downloadFile('/system/attachment/downloadFile', {attachmentId: response.body});
-          //       Message({
-          //           type: 'error',
-          //           message: this.$t('performance.message.importFail')
-          //       });
-          //     }
-          //   })
-          // },
           downloadTemplate() {
             downloadFile('/performance/indicators/dowloadIndicatorTemplate');
           },
@@ -320,15 +299,6 @@ export default {
             }
 
             downloadFile('/performance/indicators/exportIndicatorInfo',exportParam);
-            // this.$http.get('/performance/indicators/exportIndicatorInfo',{params:exportParam}).then((response)=>{
-            //   debugger;
-            //   var headers = response.headers;
-            //   var blob = new Blob([response.data],{type:headers['content-type']});
-            //   var link = document.createElement('a');
-            //   link.href = window.URL.createObjectURL(blob);
-            //   link.download = "Filename.xls";
-            //   link.click();
-            // })
           },
           parseFiles(rawFiles) {
             return Array.prototype.slice.call(rawFiles, 0);
@@ -338,7 +308,6 @@ export default {
             if (!option) return;
             switch (option.id) {
               case 'upload' :
-                // this.$els.excelupload.click();
                 break;
               case 'download' :
                 this.downloadAsExcel();
@@ -347,9 +316,7 @@ export default {
                 this.downloadTemplate();
                 break;
             }
-          }
-        },
-        events: {
+          },
           addFileUpload(file, component) {
             if (this.files.auto) {
               component.active = true;
@@ -361,7 +328,7 @@ export default {
                 type: 'success',
                 message: this.$t('performance.message.uploadSuccess')
               });
-              this.$broadcast('vuetable:refresh');
+              this.$refs.vuetable.reloadData();
             } else {
               if (!file.error) {
                 downloadFile('/system/attachment/downloadFile', {attachmentId: file.data});

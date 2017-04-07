@@ -1,53 +1,53 @@
 <style lang="less">
-.panel-b {
-    border: 1px solid #ecedee;
-}
-
-.panel-header {
-    overflow: hidden;
-    padding-left: 16px;
-    height: 48px;
-    color: #222;
-    font-size: 18px;
-    line-height: 48px;
-    border-bottom: solid 1px #e8e8e8;
-    font-weight: bold;
-}
-
-.org-form {
-    padding: 20px;
-    margin-bottom: 26px;
-}
-
-.cell.city {
-    width: 202px;
-}
-
-.cell.state {
-    width: 192px;
-}
-
-.cell.country {
-    width: 192px;
-}
-
-.up-class {
-    width: 585px !important;
-}
-
-.ihr-updateOrganization {
-    .deletePosition {
-        position: absolute;
-        top: 0;
-        left: 560px;
+    .panel-b {
+        border: 1px solid #ecedee;
     }
-    .inrement-text {
-        width: 100%;
-        overflow: initial;
-        text-overflow: initial;
-        white-space: initial;
+
+    .panel-header {
+        overflow: hidden;
+        padding-left: 16px;
+        height: 48px;
+        color: #222;
+        font-size: 18px;
+        line-height: 48px;
+        border-bottom: solid 1px #e8e8e8;
+        font-weight: bold;
     }
-}
+
+    .org-form {
+        padding: 20px;
+        margin-bottom: 26px;
+    }
+
+    .cell.city {
+        width: 202px;
+    }
+
+    .cell.state {
+        width: 192px;
+    }
+
+    .cell.country {
+        width: 192px;
+    }
+
+    .up-class {
+        width: 585px !important;
+    }
+
+    .ihr-updateOrganization {
+        .deletePosition {
+            position: absolute;
+            top: 0;
+            left: 560px;
+        }
+        .inrement-text {
+            width: 100%;
+            overflow: initial;
+            text-overflow: initial;
+            white-space: initial;
+        }
+    }
 </style>
 
 <template lang="html">
@@ -55,13 +55,13 @@
 <div class="content-wrap ihr-updateOrganization">
     <panel :title="panelTitle" class="panel-b mb-suitable" header="panel-header">
 
-        <v-form v-ref:orgform :model="org" :schema="orgSchema" label-width="200" label-suffix="" :cols="1" form-style="org-form">
+        <v-form ref="orgform" :model="org" :schema="orgSchema" label-width="200" label-suffix="" :cols="1" form-style="org-form">
             <text-increment :title="org.parentUnitName" property="parentUnitName" editor-width="100%"></text-increment>
-            <text-field v-ref:unitshortname property='unitShortName' editor-width="400"></text-field>
+            <text-field ref="unitshortname" property='unitShortName' editor-width="400"></text-field>
             <text-field property='abbreviation' editor-width="400"></text-field>
             <text-increment v-show="!isAdd" property="unitCode" editor-width="400"></text-increment>
             <div class='field'>
-                <label style="width:200px;">Location</label>
+                <label style="width:200px;">{{$t('organization.orgDetails.location')}}</label>
                 <div class="field-content" style="margin-left:200px;">
                     <div class="field-row">
                         <div class="cell country">
@@ -82,7 +82,7 @@
             <text-field v-show="!isEdit" property="beginDate" :min-date="effectiveDate" editor-width="400"></text-field>
             <text-increment v-show="isEdit" property="beginDate" editor-width="400"></text-increment>
             <text-field property="unitSize" editor-width="400"></text-field>
-            <text-field property="unitLeaderName" type="selector" :readonly="true" :show.sync="show" editor-width="400">
+            <text-field property="unitLeaderName" type="selector" @open-selector="openSelector" :readonly="true" :show="show" editor-width="400">
                 <input type="hidden" v-model="unitLeaderIds" id="icansee">
                 <div class="deletePosition">
                     <i class="fa fa-close mr10" v-show="hasleader" @click="clearPosition()"></i>
@@ -91,7 +91,7 @@
             <text-increment property="unitTier" editor-width="400"></text-increment>
             <text-field property="unitScale" type="number" editor-width="400"></text-field>
             <template v-if="routeName !== 'change_organization'">
-                <upload-field :upload-result="uploadResult" v-ref:uploadfield :files-option="filesOption" :max-filesize="2*1024*1024" :default-files="defaultFiles" :remove-ids="removeIds" property="uploadFiles" upload-class="up-class" editor-height="150" url="http://wwww.baidu.com/upload/"></upload-field>
+                <upload-field :upload-result="uploadResult" ref="uploadfield" :files-option="filesOption" :max-filesize="maxFileSize" :default-files="defaultFiles" :remove-ids="removeIds" property="uploadFiles" upload-class="up-class" editor-height="150"></upload-field>
             </template>
             <text-field type="textarea" maxlength="1024" :editor-height="100" editor-width="400" property="unitResponsibility"></text-field>
             <text-field property="remark" editor-width="400"></text-field>
@@ -99,11 +99,11 @@
     </panel>
 
     <div class="btn-group">
-        <ui-button color="primary mr10" @click="handleSubmit" :loading="submitLoading">Submit</ui-button>
-        <ui-button class="btn-default-bd" @click="handleCancel" type="flat">Cancel</ui-button>
+        <ui-button color="primary mr10" @click="handleSubmit" :loading="submitLoading">{{$t('button.submit')}}</ui-button>
+        <ui-button class="btn-default-bd" @click="handleCancel" type="flat">{{$t('button.cancel')}}</ui-button>
     </div>
 
-    <person-selector :show.sync="show" :multi-selected="false"></person-selector>
+    <person-selector ref="orgHeader" @select-chief="getOrgChief" :show="show" :multi-selected="false"></person-selector>
 </div>
 
 </template>
@@ -129,7 +129,7 @@ export default {
 
         let orgSchemaData = {
             unitShortName: {
-                label: 'Organization Name',
+                label: this.$t('organization.historyRecord.orgName'),
                 required: true,
                 rules: {
                     type: 'custom',
@@ -145,10 +145,10 @@ export default {
                 }
             },
             abbreviation: {
-                label: 'Abbreviation'
+                label: this.$t('organization.orgDetails.abbreviation')
             },
             unitCode: {
-                label: 'Organization ID',
+                label: this.$t('organization.orgInfo.orgId'),
                 default () {
                     return 'Automatically generated';
                 }
@@ -160,11 +160,11 @@ export default {
             },
             country: {},
             countryScope: {
-                label: 'Country Scope',
+                label: this.$t('organization.orgDetails.countryScope'),
                 multiSelect: true
             },
             legalentity: {
-                label: 'Legal Entity',
+                label: this.$t('organization.orgDetails.legalEntity'),
                 rules: {
                     type: 'custom',
                     message: this.$t('organization.message.legalentity'),
@@ -188,10 +188,10 @@ export default {
                 }
             },
             corporation: {
-                label: 'Legal Representative'
+                label: this.$t('organization.orgDetails.legalRepresentative')
             },
             beginDate: {
-                label: 'Effective Date',
+                label: this.$t('organization.orgInfo.effectDate'),
                 required: true,
                 type: 'date',
                 default () {
@@ -199,37 +199,38 @@ export default {
                 }
             },
             unitSize: {
-                label: 'Organization Size'
+                label: this.$t('organization.orgDetails.orgSize')
             },
             parentUnitName: {
-                label: 'Superior Organization'
+                label: this.$t('organization.orgInfo.superiorOrg')
             },
             unitLeaderName: {
-                label: 'Head of Organization'
+                label: this.$t('organization.orgInfo.headOfOrg')
             },
             unitTier: {
-                label: 'Organization Tier'
+                label: this.$t('organization.orgDetails.orgTier')
             },
             uploadFiles: {
-                label: 'Company License'
+                label: this.$t('organization.orgDetails.companyLicense')
             },
             unitScale: {
-                label: 'Head Count'
+                label: this.$t('organization.orgDetails.headCount')
             },
             unitResponsibility: {
-                label: 'Organization Responsibility',
+                label: this.$t('organization.orgDetails.orgResponsibility'),
                 required: true
             },
             remark: {
-                label: 'Additional Info'
+                label: this.$t('organization.orgDetails.additionalInfo')
             }
         };
         if (this.$route.name === 'edit_organization') {
             orgSchemaData.beginDate = {
-                label: 'Effective Date'
+                label: this.$t('organization.orgInfo.effectDate')
             };
         }
         return {
+            maxFileSize: 2097152,
             orgSchema: new Schema(orgSchemaData),
             org: {},
             show: {
@@ -333,11 +334,11 @@ export default {
         },
         panelTitle() {
             if (this.routeName === 'add_organization') {
-                return 'Add Organization';
+                return this.$t('organization.modifyOrg.addOrgTitle');
             } else if (this.routeName === 'edit_organization') {
-                return 'Edit Organization';
+                return this.$t('organization.modifyOrg.editOrgTitle');
             } else if (this.routeName === 'change_organization') {
-                return 'Change Organization';
+                return this.$t('organization.modifyOrg.changeOrgTitle');
             }
         },
         isDisabled() {
@@ -385,6 +386,24 @@ export default {
         }
     },
     methods: {
+        //receive data from person-selector;
+        getOrgChief(chiefInfo,orgGroup) {
+            this.hasleader = true;
+            if (chiefInfo && chiefInfo instanceof Array) {
+                let tempNames = [],
+                    tempIds = [];
+                chiefInfo.forEach((list) => {
+                     tempNames.push(list.employeeName);
+                    tempIds.push(list.employeeId);
+                })
+                this.org.unitLeaderName = tempNames.toString();
+                this.unitLeaderIds = tempIds.toString();
+            }
+        },
+        openSelector() {
+            this.$refs['orgHeader'].open();
+            this.show.modal = true;
+        },
         clearPosition() {
             this.org.unitLeaderName = " ";
             this.hasleader = false;
@@ -419,7 +438,7 @@ export default {
         handleSubmit() {
             let orgModel = this.org,
 
-                passed = orgModel.$schema.isFormValidate(this.$refs.orgform);
+                passed = this.$refs.orgform.isFormValidate();
             if (!passed) return;
 
             this.submitLoading = true;
@@ -430,61 +449,12 @@ export default {
                 }
             }
 
-            // var formData = new FormData();
-            // for (var key in params) {
-            //     if (params[key] !== undefined && params[key] !== null) {
-            //         formData.append(key, params[key]);
-            //     }
-            // }
-            // if (orgModel.uploadFiles) {
-            //     orgModel.uploadFiles.forEach(function(file, index) {
-            //         formData.append('orgFiles' + index, file);
-            //     });
-            // }
-
             if (this.routeName === "add_organization") {
                 this.$refs.uploadfield.uploadFile(params);
-                // this.$http.post('/org/orgs/org/units', formData).then((response) => {
-                //     if (response.data) {
-                //         this.org.unitId = response.data;
-                //         this.setCacheTreeData('add', this.org);
-                //         Message({
-                //             type: 'success',
-                //             message: this.$t('organization.message.crudAddSucceed')
-                //         });
-                //         this.$route.router.go({
-                //             name: 'organizationSetting',
-                //             query: {
-                //                 orgId: response.data
-                //             }
-                //         });
-                //     }
-                // }, (response) => {
-                //     this.submitLoading = false;
-                // });
             } else if (this.routeName === 'edit_organization') {
                 params.parentUnitId = orgModel.parentUnitId;
                 params.delAttachmentIds = this.removeIds.join(',');
                 this.$refs.uploadfield.uploadFile(params);
-                // formData.append('parentUnitId', orgModel.parentUnitId);
-                // formData.append('delAttachmentIds', this.removeIds.join(','));
-                // this.$http.post(`/org/orgs/org/units/${this.$route.params.oid}`, formData).then((response) => {
-                //     if (response.data) {
-                //         this.setCacheTreeData('edit', this.org);
-                //         Message({
-                //             type: 'success',
-                //             message: this.$t('organization.message.crudEditSucceed')
-                //         });
-                //         this.$route.router.go({
-                //             name: 'organizationSetting',
-                //             query: {
-                //                 orgId: this.$route.params.oid
-                //             }
-                //         });
-                //     }
-                // }, (response) => {
-                //     this.submitLoading = false;
-                // });
             } else if (this.routeName === 'change_organization') {
                 let url = `/org/orgs/org/units/${this.$route.params.oid}/update`;
                 params.fullUnitName = this.org.fullUnitName;
@@ -500,7 +470,7 @@ export default {
                         });
                         this.$root.$data.orgSettingTreeCache = null;
                     }
-                    this.$route.router.go({
+                    this.$router.push({
                         name: 'organizationSetting',
                         query: {
                             orgId: this.$route.params.oid
@@ -545,7 +515,7 @@ export default {
         },
 
         handleCancel() {
-            this.$router.go({
+            this.$router.push({
                 name: 'organizationSetting',
                 query: {
                     orgId: this.$route.params.oid
@@ -610,7 +580,7 @@ export default {
               });
             }
 
-            this.$route.router.go({
+            this.$router.push({
                 name: 'organizationSetting',
                 query: {
                     orgId: orgId
@@ -629,22 +599,6 @@ export default {
               });
             }
           }
-        }
-    },
-
-    events: {
-        'selected-person': function(value) {
-            this.hasleader = true;
-            if (value && value instanceof Array) {
-                let tempNames = [],
-                    tempIds = [];
-                for (let index of value.keys()) {
-                    tempNames.push(value[index].employeeName);
-                    tempIds.push(value[index].employeeId);
-                }
-                this.org.unitLeaderName = tempNames.toString();
-                this.unitLeaderIds = tempIds.toString();
-            }
         }
     },
     components: {

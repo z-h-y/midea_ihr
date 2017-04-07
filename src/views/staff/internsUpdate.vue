@@ -238,61 +238,33 @@
 <template lang="html">
 <div class="update-emp-form" >
   <panel :title="source.panelTitle" class="panel-b" header="panel-header">
-    <ui-collapsible header="Personnal Information" :open.sync="collapsible.per" id="per-info">
+    <ui-collapsible ref="perinfo" :title="$t('staff.personnalInformation')" :open="collapsible.per" id="per-info">
       <div class="update-interns">
         <div class="avatar" :class="{'show-shadow': showShadow}">
           <img v-bind:src="avatar" alt="" width="120px" height="120px" />
-          <img src="/static/images/public/avatar-upload-bg.png" height="119" width="119" class="avatar-shadow" >
+          <img src="/assets/images/public/avatar-upload-bg.png" height="119" width="119" class="avatar-shadow" >
           <div class="avatar-input" title="click to upload">
-            <file-upload title="avatar" class="file-upload" name="file" :post-action="files.url" :extensions="files.extensions" :accept="files.accept" :multiple="files.multiple" :size="files.size" v-ref:upload :drop="files.drop" @mouseover="showShadow = true" @mouseout="showShadow = false"></file-upload>
+            <file-upload @addFileUpload="addFileUpload" @afterFileUpload="afterFileUpload" @fileUploadFail="fileUploadFail" title="avatar" class="file-upload" name="file" :post-action="files.url" :extensions="files.extensions" :accept="files.accept" :multiple="files.multiple" :size="files.size" ref="upload" :drop="files.drop" @mouseover="showShadow = true" @mouseout="showShadow = false"></file-upload>
           </div>
           <!-- <input type="file" name="file" multiple accept="image/gif,image/jpeg,image/jpg,image/png" @change="uploadAvatar($event)" title="click to upload" @mouseover="showShadow = true" @mouseout="showShadow = false"> -->
         </div>
-        <basic-info v-ref:internsper :data.sync="internsPer" :dist.sync="dist"></basic-info>
-        <!-- <div class="interns-id">
-          <id-type v-ref:idtype :data.sync="idList" parent-id="per-info" :selected-num="idSelect"></id-type>
-        </div> -->
+        <basic-info ref="internsper" :dist="dist"></basic-info>
       </div>
     </ui-collapsible>
-    <id-type v-ref:idtype :dist.sync="dist" :data.sync="idList" parent-id="per-info" :selected-num="idSelect"></id-type>
-    <ui-collapsible :header="jobInfoText" :open.sync="collapsible.internship" id="job-info">
+    <id-type ref="idtype" :dist="dist" parent-id="per-info" :selected-num="idSelect"></id-type>
+    <ui-collapsible ref="collapsiblejob" :title="jobInfoText" :open="collapsible.internship" id="job-info">
       <div class="update-interns">
-        <job-info v-ref:internsjob :data.sync="internsShip" :dist.sync="dist"></job-info>
+        <job-info @refresh="refreshHeight" ref="internsjob" :dist="dist"></job-info>
       </div>
     </ui-collapsible>
-    <education v-ref:academiclist :data.sync="academicList" parent-id="aca-bg" :dist.sync="dist"></education>
-    <!-- <ui-collapsible header="Academic Background" :open.sync="collapsible.academic" id="aca-bg">
-        <education v-ref:academiclist :data.sync="academicList" parent-id="aca-bg" :dist.sync="dist"></education>
-    </ui-collapsible> -->
+    <education ref="academiclist" parent-id="aca-bg" :dist="dist"></education>
     <div class="save-basic-info">
         <ui-button color="primary mr10" @click="submitForm" :loading="submitLoading">{{$t('button.submit')}}</ui-button>
         <ui-button class="btn-default-bd" @click="cancel" type="flat">{{$t('button.cancel')}}</ui-button>
     </div>
-    <!-- <div class="more-info" v-show="showMore">
-      <ui-collapsible header="Additional Infomation" :open.sync="collapsible.additionInfo" id="additionInfo">
-        <additional-info :data.sync="additionInfo" :employee-id.sync="employeeId" parent-id="additionInfo"></additional-info>
-      </ui-collapsible>
-      <ui-collapsible header="Personal Contact" :open.sync="collapsible.perContact" id="per-contact">
-        <div class="update-interns">
-          <personal-contact v-ref:percontact :data.sync="perContact" parent-id="per-contact" :dist.sync="dist" :employee-id.sync="employeeId"></personal-contact>
-        </div>
-      </ui-collapsible>
-      <family :data.sync="familyList" parent-id="family-info" :dist.sync="dist" :employee-id.sync="employeeId"></family>
-      <ui-collapsible header="Bank & Tax" :open.sync="collapsible.bank" id="bank">
-        <bank :data.sync="bank" :employee-id.sync="employeeId"></bank>
-      </ui-collapsible>
-      <training-course :data.sync="courseList" parent-id="training-course" :employee-id.sync="employeeId"></training-course>
-      <skill :data.sync="skillList" parent-id="skill" :employee-id.sync="employeeId" :dist.sync="dist"></skill>
-      <experience :data.sync="expList" parent-id="pro-exp" :employee-id.sync="employeeId"></experience>
-      <ui-collapsible header="Contract" :open.sync="collapsible.contract" id="contract-info">
-        <div class="update-interns">
-          <contract v-ref:contract :data.sync="contract" parent-id="contract-info" :employee-id.sync="employeeId"></contract>
-        </div>
-      </ui-collapsible>
-    </div> -->
   </panel>
 
-  <ui-confirm header="Tips" @confirmed="addMoreConfirm" @denied="addMoreCancel" :show.sync="show.addMoreConfirm" close-on-confirm autofocus="confirm-button" confirm-button-text="Yes, continue" deny-button-text="No,later">
+  <ui-confirm title="Tips" @confirm="addMoreConfirm" @denied="addMoreCancel" :show="show.addMoreConfirm" close-on-confirm autofocus="confirm-button" confirm-button-text="Yes, continue" deny-button-text="No,later">
       Would you like to furnish other important information for this employee?
   </ui-confirm>
 </div>
@@ -310,8 +282,8 @@ import {
 import {default as Message} from '../../components/basic/message';
 export default {
     data() {
-        var isInterns = this.$route.extra === '/ihr/staff/interns';
-        var isOutsource = this.$route.extra === '/ihr/staff/outsource';
+        var isInterns = this.$route.meta.extra === '/ihr/staff/interns';
+        var isOutsource = this.$route.meta.extra === '/ihr/staff/outsource';
         var isEmployee = !isInterns && !isOutsource;
         return {
             // 头像图片
@@ -322,7 +294,7 @@ export default {
             submitLoading: false,
             // 提交时需要删除的字段
             delParmas: [],
-            avatar: '/static/images/public/defaultAvatar.png',
+            avatar: '/assets/images/public/defaultAvatar.png',
             showShadow: false,
             isEmployee: isEmployee,
             isInterns: isInterns,
@@ -366,14 +338,10 @@ export default {
               auto: true
             },
             photoId: '',
-
-            idList: [],
-            academicList: [],
             familyList: [],
             courseList: [],
             skillList: [],
             expList: [],
-            internsPer: {},
             internsShip: {},
             perContact: {},
             contract: {},
@@ -411,6 +379,18 @@ export default {
             } else if (this.isInterns) {
                 return this.$t('staff.internshipInformation');
             }
+        },
+        internsper() {
+          return this.$refs.internsper.data;
+        },
+        academicList() {
+          return this.$refs.academicList.data;
+        },
+        idList() {
+          return this.$refs.idtype.data;
+        },
+        internsShip() {
+          return this.$refs.internsjob.data;
         }
     },
     created() {
@@ -493,12 +473,11 @@ export default {
       });
 
     },
-    ready() {
-        this.$broadcast('ui-collapsible::refresh-height');
+    mounted() {
         // 根据人员的类型为source赋值
-        var panelTitleType = 'Add';
+        var panelTitleType = this.$t('button.add');
         if (this.$route.params.employeeId) {
-          panelTitleType = 'Edit';
+          panelTitleType = this.$t('button.edit');
           this.collapsible.internship = true;
           this.collapsible.academic = false;
           this.collapsible.perContact = false;
@@ -511,33 +490,33 @@ export default {
           this.collapsible.additionInfo = false;
         }
         if (this.isReHire) {
-          panelTitleType = 'Rehire';
+          panelTitleType = this.$t('button.rehire');
         }
-        switch (this.$route.extra) {
+        switch (this.$route.meta.extra) {
             case '/ihr/staff/outsource':
                 this.source = {
-                    panelTitle: panelTitleType + ' Outsource',
+                    panelTitle: panelTitleType + ' ' + this.$t('staff.outsource'),
                     refer: 'outsource',
                     url: '/employee/outsource/employees'
                 };
                 break;
             case '/ihr/staff/interns':
                 this.source = {
-                    panelTitle: panelTitleType + ' Interns',
+                    panelTitle: panelTitleType + ' ' + this.$t('staff.interns'),
                     refer: 'interns',
                     url: '/employee/interns/employees'
                 };
                 break;
             case '/ihr/staff/employees/regularEmployees':
                 this.source = {
-                    panelTitle: panelTitleType + ' Employees',
+                    panelTitle: panelTitleType + ' ' + this.$t('staff.employees'),
                     refer: 'regularEmployees',
                     url: '/employee/employees/'
                 };
                 break;
             case '/ihr/staff/employees/resignedEmployees':
                 this.source = {
-                    panelTitle: panelTitleType + ' Employees',
+                    panelTitle: panelTitleType + ' ' + this.$t('staff.employees'),
                     refer: 'resignedEmployees',
                     url: '/employee/employees/'
                 };
@@ -570,7 +549,7 @@ export default {
                 }
                 this.$nextTick(function(){
                   this.$refs.idtype.initList();
-                  this.$broadcast('ui-collapsible::refresh-height', 'per-info');
+                  this.$refs.perinfo.refreshHeight()
                 });
             });
             if (!this.isReHire) {
@@ -580,7 +559,6 @@ export default {
             }
         }
     },
-    attached() {},
     methods: {
         // 获得要提交的数据字段，删除不需要的
         repalceData(obj, newObj) {
@@ -593,31 +571,11 @@ export default {
         submitForm: function() {
             var self = this;
             var allPass = true;
-            var passed = this.internsPer.$schema.isFormValidate(this.$refs.internsper.$children[0]);
+            var passed = this.$refs.internsper.$children[0].isFormValidate()
             if (!passed) {
                 allPass = false;
                 this.collapsible.per = true;
             }
-
-            // this.idList.forEach(function(item, index){
-            //   passed = item.$schema.isFormValidate(self.$refs.idtype.$children[index + 1], {
-            //       focus: allPass
-            //   });
-            //   if (!passed) {
-            //       allPass = false;
-            //       self.collapsible.per = true;
-            //   }
-            // });
-            // this.academicList.forEach(function(item, index){
-            //   passed = item.$schema.isFormValidate(self.$refs.academiclist.$children[index + 1], {
-            //       focus: allPass
-            //   });
-            //   if (!passed) {
-            //       allPass = false;
-            //       self.collapsible.academic = true;
-            //   }
-            // });
-            // var passed = this.idType.$schema.isFormValidate(this.$refs.idtype.$children[0]);
             // 员工重新雇佣根据分类给隐藏的必填值设值，防止验证不通过
             if (this.isReHire && this.internsShip.employementCategory !== '9') {
               this.internsShip.isProbation = '2';
@@ -628,9 +586,9 @@ export default {
               this.internsShip.registerDate = new Date();
               this.internsShip.endDate = new Date();
             }
-            passed = this.internsShip.$schema.isFormValidate(this.$refs.internsjob.$children[0], {
+            var passed = this.$refs.internsjob.$children[0].isFormValidate({
                 focus: allPass
-            });
+            })
             if (!passed) {
                 allPass = false;
                 this.collapsible.internship = true;
@@ -648,7 +606,7 @@ export default {
             // this.show.addMoreConfirm = true;
         },
         cancel: function() {
-            this.$route.router.go({
+            this.$router.push({
                 name: this.source.refer
             });
         },
@@ -757,19 +715,6 @@ export default {
             data.photoId = this.photoId;
           }
           this.submitData(data, isCancel);
-          // if (this.avatarFiles.length > 0) {
-          //   var formData = new FormData();
-          //   this.avatarFiles.forEach(function(file) {
-          //       formData.append('file', file);
-          //   });
-          //   this.$http.post('/system/attachment/uploadFile', formData).then(function(res) {
-          //     //this.data.contractId = res.body;
-          //     data.photoId = res.body;
-          //     this.submitData(data, isCancel);
-          //   });
-          // } else {
-          //   this.submitData(data, isCancel);
-          // }
         },
         submitData(data, isCancel) {
           data.mibGrade = this.fixMibGrade(data.mibGrade);
@@ -828,43 +773,31 @@ export default {
             }
           }
           return result;
+        },
+        addFileUpload(file, component) {
+          if (this.files.auto) {
+            component.active = true;
+          }
+        },
+        afterFileUpload(file, component) {
+          this.photoId = file.data;
+          this.avatar = Vue.config.APIURL + '/system/attachment/downloadImg/' + file.data;
+        },
+        fileUploadFail(file, component) {
+          Message({
+              type: 'error',
+              message: this.$t('staff.message.avatarTypeError')
+          });
+        },
+        refreshHeight(id) {
+          this.$refs[id].refreshHeight()
         }
-        // uploadAvatar(e) {
-        //     var rawFile = e.srcElement.files;
-        //     this.avatar = URL.createObjectURL(rawFile[0]);
-        //     this.avatarFiles = Array.prototype.slice.call(rawFile, 0);
-        // }
-    },
-    events: {
-      addFileUpload(file, component) {
-        if (this.files.auto) {
-          component.active = true;
-        }
-      },
-      afterFileUpload(file, component) {
-        this.photoId = file.data;
-        this.avatar = Vue.config.APIURL + '/system/attachment/downloadImg/' + file.data;
-      },
-      fileUploadFail(file, component) {
-        Message({
-            type: 'error',
-            message: 'Files format limitation. Please upload png,jpeg,jpg,gif.'
-        });
-      }
     },
     components: {
-        // AdditionalInfo: require('./updateInfoPart/additionalInfo.vue'),
         BasicInfo: require('./updateInfoPart/basicInfo.vue'),
         JobInfo: require('./updateInfoPart/jobInfo.vue'),
-        // PersonalContact: require('./updateInfoPart/personalContact.vue'),
-        // Contract: require('./updateInfoPart/contract.vue'),
         IdType: require('./updateInfoPart/idType.vue'),
-        // Family: require('./updateInfoPart/family.vue'),
-        // Bank: require('./updateInfoPart/bank.vue'),
         Education: require('./updateInfoPart/education.vue'),
-        // TrainingCourse: require('./updateInfoPart/trainingCourse.vue'),
-        // Experience: require('./updateInfoPart/experience.vue'),
-        // Skill: require('./updateInfoPart/skill.vue'),
         Panel: require('../../components/basic/panel.vue'),
         FileUpload: require('../../components/basic/FileUpload.vue')
     }

@@ -131,7 +131,7 @@
         </div>
     </template>
     <div class="add-new">
-        <div class="addList" @click="addList"><i class="fa fa-plus-circle" aria-hidden="true"></i>Add New</div>
+        <div class="addList" @click="addList"><i class="fa fa-plus-circle" aria-hidden="true"></i>{{$t('system.checkProcess.add')}}</div>
     </div>
 </div>
 
@@ -158,19 +158,19 @@ export default {
         let _self = this;
         var roleData = {
             orderNo: {
-                label: 'Order No',
+                label:  this.$t('system.checkProcess.orderNo'),
                 required: false,
                 default: 1
             },
             approveRole: {
-                label: 'Approve Role',
+                label: this.$t('system.checkProcess.approveRole'),
                 mapping: function() {
                     return getDictMapping('PROCESS_TEMPLATE_APPROVE_ROLE');
                 },
                 required: true
             },
             nodeName: {
-                label: 'Node Name',
+                label: this.$t('system.checkProcess.nodeName'),
                 required: true,
                 whitespace: false
             }

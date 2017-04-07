@@ -88,22 +88,22 @@
     }
     .contact-ico-num {
         .contact-ico(36px, 36px);
-        background: url("../../static/images/public/staff-interns-phone.png") no-repeat center center;
+        background: url("../../assets/images/public/staff-interns-phone.png") no-repeat center center;
     }
     .contact-ico-mail {
         .contact-ico(36px,
         36px);
-        background: url("../../static/images/public/staff-interns-mail.png") no-repeat center center;
+        background: url("../../assets/images/public/staff-interns-mail.png") no-repeat center center;
     }
     .contact-ico-location {
         .contact-ico(36px,
         36px);
-        background: url("../../static/images/public/staff-interns-location.png") no-repeat center center;
+        background: url("../../assets/images/public/staff-interns-location.png") no-repeat center center;
     }
     .contact-ico-person {
         .contact-ico(36px,
         36px);
-        background: url("../../static/images/public/staff-interns-person.png") no-repeat center center;
+        background: url("../../assets/images/public/staff-interns-person.png") no-repeat center center;
     }
     .panel-content-label {
         padding: 10px 0;
@@ -149,9 +149,9 @@
       <div class="img-wrap">
         <div class="avatar" :class="{'show-shadow': showShadow}">
           <img v-bind:src="avatar" alt="" width="140px" height="140px" />
-          <img v-if="editAble" src="/static/images/public/avatar-upload-bg.png" height="140" width="140" class="avatar-shadow" >
+          <img v-if="editAble" src="/assets/images/public/avatar-upload-bg.png" height="140" width="140" class="avatar-shadow" >
           <div class="" title="click to upload">
-            <file-upload v-if="editAble" title="avatar" class="file-upload" name="file" :post-action="files.url" :extensions="files.extensions" :accept="files.accept" :multiple="files.multiple" :size="files.size" v-ref:upload :drop="files.drop" @mouseover="showShadow = true" @mouseout="showShadow = false"></file-upload>
+            <file-upload @addFileUpload="addFileUpload" @afterFileUpload="afterFileUpload" @fileUploadFail="fileUploadFail" v-if="editAble" title="avatar" class="file-upload" name="file" :post-action="files.url" :extensions="files.extensions" :accept="files.accept" :multiple="files.multiple" :size="files.size" ref="upload" :drop="files.drop" @mouseover="showShadow = true" @mouseout="showShadow = false"></file-upload>
           </div>
           <!-- <input v-if="editAble" type="file" name="file" multiple accept="image/gif,image/jpeg,image/jpg,image/png" @change="uploadAvatar($event)" title="click to upload" @mouseover="showShadow = true" @mouseout="showShadow = false"> -->
         </div>
@@ -181,7 +181,7 @@
               {{ empInfo.officeAddress }}
               <div class="contact-ico-location"></div>
           </li>
-          <li><span class="text-manager-color">Manager</span>{{ empInfo.parentEmployeeName }}
+          <li><span class="text-manager-color">{{$t('staff.manager')}}</span>{{ empInfo.parentEmployeeName }}
               <div class="contact-ico-person"></div>
           </li>
       </ul>
@@ -191,27 +191,16 @@
 <script>
 import {default as Message} from '../../components/basic/message';
 export default {
-    props: [
-      {
-        name: 'employeeId'
-      },
-      {
-        name: 'employeeInfo',
-        type: Object,
-        default() {
-          return {};
-        }
-      },
-      {
-        name: 'editAble',
-        default() {
-          return false;
-        }
+    props: {
+      employeeId: {},
+      employeeInfo: {},
+      editAble: {
+        default: false
       }
-    ],
+    },
     data() {
             return {
-              avatar: '/static/images/public/defaultAvatar.png',
+              avatar: '/assets/images/public/defaultAvatar.png',
               showShadow: false,
               empInfo: {
                 orgUnit: {}
@@ -231,16 +220,11 @@ export default {
               }
             };
         },
-        computed: {},
         created() {
           if (this.employeeId) {
             this.getData(this.employeeId);
           }
         },
-        ready() {
-
-        },
-        attached() {},
         methods: {
           getData(employeeId) {
             this.$http.get('/employee/employees/'+ employeeId).then((response) => {
@@ -254,30 +238,6 @@ export default {
                 console.log('错误信息 ：' + response.statusText);
             });
           },
-          // uploadAvatar(e) {
-          //     var rawFile = e.srcElement.files;
-          //     this.avatar = URL.createObjectURL(rawFile[0]);
-          //     var avatarFiles = Array.prototype.slice.call(rawFile, 0);
-          //     var formData = new FormData();
-          //     avatarFiles.forEach(function(file) {
-          //         formData.append('file', file);
-          //     });
-          //     this.$http.post('/system/attachment/uploadFile', formData).then(function(res) {
-          //       this.employeeInfo.photoId = res.body;
-          //       this.avatar = Vue.config.APIURL + '/system/attachment/downloadImg/' + res.body;
-          //       // this.$parent.submitForm('uploadAvatar');
-          //       this.$http.post('/employee/employees/photo/' + this.employeeId, {photoId: this.employeeInfo.photoId}, {
-          //           emulateJSON: true
-          //       }).then(function(res) {
-          //
-          //       });
-          //     });
-          // }
-        },
-        components: {
-          FileUpload: require('../../components/basic/FileUpload.vue')
-        },
-        events: {
           addFileUpload(file, component) {
             if (this.files.auto) {
               component.active = true;
@@ -299,9 +259,12 @@ export default {
           fileUploadFail(file, component) {
             Message({
                 type: 'error',
-                message: 'Files format limitation. Please upload png,jpeg,jpg,gif.'
+                message: this.$t('staff.message.avatarTypeError')
             });
           }
+        },
+        components: {
+          FileUpload: require('../../components/basic/FileUpload.vue')
         }
 };
 

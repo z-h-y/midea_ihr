@@ -16,14 +16,14 @@
 
   <panel :title="$t('staff.extendProbation')" class=" panel-b mb-suitable" header="panel-header">
     <employee-common-info :employee-id="employeeId" :edit-able="false"></employee-common-info>
-    <v-form v-ref:myForm :model="extend" :schema="extendSchema" label-width="250" label-suffix="" :cols="1" form-style="org-form">
+    <v-form ref="myform" :model="extend" :schema="extendSchema" label-width="250" label-suffix="" :cols="1" form-style="org-form">
         <text-increment property="beginDate" editor-width="400"></text-increment>
         <text-increment property="endDate" editor-width="400"></text-increment>
         <text-field property='delayDate' :min-date="delayDate" editor-width="400"></text-field>
         <text-field type="textarea" :editor-height="100" editor-width="400" property="delayReason"></text-field>
     </v-form>
   </panel>
-  <employee-submit v-ref:employeesubmit :form-confirmed="confirmed" :form-cancel="cancel" :is-form-validate="isFormValidate"></employee-submit>
+  <employee-submit ref="employeesubmit" :form-confirmed="confirmed" :form-cancel="cancel" :is-form-validate="isFormValidate"></employee-submit>
 
 </div>
 </template>
@@ -74,7 +74,7 @@ export default {
         return '';
       }
     },
-    ready() {
+    mounted() {
         this.$http.get('/employee/onProbation/employees/' + this.employeeId + '/probationInfo').then(function(res) {
             if (res.data.beginDate) {
               this.extend.beginDate = formatDate(new Date(res.data.beginDate));
@@ -85,15 +85,14 @@ export default {
             }
         })
     },
-    attached() {},
     methods: {
         cancel() {
-            this.$route.router.go({
+            this.$router.push({
                 name: 'employeesOnProbation'
             });
         },
         isFormValidate() {
-          var passed = this.extend.$schema.isFormValidate(this.$refs.myform);
+          var passed = this.$refs.myform.isFormValidate();
           return passed;
         },
         confirmed() {
@@ -108,7 +107,7 @@ export default {
                     type: 'success',
                     message: this.$t('staff.message.extendProbationSuccess')
                 });
-                  this.$route.router.go({
+                  this.$router.push({
                       name: 'employeesOnProbation'
                   });
               },function(response) {

@@ -10,10 +10,10 @@
 
 <div class="content-wrap bg-w ihr-staff-interns">
   <panel :title="$t('staff.promoteEmployee')" class="panel-b mb-suitable" header="panel-header">
-    <employee-common-info :employee-id="employeeId" :employee-info.sync="employeeInfo"></employee-common-info>
-    <v-form v-ref:promoteform :model="promoteEmp" :schema="promoteEmpSchema" label-width="220" label-suffix="" :cols="1" form-style="int-join-com-form">
+    <employee-common-info :employee-id="employeeId" :employee-info="employeeInfo"></employee-common-info>
+    <v-form ref="promoteform" :model="promoteEmp" :schema="promoteEmpSchema" label-width="220" label-suffix="" :cols="1" form-style="int-join-com-form">
         <text-field property="effectiveDate" :min-date="employeeInfo.hireDate" editor-width="400"></text-field>
-        <text-field property="transferPositionName" type="selector" :readonly="true" :show.sync="position" editor-width="400"></text-field>
+        <text-field property="transferPositionName" @open-selector="openSelector" type="selector" :readonly="true" :show="position" editor-width="400"></text-field>
         <text-field property="businessCardTitle" editor-width="400"></text-field>
         <text-field property="transferUnitName" :readonly="true" :placeholder="$t('staff.selectPosition')" editor-width="400"></text-field>
         <select-field property="jobGrade" :mapping="mibGradeMapping" editor-width="400"></select-field>
@@ -21,8 +21,8 @@
         <text-field property="workCity" editor-width="400"></text-field>
     </v-form>
   </panel>
-    <position-selector :show.sync="position" :handle-comfirmed="selectPosition"></position-selector>
-    <employee-submit v-ref:employeesubmit :form-confirmed="confirmed" :form-cancel="cancel" :is-form-validate="isFormValidate"></employee-submit>
+    <position-selector ref="posselect" :show="position" :handle-comfirmed="selectPosition"></position-selector>
+    <employee-submit ref="employeesubmit" :form-confirmed="confirmed" :form-cancel="cancel" :is-form-validate="isFormValidate"></employee-submit>
 </div>
 
 </template>
@@ -83,13 +83,15 @@ export default {
             self.mibGradeDist = res;
           });
         },
-        ready() {
+        mounted() {
           this.promoteEmp = this.promoteEmpSchema.newModel();
         },
-        attached() {},
         methods: {
+          openSelector() {
+            this.$refs['posselect'].open();
+          },
           isFormValidate() {
-              var passed = this.promoteEmp.$schema.isFormValidate(this.$refs.promoteform);
+              var passed = this.$refs.promoteform.isFormValidate();
               if (!passed) {
                 return;
               }
@@ -107,7 +109,7 @@ export default {
                         type: 'success',
                         message: this.$t('staff.message.promotionSuccess')
                     });
-                      this.$route.router.go({
+                      this.$router.push({
                           name: 'regularEmployees'
                       });
                   },function(response) {
@@ -115,7 +117,7 @@ export default {
                   });
           },
           cancel() {
-              this.$route.router.go({
+              this.$router.push({
                   name: 'regularEmployees'
               });
           },

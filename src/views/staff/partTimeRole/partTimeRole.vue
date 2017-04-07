@@ -25,12 +25,12 @@
 
 <div class="content-wrap bg-w ihr-staff-parttime">
     <div class="mb20 pt20">
-        <organization-selector :show.sync="org"></organization-selector>
+        <organization-selector ref="orgselect" :show="org" :handel-select="selectOrg"></organization-selector>
         <div class="search-area">
             <v-form :class="{expended: expended}" :model="parttime" :schema="parttimeSchema" label-width="170" label-suffix="" :cols="3" form-style="interns-form">
                 <text-field property="empFullName" editor-width="150"></text-field>
                 <text-field property="employeeCode" editor-width="150"></text-field>
-                <text-field type="selector" :readonly="true" :show.sync="org" property="orgUnitName" editor-width="150"></text-field>
+                <text-field type="selector" :readonly="true" @open-selector="openSelector" :show="org" property="orgUnitName" editor-width="150"></text-field>
                 <text-field v-show="expended" property="positionName" editor-width="150"></text-field>
                 <select-field v-show="expended" property="status" editor-width="150" :mapping="statusDist"></select-field>
             </v-form>
@@ -41,12 +41,12 @@
             </div>
         </div>
         <div class="group">
-            <ui-button class="mr10 dis-tc btn-primary-bd" @click="goInterim" color="primary" :text="$t('staff.interimPartTimeRole')" button-type="button"></ui-button>
-            <ui-button class="mr10 dis-tc btn-default-bd" @click="goTransfer" type="flat" :text="$t('staff.transfer')" button-type="button"></ui-button>
-            <ui-button class="mr10 dis-tc btn-default-bd" @click="goTerminate" type="flat" :text="$t('staff.terminate')" button-type="button"></ui-button>
+            <ui-button class="mr10 dis-tc btn-primary-bd" @click="goInterim" color="primary" button-type="button">{{$t('staff.interimPartTimeRole')}}</ui-button>
+            <ui-button class="mr10 dis-tc btn-default-bd" @click="goTransfer" type="flat" button-type="button">{{$t('staff.transfer')}}</ui-button>
+            <ui-button class="mr10 dis-tc btn-default-bd" @click="goTerminate" type="flat" button-type="button">{{$t('staff.terminate')}}</ui-button>
         </div>
         <div class="vuetable-wrapper">
-          <vuetable v-ref:vuetable :append-params="moreParams" api-url="/employee/parttimes" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="columns" per-page="10">
+          <vuetable ref="vuetable" :append-params="moreParams" api-url="/employee/parttimes" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="columns" per-page="10">
           </vuetable>
         </div>
     </div>
@@ -63,7 +63,7 @@ import {default as Message} from '../../../components/basic/message';
 
 
 export default {
-    data() {
+    data () {
         let parttimeData = {
             empFullName: {
                 label: this.$t('staff.employeeName')
@@ -116,11 +116,11 @@ export default {
                     },
                     {
                       name: 'empPositionName',
-                      title: this.$t('staff.hostPosition')
+                      title: this.$t('staff.hostPosition1')
                     },
                     {
                       name: 'empUnitShortName',
-                      title: this.$t('staff.hostOrganizatoin')
+                      title: this.$t('staff.hostOrganizatoin1')
                     },
                     {
                       name: 'positionName',
@@ -187,11 +187,13 @@ export default {
             }
           });
         },
-        ready() {
+        mounted() {
           this.parttime = this.parttimeSchema.newModel();
         },
-        attached() {},
         methods: {
+            openSelector() {
+              this.$refs['orgselect'].open();
+            },
             search() {
               this.moreParams = [];
               for (let i = 0, len = this.moreParamsKeys.length; i < len; i++) {
@@ -202,7 +204,7 @@ export default {
                 }
               }
               this.$nextTick(function() {
-                this.$broadcast('vuetable:refresh')
+                this.$refs.vuetable.reloadData();
               })
             },
             reset() {
@@ -210,7 +212,7 @@ export default {
               this.parttime.unitId = '';
             },
             goInterim() {
-              this.$route.router.go({ name: 'interim'});
+              this.$router.push({ name: 'interim'});
             },
             goTransfer() {
               var tableData = this.$refs.vuetable.tableData;
@@ -222,7 +224,7 @@ export default {
                   });
                   return;
                 }
-                this.$route.router.go({ name: 'partTimeTransfer', params: { employeeId: tableData[this.selectedRow[0]].employeeId, partTimeId: tableData[this.selectedRow[0]].partTimeId }});
+                this.$router.push({ name: 'partTimeTransfer', params: { employeeId: tableData[this.selectedRow[0]].employeeId, partTimeId: tableData[this.selectedRow[0]].partTimeId }});
               } else {
                 Message({
                     type: 'error',
@@ -240,7 +242,7 @@ export default {
                   });
                   return;
                 }
-                this.$route.router.go({ name: 'partTimeTerminate', params: { employeeId: tableData[this.selectedRow[0]].employeeId, partTimeId: tableData[this.selectedRow[0]].partTimeId }});
+                this.$router.push({ name: 'partTimeTerminate', params: { employeeId: tableData[this.selectedRow[0]].employeeId, partTimeId: tableData[this.selectedRow[0]].partTimeId }});
               } else {
                 Message({
                     type: 'error',
@@ -272,15 +274,13 @@ export default {
               this.expendIcon = this.expended ? 'fa-angle-double-up' : 'fa-angle-double-down';
             },
             cname(value, data) {
-              return `<a href="${location.href}/${data.employeeId}">${value}</a>`;
-            }
-        },
-        events: {
-            'organization-selector:selected': function(value) {
-                if (value) {
-                    this.parttime.orgUnitName = value.orgShortName;
-                    this.parttime.unitId = value.orgId;
-                }
+              return `<a href="${location.href}/view/${data.employeeId}">${value}</a>`;
+            },
+            selectOrg(value) {
+              if (value) {
+                  this.parttime.orgUnitName = value.orgShortName;
+                  this.parttime.unitId = value.orgId;
+              }
             }
         },
         components: {}

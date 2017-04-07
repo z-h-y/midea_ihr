@@ -5,20 +5,8 @@ import Vue from 'vue';
 
 export default {
     props: {
-        form: {},
-        model: {
-            default () {
-                return {};
-            }
-        },
         property: {},
         schema: {},
-        label: {
-            type: String
-        },
-        labelWidth: {
-            default: 120
-        },
         labelSuffix: {},
         editorWidth: {},
         required: {
@@ -37,17 +25,18 @@ export default {
             type: String,
             default: ''
         },
-        hintMessage: {
-            type: String
-        },
         parentProperty: {},
-        mapping: {},
-        editorFocused: {
-            type: Boolean,
-            defaultValue: true
-        }
+        mapping: {}
     },
-
+    data: {
+      form: {},
+      model: {},
+      hintMessage: '',
+      editorFocused: true,
+      labelWidth: 120,
+      label: '',
+      actualMapping: {}
+    },
     methods: {
         fetchMapping(...args) {
             var schema = this.fieldSchema;
@@ -57,15 +46,15 @@ export default {
                 if (result.then) {
                     result.then((value) => {
                         this.selectValue = null;
-                        this.mapping = value;
+                        this.actualMapping = value;
                         if (emptyRecord) {
-                            this.mapping[''] = null;
+                            this.actualMapping[''] = null;
                         }
                     });
                 } else {
-                    this.mapping = result;
+                    this.actualMapping = result;
                     if (emptyRecord) {
-                        this.mapping[''] = null;
+                        this.actualMapping[''] = null;
                     }
                 }
             }
@@ -80,6 +69,34 @@ export default {
                 this.hintMessage = model.$hints[this.property];
                 this.hintType = this.hintMessage ? 'error' : '';
             }
+        },
+        formModelChange() {
+            var form = this.form;
+            if (form && form.model) {
+                if (this.model !== form.model) {
+                    this.model = form.model;
+                }
+            }
+        },
+        checkFormValidate(option) {
+          option = option || { focus: true };
+          this.validate();
+          // 找到一处错误即将表单设为不符合的
+          if(this.hintType === 'error' && !this.$parent.isFocus) {
+            this.$parent.isValidate = false;
+            this.$parent.isFocus = true;
+            // 是否定位到第一个错误处
+            if (option.focus) {
+              var parentEl = this.$el;
+              var el = this.$el.getElementsByTagName('input')[0] || this.$el.getElementsByTagName('textarea')[0];
+              if (el) {
+                el.focus();
+              } else {
+                parentEl.focus()
+              }
+            }
+          }
+          return this.hintType !== 'error'
         }
     },
 
@@ -161,6 +178,9 @@ export default {
                 schema = this.schema = SchemeStore.getSchema(schema);
             }
             return schema;
+        },
+        fieldClass() {
+          return this.form.fieldClass
         }
     },
 
@@ -179,7 +199,7 @@ export default {
         }
     },
 
-    onCompiled() {
+    onMounted() {
         var form = this.form;
 
         if (form) {
@@ -189,19 +209,19 @@ export default {
                 addClass(this.$el, fieldClass);
             }
 
-            if (!this._props.labelWidth.raw && form.labelWidth) {
+            if (form.labelWidth) {
                 this.labelWidth = form.labelWidth;
             }
 
-            if (!this._props.labelSuffix.raw && form.labelSuffix) {
+            if (form.labelSuffix) {
                 this.labelSuffix = form.labelSuffix;
             }
 
-            if (!this._props.hideHint.raw && form.hideHint) {
+            if (form.hideHint) {
                 this.hideHint = form.hideHint;
             }
 
-            if (!this._props.editorWidth.raw && form.editorWidth) {
+            if (form.editorWidth) {
                 this.editorWidth = form.editorWidth;
             }
         }
@@ -244,20 +264,20 @@ export default {
             if (mapping.then) {
                 mapping.then((value) => {
                     if (emptyRecord) {
-                        this.mapping = merge({
+                        this.actualMapping = merge({
                             '': null
                         }, value);
                     } else {
-                        this.mapping = value;
+                        this.actualMapping = value;
                     }
                 });
             } else {
                 if (emptyRecord) {
-                    this.mapping = merge({
+                    this.actualMapping = merge({
                         '': null
                     }, mapping);
                 } else {
-                    this.mapping = mapping;
+                    this.actualMapping = mapping;
                 }
             }
         }

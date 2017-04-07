@@ -1,71 +1,71 @@
 <style>
 
-.field {
-    position: relative;
-    width: 100%;
-}
+  .field {
+      position: relative;
+      width: 100%;
+  }
 
-.field-hashint {
-    min-height: 44px;
-}
+  .field-hashint {
+      min-height: 44px;
+  }
 
-.field.require > label::after {
-    content: '*';
-    color: #ed5565;
-    margin-right: 2px;
-    margin-left: 4px;
-    vertical-align: sub;
-}
+  .field.require > label::after {
+      content: '*';
+      color: #ed5565;
+      margin-right: 2px;
+      margin-left: 4px;
+      vertical-align: sub;
+  }
 
-.field::after {
-    content: "";
-    display: table;
-    clear: both;
-}
+  .field::after {
+      content: "";
+      display: table;
+      clear: both;
+  }
 
-.field-content {
-    vertical-align: top;
-    font-size: 14px;
-    padding-left: 2px;
-    padding-right: 24px;
-    box-sizing: border-box;
-    border-radius: 2px;
-    line-height: 32px;
-}
+  .field-content {
+      vertical-align: top;
+      font-size: 14px;
+      padding-left: 2px;
+      padding-right: 24px;
+      box-sizing: border-box;
+      border-radius: 2px;
+      line-height: 32px;
+  }
 
-.field-hint {
-    font-size: 12px;
-    line-height: 18px;
-    height: 18px;
-}
+  .field-hint {
+      font-size: 12px;
+      line-height: 18px;
+      height: 18px;
+  }
 
-.field.validate-error,
-.field-hint {
-    color: #ed5565;
-}
+  .field.validate-error,
+  .field-hint {
+      color: #ed5565;
+  }
 
-.field-hint .icon {
-    vertical-align: top;
-}
+  .field-hint .icon {
+      vertical-align: top;
+  }
 
-.field-hint .icon-error {
-    font-size: 14px;
-    line-height: 14px;
-    color: #ed5565;
-}
+  .field-hint .icon-error {
+      font-size: 14px;
+      line-height: 14px;
+      color: #ed5565;
+  }
 
-.field-hint .icon-error:before {
-    margin-right: 3px;
-    vertical-align: middle;
-}
+  .field-hint .icon-error:before {
+      margin-right: 3px;
+      vertical-align: middle;
+  }
 
-.field-hint .icon-warning:before {
-    line-height: 14px;
-    font-size: 14px;
-    color: #65c04b;
-    margin-right: 3px;
-    vertical-align: middle;
-}
+  .field-hint .icon-warning:before {
+      line-height: 14px;
+      font-size: 14px;
+      color: #65c04b;
+      margin-right: 3px;
+      vertical-align: middle;
+  }
 
 </style>
 
@@ -74,7 +74,7 @@
 <div tabindex="-1" class='field' :class="{ 'validate-error': hintType === 'error', require: isRequired, 'field-hashint': !hideHint }">
     <label :style="{ width: labelWidth != null ? labelWidth + 'px' : '' }" v-show="!hideLabel">{{ labelText }}</label>
     <div class="field-content" :style="{ marginLeft: labelWidth != null ? labelWidth + 'px' : '' }">
-        <upload v-ref:upload :upload-result="uploadResult" :files-option="filesOption" :default-files="defaultFiles" :upload-class="uploadClass" :url="url" :multiple="multiple" :min-num="minNum" :max-num="maxNum" :accept="accept" :max-filesize="maxFilesize"></upload>
+        <upload ref="upload" :upload-result="uploadResult" :files-option="filesOption" :default-files="defaultFiles" :upload-class="uploadClass" :url="url" :multiple="multiple" :min-num="minNum" :max-num="maxNum" :accept="accept" :max-filesize="maxFilesize"></upload>
         <slot></slot>
         <div class="field-hint" v-if="!hideHint">
             <i class='icon' :class="{ 'icon-error': hintType === 'error', 'icon-warning': hintType === 'warning' }"></i> {{ hintMessage || '' }}
@@ -141,12 +141,20 @@ export default {
         }
       }
     },common.props),
-
+    data() {
+        return {
+          form: {},
+          model: {},
+          labelWidth: 120,
+          label: '',
+          hintMessage: ''
+      };
+    },
     events: common.events,
 
     created: common.onCreated,
 
-    compiled: common.onCompiled,
+    mounted: common.onMounted,
 
     methods: merge({
       uploadFile(data) {

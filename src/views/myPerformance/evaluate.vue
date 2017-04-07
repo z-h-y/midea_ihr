@@ -27,23 +27,23 @@
             <div class="help-desk-ctn">
                 <ul class="regular fix">
                     <li>
-                        <span class="prop-name">Employee Name</span>
+                        <span class="prop-name">{{ $t('myperformance.evaluate.employeeName') }}</span>
                         <span class="prop-val">{{basicInfo.employeeName}}</span>
                     </li>
                     <li v-if="basicInfo.pfmType==='1'">
-                        <span class="prop-name">Unit Name</span>
+                        <span class="prop-name">{{ $t('myperformance.evaluate.unitName') }}</span>
                         <span class="prop-val">{{basicInfo.unitName}}</span>
                     </li>
                     <li>
-                        <span class="prop-name">Position</span>
+                        <span class="prop-name">{{ $t('myperformance.evaluate.position') }}</span>
                         <span class="prop-val">{{basicInfo.positionName}}</span>
                     </li>
                     <li>
-                        <span class="prop-name">Restrict To Year</span>
+                        <span class="prop-name">{{ $t('myperformance.evaluate.restricttoYear') }}</span>
                         <span class="prop-val">{{basicInfo.restrictYear}}</span>
                     </li>
                     <li>
-                        <span class="prop-name">Evaluation Location</span>
+                        <span class="prop-name">{{ $t('myperformance.evaluate.evaluationLocation') }}</span>
                         <span class="prop-val">{{basicInfo.startDate | formatDate }} To {{basicInfo.endDate | formatDate}}</span>
                     </li>
                 </ul>
@@ -51,11 +51,11 @@
         </div>
         <div id="total-indicators" class="total-indicators-head">
             <div class="bte bg">
-                <h3 class="head-title"> Indicators（Weight 100%）</h3>
+                <h3 class="head-title"> {{$t('myperformance.indicatorsWeight')}}</h3>
             </div>
         </div>
         <div id="indicators-ctn-wrap" class="indicators-ctn-wrap">
-            <evaluate-indicator v-ref:indicators :data.sync="indicatorList"></evaluate-indicator>
+            <evaluate-indicator ref="indicators" :data.sync="indicatorList"></evaluate-indicator>
 
             <div class="loadding" v-show="loadding"><i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i></div>
             <!-- <div class="alert" v-show="isHasIndicator">
@@ -65,7 +65,7 @@
                 </div>
             </div> -->
         </div>
-        <ui-collapsible :open="true" id="coll-process-history" header="Process History">
+        <ui-collapsible :open="true" id="coll-process-history" :header="$t('myperformance.viewprocess.processHistory')">
             <div id="process-history" class="process-history">
                 <div class="process-history-ctn">
                     <ul class="fix cell-g ">
@@ -102,20 +102,20 @@
                 </div>
             </div>
         </ui-collapsible>
-        <ui-collapsible class="mt16" :open="true" id="coll-memo" header="Process Record">
+        <ui-collapsible class="mt16" :open="true" id="coll-memo" :header="$t('myperformance.viewprocess.processRecord')">
 
             <div id="process-history-list">
                 <div class="process-history-ctn">
                     <table class="vuetable ui blue striped selectable celled stackable attached table">
                         <thead>
                             <tr>
-                                <th>Stage</th>
-                                <th>Role</th>
-                                <th>Recipient</th>
-                                <th>Operation</th>
-                                <th>Suggestion</th>
+                                <th>{{$t('myperformance.stage')}}</th>
+                                <th>{{$t('myperformance.role')}}</th>
+                                <th>{{$t('myperformance.recipient')}}</th>
+                                <th>{{$t('myperformance.operation')}}</th>
+                                <th>{{$t('myperformance.suggestion')}}</th>
                                 <!-- <th></th> -->
-                                <th>Date</th>
+                                <th>{{$t('myperformance.date')}}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -148,9 +148,9 @@
         <ui-collapsible class="mt16" :open="true" id="aprove">
             <div id="process-history-list">
                 <div class="process-history-ctn">
-                    <v-form class="rel" :model="aprove" :schema="aproveSchema" v-ref:aproveform>
+                    <v-form class="rel" :model="aprove" :schema="aproveSchema" ref="aproveform">
                         <div class='field'>
-                            <label style="width:120px;">Operate</label>
+                            <label style="width:120px;">{{$t('button.operate')}}</label>
                             <div class="field-content" style="margin-left:120px;">
                                 <div class="cell-g">
                                     <div class="cell-1-1">
@@ -177,8 +177,8 @@
         </ui-collapsible>
     </panel>
     <div class="btn-group">
-        <ui-button color="primary mr20" @click="handleSubmit">Submit</ui-button>
-        <ui-button class="btn-default-bd" @click="handleCancel" type="flat">Cancel</ui-button>
+        <ui-button color="primary mr10" @click="handleSubmit">{{$t('button.submit')}}</ui-button>
+        <ui-button class="btn-default-bd" @click="handleCancel" type="flat">{{$t('button.cancel')}}</ui-button>
     </div>
     <person-selector :show.sync="showModel" :multi-selected="false" :limit="false"></person-selector>
 </div>
@@ -188,10 +188,6 @@
 <script>
 
 import {
-    default as aproveSchema
-}
-from './aprove-schema';
-import {
     default as Schema
 }
 from '../../schema/index';
@@ -200,38 +196,67 @@ import {
 }
 from '../../components/basic/message';
 import {
-    convert
+    convert,
+    getDictMapping,
+    formatDate
 }
-from '../../util/assist';
-let indicatorSchema = new Schema({
-    employeeSelfScore: {
-        label: 'Score',
-        required: true,
-        whitespace: false,
-        rules: {
-            type: 'custom',
-            message: 'Please enter a 1~999 positive integer!',
-            validate() {
-                var isValidate = true;
-                if (this.employeeSelfScore < 0 || this.employeeSelfScore > 999) {
-                    isValidate = false;
-                } else {
-                    if (this.employeeSelfScore % 1 !== 0) {
-                        isValidate = false;
-                    }
-                }
-                return isValidate;
-            }
-        }
-    },
-    comment: {
-        label: 'Comment',
-        required: true,
-        whitespace: false
-    }
-});
+from '../../util/assist.js';
+
 export default {
     data() {
+
+            let indicatorSchema = new Schema({
+                employeeSelfScore: {
+                    label:  this.$t('myperformance.approve.score'),
+                    required: true,
+                    whitespace: false,
+                    rules: {
+                        type: 'custom',
+                        message:  this.$t('myperformance.approve.eee'),
+                        validate() {
+                            var isValidate = true;
+                            if (this.employeeSelfScore < 0 || this.employeeSelfScore > 999) {
+                                isValidate = false;
+                            } else {
+                                if (this.employeeSelfScore % 1 !== 0) {
+                                    isValidate = false;
+                                }
+                            }
+                            return isValidate;
+                        }
+                    }
+                },
+                comment: {
+                    label: this.$t('myperformance.approve.comment'),
+                    required: true,
+                    whitespace: false
+                }
+            });
+
+            let aproveSchema = new Schema({
+                veteran: {
+                    label: this.$t('myperformance.approve.veteran'),
+                    default () {
+                        return '1';
+                    },
+                    mapping: function() {
+                        return getDictMapping('PROCESS_SUBMIT_TYPE');
+                    }
+                },
+                employeeName: {
+                    required: true,
+                    whitespace: false
+                },
+                employeeId: {
+
+                },
+                countryScope: {
+                    multiSelect: false
+                },
+                suggestions: {
+                    label: this.$t('myperformance.approve.suggestions')
+                }
+            });
             return {
                 show: {
                     deleteConfirm: false
@@ -255,16 +280,15 @@ export default {
                 isHasIndicator: false, //显示无数据
                 indicatorSchema: indicatorSchema,
                 indicator: indicatorSchema.newModel(),
-                submitLoading: false
+                submitLoading: false,
+                aproveSchema: aproveSchema
+
 
             };
         },
         computed: {
             submitUrl() {
                     return '/performance/PfmScoreDetails';
-                },
-                aproveSchema() {
-                    return new Schema(aproveSchema);
                 },
                 aprove() {
                     return this.aproveSchema.newModel();
@@ -292,7 +316,7 @@ export default {
                     if (photoId)
                         return Vue.config.APIURL + `/system/attachment/downloadImg/${photoId}`;
                     else
-                        return `/static/images/public/xwz.png`;
+                        return `/assets/images/public/xwz.png`;
                 },
                 memoList() {
                     this.$http.get(`/process/performanceApproval/procInst/${this.$route.params.procInstId}/node/memo`).then(response => {

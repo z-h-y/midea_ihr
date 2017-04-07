@@ -1,23 +1,21 @@
 <style lang="less">
 
-.position-select {
-
-}
+@import "style/select-common.less";
 
 </style>
 
 <template lang="html">
 
-<ui-modal class="position-select" :show.sync="show.modal" type="large" header="Select Position" body="" :backdrop-dismissible="false">
+<ui-modal ref="posselect" class="position-select select-common" type="large" :title="$t('selectors.selectPosition')" body="" :backdrop-dismissible="false">
     <div class="tree-panel fix">
         <div class="treelist">
-            <tree :data="regions" :level-config="levelConfig" :show-checkbox="showCheckbox" v-ref:tree :click-node="clickNode"></tree>
+            <tree :data="regions" :level-config="levelConfig" :show-checkbox="showCheckbox" ref="tree" :click-node="clickNode"></tree>
         </div>
         <div class="help-desk treelist-detail">
             <div class="search-ctx">
                 <div class="search-pos">
                     <span class="search-bg">
-               <input @keydown="goSearch($event)" class="search-input" placeholder="Search" type="text" v-model="searchTxt" />
+               <input @keydown="goSearch($event)" class="search-input" :placeholder="$t('button.search')" type="text" v-model="searchTxt" />
                <span @click="search" class="search-btn"><i class="fa fa-search"></i></span>
                     </span>
                 </div>
@@ -28,15 +26,9 @@
             </div>
         </div>
     </div>
-    <!-- <div class="bottom-panel">
-        <span class="all-selected-person" v-for="item in allSelectedPer" track-by="$index">
-        {{item.employeeName}}
-        <i class="rm-btn fa fa-times" aria-hidden="true" @click="delPer($index)"></i>
-      </span>
-    </div> -->
     <div slot="footer">
-        <ui-button @click="yes" color="primary">Confirm</ui-button>
-        <ui-button @click="show.modal = false">Cancel</ui-button>
+        <ui-button @click="yes" color="primary">{{$t('button.confirm')}}</ui-button>
+        <ui-button @click="close">{{$t('button.cancel')}}</ui-button>
     </div>
 </ui-modal>
 
@@ -79,16 +71,16 @@ export default {
                 title: ''
             }, {
                 name: 'positionName',
-                title: 'Position Name',
+                title: this.$t('position.label.positionName'),
                 sortField: 'positionName'
                     // callback: 'posName'
             }, {
                 name: 'standardJobName',
-                title: 'Restrict To Title',
+                title: this.$t('position.columns.pSetRestrictToTitle'),
                 sortField: 'standardJobName'
             }, {
                 name: 'mibGrade',
-                title: 'MIB Grade',
+                title: this.$t('position.columns.groupMIBGrade'),
                 sortField: 'mibGrade',
                 callback: function(value) {
                     return _self.fixMIBType(value);
@@ -130,18 +122,21 @@ export default {
             }
         }
     },
-    computed: {
 
-    },
-    ready() {
-        this.$http.get(`/employee/employees/profile`).then((response) => {
+    created() {
+        var _self = this;
+        getDictMapping('MIB_RANK').then(function(res) {
+            _self.dist.MIB_RANK = res;
+        });
+
+        _self.$http.get(`/employee/employees/profile`).then((response) => {
             if (response.data) {
-              let positionId = this.$route.params.positionId || '0';
-              this.tableUrl = `/pos/positions/${response.data.defunitId}/getPositionsByUnitId/${positionId}`;
+                let positionId = _self.$route.params.positionId || '0';
+                _self.tableUrl = `/pos/positions/${response.data.defunitId}/getPositionsByUnitId/${positionId}`;
             }
         });
-        this.$http.get('/org/orgs/0/children').then((response) => {
-            this.regions = response.data;
+        _self.$http.get('/org/orgs/0/children').then((response) => {
+            _self.regions = response.data;
         }, (response) => {
             Message({
                 type: 'error',
@@ -149,14 +144,14 @@ export default {
             });
         });
     },
-    created() {
-        var self = this;
-        getDictMapping('MIB_RANK').then(function(res) {
-            self.dist.MIB_RANK = res;
-        });
-    },
     methods: {
-        fixDist(value, option) {
+        open() {
+                this.$refs['posselect'].open();
+            },
+            close() {
+                this.$refs['posselect'].close()
+            },
+            fixDist(value, option) {
                 var dist = {};
                 switch (option) {
                     case 'MIB_RANK':
@@ -183,13 +178,13 @@ export default {
                         if (i === rows[0]) {
                             _self.selData = item;
                             _self.handleComfirmed(_self.selData, _self.orgGroup);
-                            _self.$dispatch('selected-positiondotted', _self.selData)
+                            _self.$refs['posselect'].close()
                         }
                     })
                 } else {
                     Message({
                         type: 'error',
-                        message: 'Please select a valid node.'
+                        message: 'this.$t("performance.message.reportManage")'
                     })
                 }
             },
@@ -203,9 +198,9 @@ export default {
                 this.tableUrl = `/pos/positions/${unitId}/getPositionsByUnitId/${positionId}?positionName=${positionName}`;
             },
             goSearch(event) {
-              if (event.keyCode === 13) {
-                this.search();
-              }
+                if (event.keyCode === 13) {
+                    this.search();
+                }
             }
     },
     events: {
@@ -214,7 +209,7 @@ export default {
         }
     },
     components: {
-      Tree: require('../tree/tree.vue')
+        Tree: require('../tree/tree.vue')
     }
 }
 

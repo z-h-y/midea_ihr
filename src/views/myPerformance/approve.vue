@@ -14,23 +14,23 @@
             <div class="help-desk-ctn">
                 <ul class="regular fix">
                     <li>
-                        <span class="prop-name">Employee Name</span>
+                        <span class="prop-name">{{ $t('myperformance.viewprocess.employeeName') }}</span>
                         <span class="prop-val">{{basicInfo.employeeName}}</span>
                     </li>
                     <li v-if="basicInfo.pfmType==='1'">
-                        <span class="prop-name">Unit Name</span>
+                        <span class="prop-name">{{ $t('myperformance.viewprocess.unitName') }}</span>
                         <span class="prop-val">{{basicInfo.unitName}}</span>
                     </li>
                     <li>
-                        <span class="prop-name">Position</span>
+                        <span class="prop-name">{{ $t('myperformance.viewprocess.position') }}</span>
                         <span class="prop-val">{{basicInfo.positionName}}</span>
                     </li>
                     <li>
-                        <span class="prop-name">Restrict To Year</span>
+                        <span class="prop-name">{{ $t('myperformance.viewprocess.restricttoYear') }}</span>
                         <span class="prop-val">{{basicInfo.restrictYear}}</span>
                     </li>
                     <li>
-                        <span class="prop-name">Evaluation Location</span>
+                        <span class="prop-name">{{ $t('myperformance.viewprocess.evaluationLocation') }}</span>
                         <span class="prop-val">{{basicInfo.startDate | formatDate }} To {{basicInfo.endDate | formatDate}}</span>
                     </li>
                 </ul>
@@ -38,7 +38,7 @@
         </div>
         <div id="total-indicators" class="total-indicators-head">
             <div class="bte bg">
-                <h3 class="head-title"> Indicators（Weight 100%）</h3>
+                <h3 class="head-title"> {{$t('myperformance.indicatorsWeight')}}</h3>
             </div>
         </div>
         <div id="indicators-ctn-wrap" class="indicators-ctn-wrap">
@@ -52,19 +52,19 @@
                     </div>
                     <div class="indicators-body">
                         <div class="cell-1-1">
-                            <label class="prop-name">Weight</label>
+                            <label class="prop-name">{{$t('myperformance.viewprocess.weight')}}</label>
                             <div class="field-content"><span class="text-editor">{{item.weight}} %</span></div>
                         </div>
                         <div class="cell-1-1">
-                            <label class="prop-name">Targets</label>
+                            <label class="prop-name">{{$t('myperformance.viewprocess.targets')}}</label>
                             <div class="field-content"><span class="text-editor">{{item.target}}</span></div>
                         </div>
                         <div class="cell-1-1">
-                            <label class="prop-name">Criteria/Formula</label>
+                            <label class="prop-name">{{$t('myperformance.viewprocess.criteria')}}</label>
                             <div class="field-content"><span class="text-editor">{{item.criteria}}</span></div>
                         </div>
                         <div class="cell-1-1">
-                            <label class="prop-name">Data Source Dept</label>
+                            <label class="prop-name">{{$t('myperformance.viewprocess.dataSourceDept')}}</label>
                             <div class="field-content"><span class="text-editor">{{item.dataSources}}</span></div>
                         </div>
                     </div>
@@ -72,7 +72,7 @@
             </template>
             <div class="loadding" v-show="loadding"><i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i></div>
         </div>
-        <ui-collapsible :open="true" id="coll-process-history" header="Process History">
+        <ui-collapsible :open="true" id="coll-process-history" :header="$t('myperformance.viewprocess.processHistory')">
             <div id="process-history" class="process-history">
                 <div class="process-history-ctn">
                     <ul class="fix cell-g ">
@@ -110,19 +110,19 @@
             </div>
         </ui-collapsible>
 
-        <ui-collapsible class="mt16" :open="true" id="coll-memo" header="Process Record">
+        <ui-collapsible class="mt16" :open="true" id="coll-memo" :header="$t('myperformance.viewprocess.processRecord')">
             <div id="process-history-list">
                 <div class="process-history-ctn">
                     <table class="vuetable ui blue striped selectable celled stackable attached table">
                         <thead>
                             <tr>
-                                <th>Stage</th>
-                                <th>Role</th>
-                                <th>Recipient</th>
-                                <th>Operation</th>
-                                <th>Suggestion</th>
+                                <th>{{$t('myperformance.stage')}}</th>
+                                <th>{{$t('myperformance.role')}}</th>
+                                <th>{{$t('myperformance.recipient')}}</th>
+                                <th>{{$t('myperformance.operation')}}</th>
+                                <th>{{$t('myperformance.suggestion')}}</th>
                                 <!-- <th></th> -->
-                                <th>Date</th>
+                                <th>{{$t('myperformance.date')}}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -151,9 +151,9 @@
         <ui-collapsible class="mt16" :open="true" id="aprove">
             <div id="process-history-list">
                 <div class="process-history-ctn">
-                    <v-form class="rel" :model="aprove" :schema="aproveSchema" v-ref:aproveform>
+                    <v-form class="rel" :model="aprove" :schema="aproveSchema" ref="aproveform">
                         <div class='field'>
-                            <label style="width:120px;">Operate</label>
+                            <label style="width:120px;">{{$t('button.operate')}}</label>
                             <div class="field-content" style="margin-left:120px;">
                                 <div class="cell-g">
                                     <div class="cell-1-1">
@@ -180,23 +180,25 @@
         </ui-collapsible>
     </panel>
     <div class="btn-group">
-        <ui-button color="primary mr16" @click="handleSubmit">Submit</ui-button>
-        <ui-button class="btn-default-bd ml-4" @click="handleCancel" type="flat">Cancel</ui-button>
+        <ui-button color="primary mr16" @click="handleSubmit">{{$t('button.submit')}}</ui-button>
+        <ui-button class="btn-default-bd ml-4" @click="handleCancel" type="flat">{{$t('button.cancel')}}</ui-button>
     </div>
     <person-selector :show.sync="showModel" :multi-selected="false" :limit="false"></person-selector>
-    <ui-confirm header="Delete" type="danger" confirm-button-text="Delete" confirm-button-icon="delete" deny-button-text="Cancel" @confirmed="deleteConfirmed" @denied="deleteDenied" :show.sync="show.deleteConfirm" close-on-confirm>
-        Are you sure to delete this?
+    <ui-confirm :header="$t('button.delete')" type="danger" :confirm-button-text="$t('button.delete')" confirm-button-icon="delete" :deny-button-text="$t('button.cancel')" @confirmed="deleteConfirmed" @denied="deleteDenied" :show.sync="show.deleteConfirm"
+    close-on-confirm>
+        {{$t('common.deleteConfirm')}}
     </ui-confirm>
 </div>
 
 </template>
 
 <script>
-
 import {
-    default as aproveSchema
+    convert,
+    getDictMapping,
+    formatDate
 }
-from './aprove-schema';
+from '../../util/assist.js';
 import {
     default as Schema
 }
@@ -209,12 +211,34 @@ import {
     default as Message
 }
 from '../../components/basic/message';
-import {
-    convert
-}
-from '../../util/assist';
+
 export default {
     data() {
+            let aproveSchema = new Schema({
+                veteran: {
+                    label: this.$t('myperformance.approve.veteran'),
+                    default () {
+                        return '1';
+                    },
+                    mapping: function() {
+                        return getDictMapping('PROCESS_SUBMIT_TYPE');
+                    }
+                },
+                employeeName: {
+                    required: true,
+                    whitespace: false
+                },
+                employeeId: {
+
+                },
+                countryScope: {
+                    multiSelect: false
+                },
+                suggestions: {
+                    label: this.$t('myperformance.approve.suggestions')
+                }
+            });
+
             return {
                 show: {
                     deleteConfirm: false
@@ -236,7 +260,9 @@ export default {
                 loadding: false, //加载中,
                 isHasIndicator: false, //显示无数据
                 profile: {},
-                submitLoading: false
+                submitLoading: false,
+                aproveSchema: aproveSchema
+
             };
         },
         computed: {
@@ -246,9 +272,6 @@ export default {
                 isSelfEvaluate() {
                     if (this.$route.name === 'selfevaluate') return true;
                     return false;
-                },
-                aproveSchema() {
-                    return new Schema(aproveSchema);
                 },
                 aprove() {
                     return this.aproveSchema.newModel();
@@ -283,7 +306,7 @@ export default {
                     if (photoId)
                         return Vue.config.APIURL + `/system/attachment/downloadImg/${photoId}`;
                     else
-                        return `/static/images/public/xwz.png`;
+                        return `/assets/images/public/xwz.png`;
                 },
                 memoList() {
                     this.$http.get(`/process/performanceApproval/procInst/${this.$route.params.procInstId}/node/memo`).then(response => {

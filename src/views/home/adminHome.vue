@@ -49,13 +49,12 @@
         text-align: center;
         color: #3aa2eb;
         font-size: 36px;
-        background: url("../../static/images/public/roundness.png") no-repeat center center;
+        background: url("../../assets/images/public/roundness.png") no-repeat center center;
     }
     .panel-content-txt {
         font-size: 14px;
         text-align: center;
     }
-
     .contact {
         background: #81cbff;
         position: absolute;
@@ -135,7 +134,7 @@
     <div class="dF mt16">
         <div class="panel">
             <div class="panel-tit">
-                <span>EMPLOYEES</span>
+                <span>{{ $t('home.employees') }}</span>
                 <!-- <a class="panel-more" href="javascript:void(0)">More</a> -->
             </div>
             <div class="panel-content" id="echartsArea">
@@ -146,11 +145,11 @@
     <div class="eF mt16">
         <div class="panel">
             <div class="panel-tit">
-                <span>EVALUATION STATISTICS</span>
+                <span>{{ $t('home.evaluationStatistics') }}</span>
                 <!-- <a class="panel-more" href="javascript:void(0)">More</a> -->
             </div>
             <div class="panel-content">
-                <vuetable :api-url="evaluationUrl" :selected-to="selectedRow" table-wrapper=".vuetable-wrapper" pagination-path="" :fields="columns" per-page="10">
+                <vuetable :api-url="evaluationUrl" :selected-to="selectedRow" table-wrapper=".vuetable-wrapper" pagination-path="" :fields="columns" :item-actions="itemActions" per-page="10">
                 </vuetable>
             </div>
         </div>
@@ -182,45 +181,44 @@ export default {
                 performances: [], //年份绩效
                 evaluationUrl: '/performance/performanceEvaluationStatistics', // 所有绩效方案填写情况统计 url
                 tableData: [],
-                selectedRow: [],
                 status: '',
                 //绩效统计表格字段
                 columns: [{
                     name: 'schemeName',
-                    title: 'Scheme'
+                    title: this.$t('home.columns.homeScheme')
                 }, {
                     name: 'employeeCount',
-                    title: 'Total',
+                    title: this.$t('home.columns.homeTotal'),
                     dataClass: 'tr',
                     callback: 'goPerformanceTotal'
                 }, {
                     name: 'stage1',
-                    title: 'Pending',
+                    title: this.$t('home.columns.homePending'),
                     dataClass: 'tr',
                     callback: 'goPerformancePending'
                 }, {
                     name: 'stage2',
-                    title: 'Under Approval',
+                    title: this.$t('home.columns.homeUnderApproval'),
                     dataClass: 'tr',
                     callback: 'goPerformanceUnder'
                 }, {
                     name: 'stage6',
-                    title: 'Waiting Evaluation',
+                    title: this.$t('home.columns.homeWaitingEvaluation'),
                     dataClass: 'tr',
                     callback: 'goPerformanceWaiting'
                 }, {
                     name: 'stage3',
-                    title: 'Self Evaluation',
+                    title: this.$t('home.columns.homeSelfEvaluation'),
                     dataClass: 'tr',
                     callback: 'goPerformanceSelf'
                 }, {
                     name: 'stage4',
-                    title: 'Mutual Evaluation',
+                    title: this.$t('home.columns.homeMutualEvaluation'),
                     dataClass: 'tr',
                     callback: 'goPerformanceMutual'
                 }, {
                     name: 'stage5',
-                    title: 'Completed',
+                    title: this.$t('home.columns.homeCompleted'),
                     dataClass: 'tr',
                     callback: 'goPerformanceCompleted'
                 }],
@@ -257,7 +255,7 @@ export default {
                     series: [{
                         name: 'grade',
                         type: 'line',
-                        stack: '总量',
+                        stack: this.$t('home.stack'),
                         data: [],
                         smooth: true
                     }]
@@ -274,7 +272,7 @@ export default {
                         trigger: 'axis'
                     },
                     legend: {
-                        data: ['Team Leader', 'Individual Contributor', 'Worker (Non-Front Line)', 'Worker (Front Line)']
+                        data: [this.$t('home.teamLeader'), this.$t('home.individualContributor'), this.$t('home.worker'), this.$t('home.workerFrontLine')]
                     },
                     toolbox: {
                         show: true,
@@ -284,20 +282,20 @@ export default {
                             },
                             dataView: {
                                 show: false,
-                                title: 'data view',
+                                title: this.$t('home.dataView'),
                                 readOnly: true
                             },
                             magicType: {
                                 show: true,
                                 type: ['line', 'bar'],
                                 title: {
-                                    line: 'line',
-                                    bar: 'bar'
+                                    line: this.$t('home.line'),
+                                    bar: this.$t('home.bar')
                                 }
                             },
                             restore: {
                                 show: true,
-                                title: 'restore'
+                                title: this.$t('home.restore')
                             },
                             saveAsImage: {
                                 show: false
@@ -312,7 +310,7 @@ export default {
                     },
                     yAxis: [{
                         type: 'value',
-                        max:''
+                        max: ''
                     }],
                     series: []
                 }
@@ -334,7 +332,7 @@ export default {
                     if (photoId)
                         return Vue.config.APIURL + `/system/attachment/downloadImg/${photoId}`;
                     else
-                        return `../../static/images/public/xwz.png`;
+                        return `../../assets/images/public/xwz.png`;
                 },
                 InitEchart() {
                     this.polar.xAxis.data = this.handleGrade(this.performances, 'restrictYear');
@@ -375,10 +373,10 @@ export default {
                         if (response.data) {
                             this.employeesData = response.data.entitys;
                             this.initEmlp();
-                            if(response.data.maxCount){
-                              this.employeesEC.yAxis[0].max = response.data.maxCount;
-                            }else{
-                              this.employeesEC.yAxis[0].max = 5;
+                            if (response.data.maxCount) {
+                                this.employeesEC.yAxis[0].max = response.data.maxCount;
+                            } else {
+                                this.employeesEC.yAxis[0].max = 5;
                             }
 
                         }
@@ -394,7 +392,7 @@ export default {
                     let wfl = this.handleGrade(this.employeesData, 'workerFrontLine').reverse();
                     let wnfl = this.handleGrade(this.employeesData, 'workerNonFrontLine').reverse();
                     let icObj = {
-                        name: 'Individual Contributor',
+                        name: this.$t('home.icObjIndividualContributor'),
                         type: 'line',
                         smooth: true,
                         itemStyle: {
@@ -407,7 +405,7 @@ export default {
                         data: ic
                     };
                     let tlObj = {
-                        name: 'Team Leader',
+                        name: this.$t('home.tlObjTeamLeader'),
                         type: 'line',
                         smooth: true,
                         itemStyle: {
@@ -420,7 +418,7 @@ export default {
                         data: tl
                     };
                     let wflObj = {
-                        name: 'Worker (Front Line)',
+                        name: this.$t('home.wflObjWorkerFrontLine'),
                         type: 'line',
                         smooth: true,
                         itemStyle: {
@@ -433,7 +431,7 @@ export default {
                         data: wfl
                     }
                     let wnflObj = {
-                        name: 'Worker (Non-Front Line)',
+                        name: this.$t('home.wnflObjWorkeNonFrontLine'),
                         type: 'line',
                         smooth: true,
                         itemStyle: {

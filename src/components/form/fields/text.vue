@@ -16,7 +16,7 @@
 
 <template lang="html">
 
-<div class="field textfield" :class="{'validate-error':hintType === 'error',require:isRequired,'field-hashint':!hideHint}">
+<div :class="['field', 'textfield', fieldClass, {'validate-error':hintType === 'error',require:isRequired,'field-hashint':!hideHint}]">
     <label :style="{width:labelWidth != null ? labelWidth + 'px' :'' }" v-show="!hideLabel">{{ labelText }}</label>
     <div class="field-content" :style="{ marginLeft:labelWidth != null ? labelWidth + 'px' : ''}	">
         <editor></editor>
@@ -50,6 +50,10 @@ const TYPES_MAP = {
 
 export default {
     props: merge({
+        labelWidth: {
+          type: String,
+          default: '0'
+        },
         type: {
             type: String
         },
@@ -71,9 +75,16 @@ export default {
             default: false
         }
     }, common.props),
-    events: common.events,
+    // events: common.events,
     data() {
-        return {};
+        return {
+          form: {},
+          model: {},
+          editorFocused: true,
+          // labelWidth: 120,
+          label: '',
+          hintMessage: ''
+      };
     },
     components: {
         editor: {
@@ -83,7 +94,15 @@ export default {
                 TextEditor: require('../text-editor.vue')
             },
             created() {
-               this.$options.template = `<text-editor :style="{ width: $parent.realEditorWidth ? $parent.realEditorWidth : '' }" @focus="$parent.handleFocus" type="${this.$parent.editorType}" :value.sync="${'$parent.model.' + this.$parent.property}" :maxlength="$parent.maxlength" :min-date.sync="$parent.minDate" :max-date.sync="$parent.maxDate" :height="$parent.editorHeight" :placeholder="$parent.placeholder || ''" :readonly="$parent.readonly" :show.sync="$parent.show"/>`;
+               this.$options.template = `<text-editor @open-selector="openSelector" v-on:set-value="setValue" :style="{ width: $parent.realEditorWidth ? $parent.realEditorWidth : '' }" @focus="$parent.handleFocus" type="${this.$parent.editorType}" :value.sync="${'$parent.model.' + this.$parent.property}" :maxlength="$parent.maxlength" :min-date.sync="$parent.minDate" :max-date.sync="$parent.maxDate" :height="$parent.editorHeight" :placeholder="$parent.placeholder || ''" :readonly="$parent.readonly" :show="$parent.show"/>`;
+            },
+            methods: {
+              openSelector() {
+                this.$parent.$emit('open-selector');
+              },
+              setValue(val) {
+                this.$parent.model[ this.$parent.property] = val;
+              }
             }
         }
     },
@@ -109,18 +128,21 @@ export default {
         }
     }, common.computed),
 
-    created: common.onCreated,
-
+    created() {
+      if (this.$parent.$isForm) {
+          this.form = this.$parent;
+          if (this.form && this.form.model) {
+              this.model = this.form.model;
+          }
+      }
+      this.editorFocused = false;
+      if(this.readonly) {
+        this.editorFocused = true;
+      }
+    },
     destroyed: common.onDestroyed,
 
-    beforeCompile() {
-        this.editorFocused = false;
-        if(this.readonly) {
-          this.editorFocused = true;
-        }
-    },
-
-    compiled: common.onCompiled,
+    mounted: common.onMounted,
 
     methods: merge({
         handleFocus() {

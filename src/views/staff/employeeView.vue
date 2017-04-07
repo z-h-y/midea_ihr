@@ -192,44 +192,44 @@
 <template lang="html">
 
     <div class="content-wrap bg-w ihr-staff-edit">
-        <ui-confirm header="Delete" @confirmed="delList" :show.sync="showdel" close-on-confirm>
-            Do you want to delete this?
+        <ui-confirm header="Delete" @confirmed="delList" :show="showdel" close-on-confirm>
+            {{$t('common.deleteConfirm')}}
         </ui-confirm>
-        <employee-common-info v-ref:employeecommoninfo :employee-id="employeeId" :employee-info.sync="employeeInfo" :edit-able="!isResign"></employee-common-info>
+        <employee-common-info ref="employeecommoninfo" :employee-id="employeeId" :employee-info="employeeInfo" :edit-able="!isResign"></employee-common-info>
         <div class="editTabs update-emp-form">
-          <ui-tabs type="text">
-            <ui-tab header="Basic Information" id='basic-info'>
+          <ui-tabs type="text" @tab-change="tabChange">
+            <ui-tab :title="$t('staff.basicInformation')" id='basic-info'>
               <div class="edit-tab">
                 <div class="tab-header">
-                  <span>Personal Information</span>
+                  <span>{{$t('staff.personalInfo')}}</span>
                   <i v-show="!show.perInfo && !isResign" class="fa fa-pencil-square-o" aria-hidden="true" @click="edit('perInfo')"></i>
                 </div>
                 <div class="tab-content" :class="{'edit-bg': show.perInfo}">
                   <ul class="fix" v-show="!show.perInfo">
-                    <li><span>Given Name</span>{{ employeeInfo.givenName }}</li>
-                    <li><span>Middle Name</span>{{ employeeInfo.middleName }}</li>
-                    <li><span>Family Name</span>{{ employeeInfo.familyName }}</li>
-                    <li><span>Preferred Name</span>{{ employeeInfo.preferredName }}</li>
-                    <li><span>Gender</span>{{ fixDist(employeeInfo.gender, 'gender') }}</li>
-                    <li><span>Blood Type</span>{{ fixDist(employeeInfo.bloodType, 'bloodType') }}</li>
-                    <li><span>Citizenship</span>{{ employeeInfo.areaCitizenshipName }}</li>
-                    <li><span>Date of Birth</span>{{ employeeInfo.birthDate }}</li>
-                    <li><span>Place of Birth</span>{{ employeeInfo.placeBirthName }}</li>
-                    <li><span>Marital Status</span>{{ fixDist(employeeInfo.maritalStatus, 'maritalStatus') }}</li>
-                    <li v-if="!isOutsource"><span>ID Registered Address</span>{{ employeeInfo.idRegisteredAddress }}</li>
-                    <li v-if="!isOutsource"><span>English Level</span>{{ fixDist(employeeInfo.englishLevel, 'englishLevel') }}</li>
-                    <li v-if="isEmployee"><span>Recruited From</span>{{ fixDist(employeeInfo.employeeSource, 'employeeSource') }}</li>
-                    <li><span>Overtime Classification</span>{{ fixDist(employeeInfo.isOvertimeValid, 'overtimeValid') }}</li>
-                    <li><span>ID Tpye</span>{{ fixDist(employeeInfo.idType, 'idTypeDist') }}</li>
-                    <li><span>ID Number</span>{{ employeeInfo.idNumber }}</li>
-                    <li><span>Issue Date Of ID</span>{{ getIdDate(employeeInfo.dictPassportList, 'IssueDate') }}</li>
-                    <li><span>Expiry Date Of ID</span>{{ getIdDate(employeeInfo.dictPassportList, 'ExpiryDate') }}</li>
-                    <li v-if="!isOutsource"><span>Emergency Contact Name</span>{{ employeeInfo.emergencyContact }}</li>
-                    <li v-if="!isOutsource"><span>Emergency Contact Phone</span>{{ employeeInfo.emergencyContactPhone }}</li>
-                    <li><span>Date of Starting work</span>{{ employeeInfo.startWorkDate }}</li>
+                    <li><span>{{$t('staff.givenName')}}</span>{{ employeeInfo.givenName }}</li>
+                    <li><span>{{$t('staff.middleName')}}</span>{{ employeeInfo.middleName }}</li>
+                    <li><span>{{$t('staff.familyName')}}</span>{{ employeeInfo.familyName }}</li>
+                    <li><span>{{$t('staff.preferredName')}}</span>{{ employeeInfo.preferredName }}</li>
+                    <li><span>{{$t('staff.gender')}}</span>{{ fixDist(employeeInfo.gender, 'gender') }}</li>
+                    <li><span>{{$t('staff.bloodType')}}</span>{{ fixDist(employeeInfo.bloodType, 'bloodType') }}</li>
+                    <li><span>{{$t('staff.citizenship')}}</span>{{ employeeInfo.areaCitizenshipName }}</li>
+                    <li><span>{{$t('staff.dateofBirth')}}</span>{{ employeeInfo.birthDate }}</li>
+                    <li><span>{{$t('staff.placeofBirth')}}</span>{{ employeeInfo.placeBirthName }}</li>
+                    <li><span>{{$t('staff.maritalStatus')}}</span>{{ fixDist(employeeInfo.maritalStatus, 'maritalStatus') }}</li>
+                    <li v-if="!isOutsource"><span>{{$t('staff.IDRegisteredAddress')}}</span>{{ employeeInfo.idRegisteredAddress }}</li>
+                    <li v-if="!isOutsource"><span>{{$t('staff.englishLevel')}}</span>{{ fixDist(employeeInfo.englishLevel, 'englishLevel') }}</li>
+                    <li v-if="isEmployee"><span>{{$t('staff.recruitedFrom')}}</span>{{ fixDist(employeeInfo.employeeSource, 'employeeSource') }}</li>
+                    <li><span>{{$t('staff.overtimeClassification')}}</span>{{ fixDist(employeeInfo.isOvertimeValid, 'overtimeValid') }}</li>
+                    <li><span>{{$t('staff.idType')}}</span>{{ fixDist(employeeInfo.idType, 'idTypeDist') }}</li>
+                    <li><span>{{$t('staff.IDNumber')}}</span>{{ employeeInfo.idNumber }}</li>
+                    <li><span>{{$t('staff.issueDateOfID')}}</span>{{ getIdDate(employeeInfo.dictPassportList, 'IssueDate') }}</li>
+                    <li><span>{{$t('staff.expiryDateOfID')}}</span>{{ getIdDate(employeeInfo.dictPassportList, 'ExpiryDate') }}</li>
+                    <li v-if="!isOutsource"><span>{{$t('staff.emergencyContactName')}}</span>{{ employeeInfo.emergencyContact }}</li>
+                    <li v-if="!isOutsource"><span>{{$t('staff.emergencyContactPhone')}}</span>{{ employeeInfo.emergencyContactPhone }}</li>
+                    <li><span>{{$t('staff.dateofStartingwork')}}</span>{{ employeeInfo.startWorkDate }}</li>
                   </ul>
                   <div class="edit-form" v-show="show.perInfo">
-                    <v-form v-ref:perinfoform :model="perInfo" :schema="internsPerSchema" label-width="250" label-suffix="" :cols="3" form-style="update-interns-form">
+                    <v-form ref="perinfoform" :model="perInfo" :schema="internsPerSchema" label-width="250" label-suffix="" :cols="3" form-style="update-interns-form">
                         <text-field v-if="!isMyProfile" property='givenName' editor-width="250"></text-field>
                         <text-field v-if="!isMyProfile" property='middleName' editor-width="250"></text-field>
                         <text-field v-if="!isMyProfile" property='familyName' editor-width="250"></text-field>
@@ -238,7 +238,7 @@
                         <select-field v-if="!isMyProfile" property="bloodType" :mapping="dist.bloodType" editor-width="250"></select-field>
                         <select-field v-if="!isMyProfile" property="areaCitizenship" :mapping="dist.area" editor-width="250"></select-field>
                         <text-field v-if="!isMyProfile" property="birthDate" :max-date="curDate" editor-width="250"></text-field>
-                        <text-field v-if="!isMyProfile" property="placeBirthName" type="selector" :readonly="true" :show.sync="selector.placeBirth" editor-width="250"></text-field>
+                        <text-field v-if="!isMyProfile" @open-selector="openSelector('placeselect')" property="placeBirthName" type="selector" :readonly="true" :show="selector.placeBirth" editor-width="250"></text-field>
                         <select-field property="maritalStatus" :mapping="dist.maritalStatus" editor-width="250"></select-field>
                         <text-field v-if="!isOutsource && !isMyProfile" property='idRegisteredAddress' editor-width="250"></text-field>
                         <select-field v-if="!isOutsource && !isMyProfile" property="englishLevel" :mapping="dist.englishLevel" editor-width="250"></select-field>
@@ -247,48 +247,48 @@
                         <text-field property='emergencyContact' editor-width="250" v-if="!isOutsource"></text-field>
                         <text-field property='emergencyContactPhone' type="number" editor-width="250" v-if="!isOutsource"></text-field>
                     </v-form>
-                    <tree-data-selector :tree-data="treeArea" url="/org/area/${}/child" head-text="Place Selector" label-id="areaId" label-name="areaName" :handle-comfirmed="selectPlaceBirth" :show.sync="selector.placeBirth"></tree-data-selector>
+                    <tree-data-selector ref="placeselect" :tree-data="treeArea" url="/org/area/${}/child" :head-text="$t('selectors.selectPlace')" label-id="areaId" label-name="areaName" :handle-comfirmed="selectPlaceBirth" :show="selector.placeBirth"></tree-data-selector>
                     <div class="save-info-group">
-                        <ui-button color="primary mr10" @click="submitForm('perInfo')" :loading="loading.perInfo">Save</ui-button>
-                        <ui-button class="btn-default-bd" @click="cancel('perInfo')" type="flat">Cancel</ui-button>
+                        <ui-button color="primary mr10" @click="submitForm('perInfo')" :loading="loading.perInfo">{{$t('button.save')}}</ui-button>
+                        <ui-button class="btn-default-bd" @click="cancel('perInfo')" type="flat">{{$t('button.cancel')}}</ui-button>
                     </div>
                   </div>
                 </div>
               </div>
               <div class="edit-tab">
                 <div class="tab-header">
-                  <span>ID Information</span>
+                  <span>{{$t('staff.IDInformation')}}</span>
                   <i v-show="!show.idInfo && !isResign && !isMyProfile" class="fa fa-plus-square-o" aria-hidden="true" @click="add('idInfo')"></i>
                 </div>
                 <div class="id-tab">
                   <div class="id-head fix">
-                    <span class="require">ID Type</span>
-                    <span class="require">ID Number</span>
-                    <span>Issue Date Of ID</span>
-                    <span>Expiry Date Of ID</span>
-                    <span>ID Attachment</span>
-                    <span>Primary ID</span>
+                    <span class="require">{{$t('staff.idType')}}</span>
+                    <span class="require">{{$t('staff.IDNumber')}}</span>
+                    <span>{{$t('staff.issueDateOfID')}}</span>
+                    <span>{{$t('staff.expiryDateOfID')}}</span>
+                    <span>{{$t('staff.IDAttachment')}}</span>
+                    <span>{{$t('staff.primaryID')}}</span>
                   </div>
-                  <div class="id-list fix" v-for="item in employeeInfo.dictPassportList">
+                  <div class="id-list fix" v-for="(item, index) in employeeInfo.dictPassportList">
                     <span>{{fixDist(item.idType, 'idTypeDist')}}</span>
                     <span>{{item.idNumber}}</span>
                     <span>{{item.idIssueDate}}</span>
                     <span>{{item.idExpiredDate}}</span>
-                    <span><em class="down-file" v-if="item.attachmentId" @click="downFile($index)"><i class="fa fa-cloud-download id-file-download" aria-hidden="true"></i>{{item.attachmentName}}</em></span>
+                    <span><em class="down-file" v-if="item.attachmentId" @click="downFile(index)"><i class="fa fa-cloud-download id-file-download" aria-hidden="true"></i>{{item.attachmentName}}</em></span>
                     <span>{{fixDist(item.mainDocuments, mainDocumentsDist)}}</span>
-                    <span class="list-operate" v-show="!isResign && !isMyProfile"><i class="fa fa-pencil-square-o" aria-hidden="true" @click="edit('idInfo', $index)"></i><i v-show="item.mainDocuments !== '1'" class="fa fa-trash-o" aria-hidden="true" @click="del('idInfo', $index)"></i></span>
+                    <span class="list-operate" v-show="!isResign && !isMyProfile"><i class="fa fa-pencil-square-o" aria-hidden="true" @click="edit('idInfo', index)"></i><i v-show="item.mainDocuments !== '1'" class="fa fa-trash-o" aria-hidden="true" @click="del('idInfo', index)"></i></span>
                   </div>
                   <div class="edit-form edit-bg" v-show="show.idInfo">
-                    <v-form v-ref:idform :model="id" :schema="idSchema" label-width="140" label-suffix="" :cols="6" form-style="update-interns-form">
+                    <v-form ref="idform" :model="id" :schema="idSchema" label-width="140" label-suffix="" :cols="6" form-style="update-interns-form">
                       <select-field :hide-label="true" :readonly="id.mainDocuments === '1' && isEdited" property='idType' :mapping="dist.idTypeDist" :disable-value="getDisableValue(index.id)" editor-width="140"></select-field>
                       <text-field :hide-label="true" :readonly="id.mainDocuments === '1' && isEdited" property='idNumber' editor-width="140"></text-field>
                       <text-field :hide-label="true" property='idIssueDate' editor-width="140" :max-date="id.idExpiredDate || curDate"></text-field>
                       <text-field :hide-label="true" property='idExpiredDate' editor-width="140" :min-date="id.idIssueDate"></text-field>
                       <div class="field id-type-radiogroupfield field-hashint cell-1-6">
-                        <label style="width: 170px;display: none;">ID Attachment</label>
+                        <label style="width: 170px;display: none;">{{$t('staff.IDAttachment')}}</label>
                         <!-- <input-file name="id-type-file" :file-name="idFileName" :change-file="changeIdFile" :del-file="delIdFile" accept="image/gif,image/jpg,image/jpeg,image/png,application/pdf,application/msexcel,application/msword,application/x-zip-compressed"></input-file> -->
                         <div class="id-file-upload">
-                          <file-upload title="upload" class="file-upload" name="file" :post-action="files.url" :extensions="files.extensions" :accept="files.accept" :multiple="files.multiple" :size="files.size" :drop="files.drop"></file-upload>
+                          <file-upload @addFileUpload="addFileUpload" @afterFileUpload="afterFileUpload" :title="$t('button.upload')" class="file-upload" name="file" :post-action="files.url" :extensions="files.extensions" :accept="files.accept" :multiple="files.multiple" :size="files.size" :drop="files.drop"></file-upload>
                           <span class="file-name" :title="idFileName">{{idFileName}}</span>
                           <i v-show="idFileName || idFileName === '0'" class="fa fa-trash-o" aria-hidden="true" @click="delIdFile"></i>
                         </div>
@@ -296,43 +296,43 @@
                       <select-field :hide-label="true" v-show="!isEdited" property='mainDocuments' :mapping="mainDocumentsDist" editor-width="140"></select-field>
                     </v-form>
                     <div class="save-info-group">
-                        <ui-button color="primary mr10" @click="submitForm('idInfo')" :loading="loading.idInfo">Save</ui-button>
-                        <ui-button class="btn-default-bd" @click="cancel('idInfo')" type="flat">Cancel</ui-button>
+                        <ui-button color="primary mr10" @click="submitForm('idInfo')" :loading="loading.idInfo">{{$t('button.save')}}</ui-button>
+                        <ui-button class="btn-default-bd" @click="cancel('idInfo')" type="flat">{{$t('button.cancel')}}</ui-button>
                     </div>
                   </div>
                 </div>
               </div>
               <div class="edit-tab">
                 <div class="tab-header">
-                  <span>Personal Contact</span>
+                  <span>{{$t('staff.personalContact')}}</span>
                   <i v-show="!show.perContact && !isResign" class="fa fa-pencil-square-o" aria-hidden="true" @click="edit('perContact')"></i>
                 </div>
                 <div class="tab-content" :class="{'edit-bg': show.perContact}">
                   <ul class="fix" v-show="!show.perContact">
-                    <li><span>Home Address</span>{{ perContactTemp.homeAddress }}</li>
-                    <li><span>City or Town</span>{{ perContactTemp.homeCityTown }}</li>
-                    <li><span>State</span>{{ perContactTemp.homeStateName }}</li>
-                    <li><span>Country</span>{{ perContactTemp.homeCountryName }}</li>
-                    <li><span>ZIP Code(Personal)</span>{{ perContactTemp.homeZipcode }}</li>
-                    <li><span>Phone(Personal)</span>{{ perContactTemp.personalPhone }}</li>
-                    <li><span>Mobile(Personal)</span>{{ perContactTemp.personalMobile }}</li>
-                    <li><span>Email(Personal)</span>{{ perContactTemp.personalEmail }}</li>
-                    <li class="staff-border-top"><span>Work Address</span>{{ perContactTemp.workAddress }}</li>
-                    <li class="staff-border-top"><span>City or Town</span>{{ perContactTemp.workCityTown }}</li>
-                    <li><span>State</span>{{ perContactTemp.workStateName }}</li>
-                    <li><span>Country</span>{{ perContactTemp.workCountryName }}</li>
-                    <li><span>ZIP Code(Work)</span>{{ perContactTemp.workZipcode }}</li>
-                    <li><span>Phone(Work)</span>{{ perContactTemp.workPhone }}</li>
-                    <li><span>Mobile(Work)</span>{{ perContactTemp.workMobile }}</li>
-                    <li><span>Email(Work)</span>{{ perContactTemp.workEmail }}</li>
-                    <li class="staff-border-top"><span>Skype</span>{{ perContactTemp.skype }}</li>
-                    <li class="staff-border-top"><span>Facebook</span>{{ perContactTemp.facebook }}</li>
-                    <li><span>Google</span>{{ perContactTemp.google }}</li>
-                    <li><span>Linkedin</span>{{ perContactTemp.linkedin }}</li>
-                    <li><span>Twitter</span>{{ perContactTemp.twitter }}</li>
+                    <li><span>{{$t('staff.homeAddress')}}</span>{{ perContactTemp.homeAddress }}</li>
+                    <li><span>{{$t('staff.cityorTown')}}</span>{{ perContactTemp.homeCityTown }}</li>
+                    <li><span>{{$t('staff.state')}}</span>{{ perContactTemp.homeStateName }}</li>
+                    <li><span>{{$t('staff.country')}}</span>{{ perContactTemp.homeCountryName }}</li>
+                    <li><span>{{$t('staff.ZIPCodePersonal')}}</span>{{ perContactTemp.homeZipcode }}</li>
+                    <li><span>{{$t('staff.phonePersonal')}}</span>{{ perContactTemp.personalPhone }}</li>
+                    <li><span>{{$t('staff.mobilePersonal')}}</span>{{ perContactTemp.personalMobile }}</li>
+                    <li><span>{{$t('staff.emailPersonal')}}</span>{{ perContactTemp.personalEmail }}</li>
+                    <li class="staff-border-top"><span>{{$t('staff.workAddress')}}</span>{{ perContactTemp.workAddress }}</li>
+                    <li class="staff-border-top"><span>{{$t('staff.cityorTown')}}</span>{{ perContactTemp.workCityTown }}</li>
+                    <li><span>{{$t('staff.state')}}</span>{{ perContactTemp.workStateName }}</li>
+                    <li><span>{{$t('staff.country')}}</span>{{ perContactTemp.workCountryName }}</li>
+                    <li><span>{{$t('staff.ZIPCodeWork')}}</span>{{ perContactTemp.workZipcode }}</li>
+                    <li><span>{{$t('staff.phoneWork')}}</span>{{ perContactTemp.workPhone }}</li>
+                    <li><span>{{$t('staff.mobileWork')}}</span>{{ perContactTemp.workMobile }}</li>
+                    <li><span>{{$t('staff.emailWork')}}</span>{{ perContactTemp.workEmail }}</li>
+                    <li class="staff-border-top"><span>{{$t('staff.skype')}}</span>{{ perContactTemp.skype }}</li>
+                    <li class="staff-border-top"><span>{{$t('staff.facebook')}}</span>{{ perContactTemp.facebook }}</li>
+                    <li><span>{{$t('staff.google')}}</span>{{ perContactTemp.google }}</li>
+                    <li><span>{{$t('staff.linkedin')}}</span>{{ perContactTemp.linkedin }}</li>
+                    <li><span>{{$t('staff.twitter')}}</span>{{ perContactTemp.twitter }}</li>
                   </ul>
                   <div class="edit-form" v-show="show.perContact">
-                    <v-form v-ref:percontactform :model="perContact" :schema="perContactSchema" label-width="250" label-suffix="" :cols="4" form-style="update-interns-form">
+                    <v-form ref="percontactform" :model="perContact" :schema="perContactSchema" label-width="250" label-suffix="" :cols="4" form-style="update-interns-form">
                         <text-field property="homeAddress" editor-width="250"></text-field>
                         <text-field property="homeCityTown" editor-width="250"></text-field>
                         <select-field property="homeState" :mapping="dist.homeStateMapping" editor-width="250"></select-field>
@@ -356,35 +356,35 @@
                         <text-field property="twitter" editor-width="250"></text-field>
                     </v-form>
                     <div class="save-info-group">
-                        <ui-button color="primary mr10" @click="submitForm('perContact')">Save</ui-button>
-                        <ui-button class="btn-default-bd" @click="cancel('perContact')" type="flat">Cancel</ui-button>
+                        <ui-button color="primary mr10" @click="submitForm('perContact')">{{$t('button.save')}}</ui-button>
+                        <ui-button class="btn-default-bd" @click="cancel('perContact')" type="flat">{{$t('button.cancel')}}</ui-button>
                     </div>
                   </div>
                 </div>
               </div>
               <div class="edit-tab">
                 <div class="tab-header">
-                  <span>Family Information</span>
+                  <span>{{$t('staff.familyInformation')}}</span>
                   <i v-show="!show.familyInfo && !isResign" class="fa fa-plus-square-o" aria-hidden="true" @click="add('familyInfo')"></i>
                 </div>
                 <div class="family-tab">
                   <div class="family-head fix">
-                    <span class="require">Name</span>
-                    <span class="require">Relationship</span>
-                    <span>Internal Relatives</span>
-                    <span>Company</span>
-                    <span>Primary Phone</span>
+                    <span class="require">{{$t('staff.name')}}</span>
+                    <span class="require">{{$t('staff.relationship')}}</span>
+                    <span>{{$t('staff.internalRelatives')}}</span>
+                    <span>{{$t('staff.company')}}</span>
+                    <span>{{$t('staff.primaryPhone')}}</span>
                   </div>
-                  <div class="family-list fix" v-for="item in familyList">
+                  <div class="family-list fix" v-for="(item, index) in familyList">
                     <span>{{item.name}}</span>
                     <span>{{fixDist(item.relationship, 'relationshipDist')}}</span>
                     <span>{{fixDist(item.isInternalRelatives, 'whetherType')}}</span>
                     <span>{{item.familyCompany}}</span>
                     <span class="list-last-el">{{item.primaryPhone}}</span>
-                    <span class="list-operate" v-show="!isResign"><i class="fa fa-pencil-square-o" aria-hidden="true" @click="edit('familyInfo', $index)"></i><i class="fa fa-trash-o" aria-hidden="true" @click="del('familyInfo', $index)"></i></span>
+                    <span class="list-operate" v-show="!isResign"><i class="fa fa-pencil-square-o" aria-hidden="true" @click="edit('familyInfo', index)"></i><i class="fa fa-trash-o" aria-hidden="true" @click="del('familyInfo', index)"></i></span>
                   </div>
                   <div class="edit-form edit-bg" v-show="show.familyInfo">
-                    <v-form v-ref:familyform :model="family" :schema="familySchema" label-width="190" label-suffix="" :cols="5" form-style="update-interns-form">
+                    <v-form ref="familyform" :model="family" :schema="familySchema" label-width="190" label-suffix="" :cols="5" form-style="update-interns-form">
                         <text-field :hide-label="true" property="name" editor-width="190"></text-field>
                         <select-field :hide-label="true" property="relationship" :mapping="dist.relationshipDist" editor-width="190"></select-field>
                         <radiogroup-field :mapping="dist.whetherType" :hide-label="true" property="isInternalRelatives" editor-width="190"></radiogroup-field>
@@ -392,24 +392,24 @@
                         <text-field :hide-label="true" property="primaryPhone" editor-width="190"></text-field>
                     </v-form>
                     <div class="save-info-group">
-                        <ui-button color="primary mr10" @click="submitForm('familyInfo')">Save</ui-button>
-                        <ui-button class="btn-default-bd" @click="cancel('familyInfo')" type="flat">Cancel</ui-button>
+                        <ui-button color="primary mr10" @click="submitForm('familyInfo')">{{$t('button.save')}}</ui-button>
+                        <ui-button class="btn-default-bd" @click="cancel('familyInfo')" type="flat">{{$t('button.cancel')}}</ui-button>
                     </div>
                   </div>
                 </div>
               </div>
               <div class="edit-tab">
                 <div class="tab-header">
-                  <span>Bank & Tax</span>
+                  <span>{{$t('staff.bankTax')}}</span>
                   <i v-show="!show.bankInfo && !isResign && !isMyProfile" class="fa fa-pencil-square-o" aria-hidden="true" @click="edit('bankInfo')"></i>
                 </div>
                 <div class="tab-content bank-tab" :class="{'edit-bg': show.bankInfo}">
                   <div class="list-head fix">
-                    <span class="require">Branch Name of Bank</span>
-                    <span class="require">Bank Holder</span>
-                    <span class="require">Bank Account Number</span>
-                    <span class="require">Medical Insurance Number</span>
-                    <span class="require">Taxable Number</span>
+                    <span class="require">{{$t('staff.branchNameofBank')}}</span>
+                    <span class="require">{{$t('staff.bankHolder')}}</span>
+                    <span class="require">{{$t('staff.bankAccountNumber')}}</span>
+                    <span class="require">{{$t('staff.medicalInsuranceNumber')}}</span>
+                    <span class="require">{{$t('staff.taxableNumber')}}</span>
                   </div>
                   <div class="list-body fix" v-show="!show.bankInfo">
                     <span>{{ bankTemp.brakName }}</span>
@@ -419,7 +419,7 @@
                     <span>{{ bankTemp.taxableNumber }}</span>
                   </div>
                   <div class="edit-form" v-show="show.bankInfo">
-                    <v-form v-ref:bankform :model="bank" :schema="bankSchema" label-width="200" label-suffix="" :cols="5" form-style="update-interns-form">
+                    <v-form ref="bankform" :model="bank" :schema="bankSchema" label-width="200" label-suffix="" :cols="5" form-style="update-interns-form">
                         <text-field :hide-label="true" property="brakName" editor-width="200"></text-field>
                         <text-field :hide-label="true" property="bankHolder" editor-width="200"></text-field>
                         <text-field :hide-label="true" property="bankNumber" editor-width="200"></text-field>
@@ -427,53 +427,53 @@
                         <text-field :hide-label="true" property="taxableNumber" editor-width="200"></text-field>
                     </v-form>
                     <div class="save-info-group">
-                        <ui-button color="primary mr10" @click="submitForm('bankInfo')">Save</ui-button>
-                        <ui-button class="btn-default-bd" @click="cancel('bankInfo')" type="flat">Cancel</ui-button>
+                        <ui-button color="primary mr10" @click="submitForm('bankInfo')">{{$t('button.save')}}</ui-button>
+                        <ui-button class="btn-default-bd" @click="cancel('bankInfo')" type="flat">{{$t('button.cancel')}}</ui-button>
                     </div>
                   </div>
                 </div>
               </div>
             </ui-tab>
-            <ui-tab header="Job Information" id='job-info'>
+            <ui-tab :title="$t('staff.jobInformation')" id='job-info'>
               <div class="edit-tab">
                 <div class="tab-header">
-                  <span>Job Information</span>
+                  <span>{{$t('staff.jobInformation')}}</span>
                   <i v-show="!show.jobInfo && !isResign && !isMyProfile" class="fa fa-pencil-square-o" aria-hidden="true" @click="edit('jobInfo')"></i>
                 </div>
                 <div class="tab-content" :class="{'edit-bg': show.jobInfo}">
                   <ul class="fix" v-show="!show.jobInfo">
-                    <li><span>Employee ID</span>{{ employeeInfo.employeeCode }}</li>
-                    <li v-if="!isInterns"><span>Local Employee ID</span>{{ employeeInfo.localEmployeeCode }}</li>
-                    <li v-if="!isMyProfile"><span>MIB Position</span>{{ employeeInfo.positionName }}</li>
-                    <li><span>Position</span>{{ employeeInfo.businessCardTitle }}</li>
-                    <li><span>Organization</span>{{ employeeInfo.unitShortName }}</li>
-                    <li v-if="isInterns"><span>Mentor</span>{{ employeeInfo.mentor }}</li>
-                    <li v-if="isEmployee"><span>Report Line</span>{{ employeeInfo.parentEmployeeName }}</li>
-                    <li v-if="isEmployee"><span>Employement Category</span>{{ fixDist(employeeInfo.employementCategory, 'employementCategory') }}</li>
-                    <li v-if="!isMyProfile"><span>MIB Grade</span>{{ employeeInfo.mibGrade }}</li>
-                    <li><span>Job Grade</span>{{ employeeInfo.localJobGrade }}</li>
-                    <li v-if="isEmployee"><span>Office Address</span>{{ employeeInfo.officeAddress }}</li>
-                    <li v-if="isEmployee"><span>Hire Date</span>{{ employeeInfo.hireDate | formatDate }}</li>
-                    <li v-if="isEmployee"><span>Probation</span>{{ fixDist(employeeInfo.isProbation, 'whetherType') }}</li>
-                    <li v-if="isEmployee"><span>Start Date Of Probation</span>{{ employeeInfo.probationBeginDate | formatDate }}</li>
-                    <li v-if="isEmployee"><span>End Date Of Probation</span>{{ employeeInfo.probationEndDate | formatDate }}</li>
-                    <li v-if="isEmployee"><span>Status Of Employee</span>{{ fixDist(employeeInfo.employeeStatus, 'employeeStatus') }}</li>
-                    <li v-if="isOutsource"><span>Start Date Of Outsourcing</span>{{ employeeInfo.registerDate | formatDate }}</li>
-                    <li v-if="isOutsource && isResign"><span>End Date Of Outsourcing</span>{{ employeeInfo.endDate | formatDate }}</li>
-                    <li v-if="isInterns"><span>Start Date Of Internship</span>{{ employeeInfo.registerDate | formatDate }}</li>
-                    <li v-if="isInterns && isResign"><span>End Date Of Internship</span>{{ employeeInfo.endDate | formatDate }}</li>
+                    <li><span>{{$t('staff.employeeId')}}</span>{{ employeeInfo.employeeCode }}</li>
+                    <li v-if="!isInterns"><span>{{$t('staff.localEmployeeId')}}</span>{{ employeeInfo.localEmployeeCode }}</li>
+                    <li v-if="!isMyProfile"><span>{{$t('staff.mibPostion')}}</span>{{ employeeInfo.positionName }}</li>
+                    <li><span>{{$t('staff.position')}}</span>{{ employeeInfo.businessCardTitle }}</li>
+                    <li><span>{{$t('staff.organization')}}</span>{{ employeeInfo.unitShortName }}</li>
+                    <li v-if="isInterns"><span>{{$t('staff.mentor')}}</span>{{ employeeInfo.mentor }}</li>
+                    <li v-if="isEmployee"><span>{{$t('staff.reportLine')}}</span>{{ employeeInfo.parentEmployeeName }}</li>
+                    <li v-if="isEmployee"><span>{{$t('staff.employementCategory')}}</span>{{ fixDist(employeeInfo.employementCategory, 'employementCategory') }}</li>
+                    <li v-if="!isMyProfile"><span>{{$t('staff.mibGrade')}}</span>{{ employeeInfo.mibGrade }}</li>
+                    <li><span>{{$t('staff.jobGrade')}}</span>{{ employeeInfo.localJobGrade }}</li>
+                    <li v-if="isEmployee"><span>{{$t('staff.officeAddress')}}</span>{{ employeeInfo.officeAddress }}</li>
+                    <li v-if="isEmployee"><span>{{$t('staff.hireDate')}}</span>{{ employeeInfo.hireDate | formatDate }}</li>
+                    <li v-if="isEmployee"><span>{{$t('staff.probation')}}</span>{{ fixDist(employeeInfo.isProbation, 'whetherType') }}</li>
+                    <li v-if="isEmployee"><span>{{$t('staff.startDateOfProbation')}}</span>{{ employeeInfo.probationBeginDate | formatDate }}</li>
+                    <li v-if="isEmployee"><span>{{$t('staff.endDateOfProbation')}}</span>{{ employeeInfo.probationEndDate | formatDate }}</li>
+                    <li v-if="isEmployee"><span>{{$t('staff.statusOfEmployee')}}</span>{{ fixDist(employeeInfo.employeeStatus, 'employeeStatus') }}</li>
+                    <li v-if="isOutsource"><span>{{$t('staff.startDateOfOutsourcing')}}</span>{{ employeeInfo.registerDate | formatDate }}</li>
+                    <li v-if="isOutsource && isResign"><span>{{$t('staff.endDateOfOutsourcing')}}</span>{{ employeeInfo.endDate | formatDate }}</li>
+                    <li v-if="isInterns"><span>{{$t('staff.startDateOfInternship')}}</span>{{ employeeInfo.registerDate | formatDate }}</li>
+                    <li v-if="isInterns && isResign"><span>{{$t('staff.endDateOfInternship')}}</span>{{ employeeInfo.endDate | formatDate }}</li>
                   </ul>
                   <div class="edit-form" v-show="show.jobInfo">
-                    <v-form v-ref:jobform :model="jobInfo" :schema="jobSchema" label-width="250" label-suffix="" :cols="3" form-style="update-interns-form">
+                    <v-form ref="jobform" :model="jobInfo" :schema="jobSchema" label-width="250" label-suffix="" :cols="3" form-style="update-interns-form">
                       <text-field property='localEmployeeCode' editor-width="250" v-if="!isInterns"></text-field>
                       <!-- <text-field property='businessCardTitle' editor-width="250" v-if="isEmployee"></text-field>
                       <text-field property='localJobGrade' editor-width="250" v-if="isEmployee"></text-field> -->
-                      <text-field property="mentor" type="selector" :readonly="true" :show.sync="selector.mentor" editor-width="250" v-if="isInterns"></text-field>
+                      <text-field property="mentor" @open-selector="openSelector('perselect')" type="selector" :readonly="true" :show="selector.mentor" editor-width="250" v-if="isInterns"></text-field>
                     </v-form>
-                    <person-selector :show.sync="selector.mentor" :handle-comfirmed="selectMentor" :multi-selected="false"></person-selector>
+                    <person-selector ref="perselect" :show="selector.mentor" :handle-comfirmed="selectMentor" :multi-selected="false"></person-selector>
                     <div class="save-info-group">
-                        <ui-button color="primary mr10" @click="submitForm('jobInfo')" :loading="loading.jobInfo">Save</ui-button>
-                        <ui-button class="btn-default-bd" @click="cancel('jobInfo')" type="flat">Cancel</ui-button>
+                        <ui-button color="primary mr10" @click="submitForm('jobInfo')" :loading="loading.jobInfo">{{$t('button.save')}}</ui-button>
+                        <ui-button class="btn-default-bd" @click="cancel('jobInfo')" type="flat">{{$t('button.cancel')}}</ui-button>
                     </div>
                   </div>
                 </div>
@@ -481,24 +481,24 @@
 
               <div class="edit-tab">
                 <div class="tab-header">
-                  <span>Contract</span>
+                  <span>{{$t('staff.contract')}}</span>
                   <i v-show="!show.contractInfo && !isResign && !isMyProfile" class="fa fa-pencil-square-o" aria-hidden="true" @click="edit('contractInfo')"></i>
                 </div>
                 <div class="tab-content" :class="{'edit-bg': show.contractInfo}">
                   <ul class="fix" v-show="!show.contractInfo">
-                    <li><span>Contract Number</span>{{ contractTemp.contractNo }}</li>
-                    <li><span>Contract Type</span>{{ fixDist(contractTemp.contractType, 'contractType') }}</li>
-                    <li><span>Start Date</span>{{ contractTemp.startDate }}</li>
-                    <li><span>End Date</span>{{ contractTemp.contractLength !== '2' ? contractTemp.endDate : '' }}</li>
-                    <li><span>Length Of Contract</span>{{ fixDist(contractTemp.contractLength, 'contractLength') }}</li>
-                    <li><span>Subject Of Contract</span>{{ contractTemp.contractSubject }}</li>
-                    <li><span>Confidential Items</span>{{ fixDist(contractTemp.isConfidentia, 'confidentiaTypeDist')   }}</li>
-                    <li><span>Non-competition Items</span>{{ fixDist(contractTemp.isNonCompetition, 'confidentiaTypeDist')  }}</li>
-                    <li><span>Attachment</span><em class="down-file" v-if="contractTemp.confidentiaAgreement && contractTemp.confidentiaAgreementName !== null" @click="downFile('confidentiaAgreement')"><i class="fa fa-cloud-download contract-file-download" aria-hidden="true"></i>{{contractTemp.confidentiaAgreementName}}</em></li>
+                    <li><span>{{$t('staff.contractNumber')}}</span>{{ contractTemp.contractNo }}</li>
+                    <li><span>{{$t('staff.contractType')}}</span>{{ fixDist(contractTemp.contractType, 'contractType') }}</li>
+                    <li><span>{{$t('staff.startDate')}}</span>{{ contractTemp.startDate }}</li>
+                    <li><span>{{$t('staff.endDate')}}</span>{{ contractTemp.contractLength !== '2' ? contractTemp.endDate : '' }}</li>
+                    <li><span>{{$t('staff.lengthOfContract')}}</span>{{ fixDist(contractTemp.contractLength, 'contractLength') }}</li>
+                    <li><span>{{$t('staff.subjectOfContract')}}</span>{{ contractTemp.contractSubject }}</li>
+                    <li><span>{{$t('staff.confidentialItems')}}</span>{{ fixDist(contractTemp.isConfidentia, 'confidentiaTypeDist')   }}</li>
+                    <li><span>{{$t('staff.nonCompetitionItems')}}</span>{{ fixDist(contractTemp.isNonCompetition, 'confidentiaTypeDist')  }}</li>
+                    <li><span>{{$t('staff.attachment')}}</span><em class="down-file" v-if="contractTemp.confidentiaAgreement && contractTemp.confidentiaAgreementName !== null" @click="downFile('confidentiaAgreement')"><i class="fa fa-cloud-download contract-file-download" aria-hidden="true"></i>{{contractTemp.confidentiaAgreementName}}</em></li>
                     <!-- <li><span>Non Confidential Agreement</span><em class="down-file" v-if="contractTemp.nonCompetitionAgreement" @click="downFile('nonCompetitionAgreement')"><i class="fa fa-cloud-download contract-file-download" aria-hidden="true"></i>{{contractTemp.nonCompetitionAgreementName}}</em></li> -->
                   </ul>
                   <div class="edit-form" v-show="show.contractInfo">
-                    <v-form v-ref:contractform :model="contract" :schema="contractSchema" label-width="250" label-suffix="" :cols="4" form-style="update-interns-form">
+                    <v-form ref="contractform" :model="contract" :schema="contractSchema" label-width="250" label-suffix="" :cols="4" form-style="update-interns-form">
                         <text-field property="contractNo" editor-width="250"></text-field>
                         <select-field property="contractType" :mapping="dist.contractType" editor-width="250"></select-field>
                         <select-field property="contractLength" :mapping="dist.contractLength" editor-width="250" :select-change="changeLength"></select-field>
@@ -513,7 +513,7 @@
                           <!-- <input type="file" class="contract-file" name="confidentiaAgreement" value="" @change="changeFile($event, 'confidentiaAgreement')" accept="image/gif,image/jpg,image/jpeg,image/png,application/pdf,application/msexcel,application/msword,application/x-zip-compressed"> -->
                           <!-- <input-file name="confidentiaAgreement" :file-name="contractTemp.confidentiaAgreementName" :change-file="changeConFile" :del-file="delConFile" accept="image/gif,image/jpg,image/jpeg,image/png,application/pdf,application/msexcel,application/msword,application/x-zip-compressed"></input-file> -->
                           <div class="file-upload-content">
-                            <file-upload v-ref:upload title="upload" class="file-upload" name="confidentiaAgreementFile" :post-action="contractFile.url" :extensions="contractFile.extensions" :accept="contractFile.accept" :multiple="contractFile.multiple" :size="contractFile.size" :drop="contractFile.drop"></file-upload>
+                            <file-upload ref="upload" :title="$t('button.upload')" class="file-upload" name="confidentiaAgreementFile" :post-action="contractFile.url" :extensions="contractFile.extensions" :accept="contractFile.accept" :multiple="contractFile.multiple" :size="contractFile.size" :drop="contractFile.drop"></file-upload>
                             <span class="file-name" :title="contract.confidentiaAgreementName">{{contract.confidentiaAgreementName}}</span>
                             <i v-show="contract.confidentiaAgreementName || contract.confidentiaAgreementName === '0'" class="fa fa-trash-o" aria-hidden="true" @click="delConFile"></i>
                           </div>
@@ -523,8 +523,8 @@
                         </text-increment> -->
                     </v-form>
                     <div class="save-info-group">
-                        <ui-button color="primary mr10" @click="submitForm('contractInfo')">Save</ui-button>
-                        <ui-button class="btn-default-bd" @click="cancel('contractInfo')" type="flat">Cancel</ui-button>
+                        <ui-button color="primary mr10" @click="submitForm('contractInfo')">{{$t('button.save')}}</ui-button>
+                        <ui-button class="btn-default-bd" @click="cancel('contractInfo')" type="flat">{{$t('button.cancel')}}</ui-button>
                     </div>
                   </div>
                 </div>
@@ -532,7 +532,7 @@
 
               <div class="edit-tab" v-if="isEmployee">
                 <div class="tab-header">
-                  <span>Part-Time Information</span>
+                  <span>{{$t('staff.partTimeInformation')}}</span>
                 </div>
                 <div class="vuetable-wrapper">
                   <vuetable :api-url="tableUrl.partTimeUrl" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="tableColumns.partTimeColumns" per-page="10">
@@ -541,22 +541,22 @@
               </div>
 
             </ui-tab>
-            <ui-tab header="Professional Information" id='professional-info'>
+            <ui-tab :title="$t('staff.professionalInformation')" id='professional-info'>
               <div class="edit-tab">
                 <div class="tab-header">
-                  <span>Training Course</span>
+                  <span>{{$t('staff.trainingCourse')}}</span>
                   <i v-show="!show.trainingInfo && !isResign" class="fa fa-plus-square-o" aria-hidden="true" @click="add('trainingInfo')"></i>
                 </div>
                 <div class="training-tab tab-content">
                   <div class="list-head training-head fix">
-                    <span class="require">Training Name</span>
-                    <span class="require">Course</span>
-                    <span class="require">Start Date</span>
-                    <span class="require">End Date</span>
-                    <span>Name of Certificate</span>
-                    <span>Type of Training</span>
+                    <span class="require">{{$t('staff.trainingName')}}</span>
+                    <span class="require">{{$t('staff.course')}}</span>
+                    <span class="require">{{$t('staff.startDate')}}</span>
+                    <span class="require">{{$t('staff.endDate')}}</span>
+                    <span>{{$t('staff.nameofCertificate')}}</span>
+                    <span>{{$t('staff.typeofTraining')}}</span>
                   </div>
-                  <div class="training-list list-body fix" v-for="item in trainingList">
+                  <div class="training-list list-body fix" v-for="(item, index) in trainingList">
                     <div class="fix">
                       <span>{{item.trainingName}}</span>
                       <span>{{item.courses}}</span>
@@ -565,10 +565,10 @@
                       <span>{{item.certificate}}</span>
                       <span class="list-last-el">{{fixDist(item.trainingType, 'trainingType')}}</span>
                     </div>
-                    <span class="list-operate training-operate" v-show="!isResign"><i class="fa fa-pencil-square-o" aria-hidden="true" @click="edit('trainingInfo', $index)"></i><i class="fa fa-trash-o" aria-hidden="true" @click="del('trainingInfo', $index)"></i></span>
+                    <span class="list-operate training-operate" v-show="!isResign"><i class="fa fa-pencil-square-o" aria-hidden="true" @click="edit('trainingInfo', index)"></i><i class="fa fa-trash-o" aria-hidden="true" @click="del('trainingInfo', index)"></i></span>
                   </div>
                   <div class="edit-form edit-bg" v-show="show.trainingInfo">
-                    <v-form v-ref:trainingform :model="training" :schema="trainingSchema" label-width="140" label-suffix="" :cols="6" form-style="update-interns-form">
+                    <v-form ref="trainingform" :model="training" :schema="trainingSchema" label-width="140" label-suffix="" :cols="6" form-style="update-interns-form">
                         <text-field :hide-label="true" property="trainingName" editor-width="140"></text-field>
                         <text-field :hide-label="true" property="courses" editor-width="140"></text-field>
                         <text-field :hide-label="true" property="startDate" :max-date="training.endDate || curDate" editor-width="140"></text-field>
@@ -577,34 +577,34 @@
                         <select-field :hide-label="true" property="trainingType" :mapping="dist.trainingType" editor-width="140"></select-field>
                     </v-form>
                     <div class="save-info-group">
-                        <ui-button color="primary mr10" @click="submitForm('trainingInfo')">Save</ui-button>
-                        <ui-button class="btn-default-bd" @click="cancel('trainingInfo')" type="flat">Cancel</ui-button>
+                        <ui-button color="primary mr10" @click="submitForm('trainingInfo')">{{$t('button.save')}}</ui-button>
+                        <ui-button class="btn-default-bd" @click="cancel('trainingInfo')" type="flat">{{$t('button.cancel')}}</ui-button>
                     </div>
                   </div>
                 </div>
               </div>
               <div class="edit-tab">
                 <div class="tab-header">
-                  <span>Academic Background</span>
+                  <span>{{$t('staff.academicBackground')}}</span>
                   <i v-show="!show.eduInfo && !isResign && !isMyProfile" class="fa fa-plus-square-o" aria-hidden="true" @click="add('eduInfo')"></i>
                 </div>
                 <div class="edu-tab tab-content">
-                  <div class="edu-list fix" v-for="item in eduList">
+                  <div class="edu-list fix" v-for="(item, index) in eduList">
                     <ul class="fix">
-                      <li><span>Alma Mater</span>{{item.institution}}</li>
-                      <li><span>Major</span>{{item.major}}</li>
-                      <li><span>Admission Date</span>{{item.admissionDate}}</li>
-                      <li><span>Graduation Date</span>{{item.graduationDate}}</li>
-                      <li><span>Academic Degree</span>{{fixDist(item.educationLevel, 'degree')}}</li>
-                      <li><span>Certificate Number</span>{{item.certificateNumber}}</li>
-                      <li><span>Study Mode</span>{{fixDist(item.learnType, 'learnType')}}</li>
-                      <li><span>Highest-Level Certificate</span>{{fixDist(item.isTopGrade, 'whetherType')}}</li>
-                      <li><span>Graduation Grade</span>{{fixDist(item.grade, 'grade')}}</li>
+                      <li><span>{{$t('staff.almaMater')}}</span>{{item.institution}}</li>
+                      <li><span>{{$t('staff.major')}}</span>{{item.major}}</li>
+                      <li><span>{{$t('staff.admissionDate')}}</span>{{item.admissionDate}}</li>
+                      <li><span>{{$t('staff.graduationDate')}}</span>{{item.graduationDate}}</li>
+                      <li><span>{{$t('staff.academicDegree')}}</span>{{fixDist(item.educationLevel, 'degree')}}</li>
+                      <li><span>{{$t('staff.certificateNumber')}}</span>{{item.certificateNumber}}</li>
+                      <li><span>{{$t('staff.studyMode')}}</span>{{fixDist(item.learnType, 'learnType')}}</li>
+                      <li><span>{{$t('staff.highestLevelCertificate')}}</span>{{fixDist(item.isTopGrade, 'whetherType')}}</li>
+                      <li><span>{{$t('staff.graduationGrade')}}</span>{{fixDist(item.grade, 'grade')}}</li>
                     </ul>
-                    <span class="list-operate edu-operate" v-show="!isResign && !isMyProfile"><i class="fa fa-pencil-square-o" aria-hidden="true" @click="edit('eduInfo', $index)"></i><i v-show="eduList.length > 1" class="fa fa-trash-o" aria-hidden="true" @click="del('eduInfo', $index)"></i></span>
+                    <span class="list-operate edu-operate" v-show="!isResign && !isMyProfile"><i class="fa fa-pencil-square-o" aria-hidden="true" @click="edit('eduInfo', index)"></i><i v-show="eduList.length > 1" class="fa fa-trash-o" aria-hidden="true" @click="del('eduInfo', index)"></i></span>
                   </div>
                   <div class="edit-form edit-bg" v-show="show.eduInfo">
-                    <v-form v-ref:eduform :model="edu" :schema="eduSchema" label-width="220" label-suffix="" :cols="4" form-style="update-interns-form">
+                    <v-form ref="eduform" :model="edu" :schema="eduSchema" label-width="220" label-suffix="" :cols="4" form-style="update-interns-form">
                         <text-field property="institution" editor-width="220"></text-field>
                         <text-field property="major" editor-width="220"></text-field>
                         <text-field property="admissionDate" :max-date="edu.graduationDate" editor-width="220"></text-field>
@@ -616,58 +616,58 @@
                         <select-field property="grade" :mapping="dist.grade" editor-width="220"></select-field>
                     </v-form>
                     <div class="save-info-group">
-                        <ui-button color="primary mr10" @click="submitForm('eduInfo')" :loading="loading.eduInfo">Save</ui-button>
-                        <ui-button class="btn-default-bd" @click="cancel('eduInfo')" type="flat">Cancel</ui-button>
+                        <ui-button color="primary mr10" @click="submitForm('eduInfo')" :loading="loading.eduInfo">{{$t('button.save')}}</ui-button>
+                        <ui-button class="btn-default-bd" @click="cancel('eduInfo')" type="flat">{{$t('button.cancel')}}</ui-button>
                     </div>
                   </div>
                 </div>
               </div>
               <div class="edit-tab">
                 <div class="tab-header">
-                  <span>Skill & Language</span>
+                  <span>{{$t('staff.skillLanguage')}}</span>
                   <i v-show="!show.skillInfo && !isResign" class="fa fa-plus-square-o" aria-hidden="true" @click="add('skillInfo')"></i>
                 </div>
                 <div class="skill-tab tab-content">
-                  <div class="skill-list fix" v-for="item in skillList">
+                  <div class="skill-list fix" v-for="(item, index) in skillList">
                     <p>
                       <span class="skill-type">{{item.skillType}}</span>
                       <span class="skill-level">{{fixDist(item.skillLevel, 'grade')}}</span>
-                      <span class="list-operate" v-show="!isResign"><i class="fa fa-pencil-square-o" aria-hidden="true" @click="edit('skillInfo', $index)"></i><i class="fa fa-trash-o" aria-hidden="true" @click="del('skillInfo', $index)"></i></span>
+                      <span class="list-operate" v-show="!isResign"><i class="fa fa-pencil-square-o" aria-hidden="true" @click="edit('skillInfo', index)"></i><i class="fa fa-trash-o" aria-hidden="true" @click="del('skillInfo', index)"></i></span>
                     </p>
                   </div>
                   <div class="edit-form edit-bg" v-show="show.skillInfo">
-                    <v-form v-ref:skillform :model="skill" :schema="skillSchema" label-width="227" label-suffix="" :cols="4" form-style="update-interns-form">
+                    <v-form ref="skillform" :model="skill" :schema="skillSchema" label-width="227" label-suffix="" :cols="4" form-style="update-interns-form">
                         <text-field property="skillType" editor-width="227"></text-field>
                         <select-field :mapping="dist.grade" property="skillLevel" editor-width="227"></select-field>
                     </v-form>
                     <div class="save-info-group">
-                        <ui-button color="primary mr10" @click="submitForm('skillInfo')">Save</ui-button>
-                        <ui-button class="btn-default-bd" @click="cancel('skillInfo')" type="flat">Cancel</ui-button>
+                        <ui-button color="primary mr10" @click="submitForm('skillInfo')">{{$t('button.save')}}</ui-button>
+                        <ui-button class="btn-default-bd" @click="cancel('skillInfo')" type="flat">{{$t('button.cancel')}}</ui-button>
                     </div>
                   </div>
                 </div>
               </div>
             </ui-tab>
-            <ui-tab header="Work Experience" id='work-exp'>
+            <ui-tab :title="$t('staff.workExperience')" id='work-exp'>
               <div class="edit-tab">
                 <div class="tab-header">
-                  <span>Professional Experience</span>
+                  <span>{{$t('staff.professionalExperience')}}</span>
                   <i v-show="!show.expInfo && !isResign && !isMyProfile" class="fa fa-plus-square-o" aria-hidden="true" @click="add('expInfo')"></i>
                 </div>
                 <div class="exp-tab tab-content">
-                  <div class="exp-list fix" v-for="item in expList">
+                  <div class="exp-list fix" v-for="(item, index) in expList">
                     <ul class="fix">
-                      <li><span>Previous Position</span>{{item.positionName}}</li>
-                      <li><span>Previous Company</span>{{item.company}}</li>
-                      <li><span>Start Date</span>{{item.startDate}}</li>
-                      <li><span>End Date</span>{{item.endDate}}</li>
-                      <li><span>References</span>{{item.witness}}</li>
-                      <li><span>Contact Info of References</span>{{item.witnessContact}}</li>
+                      <li><span>{{$t('staff.previousPosition')}}</span>{{item.positionName}}</li>
+                      <li><span>{{$t('staff.previousCompany')}}</span>{{item.company}}</li>
+                      <li><span>{{$t('staff.startDate')}}</span>{{item.startDate}}</li>
+                      <li><span>{{$t('staff.endDate')}}</span>{{item.endDate}}</li>
+                      <li><span>{{$t('staff.references')}}</span>{{item.witness}}</li>
+                      <li><span>{{$t('staff.contactInfoofReferences')}}</span>{{item.witnessContact}}</li>
                     </ul>
-                    <span class="list-operate exp-operate" v-show="!isResign && !isMyProfile"><i class="fa fa-pencil-square-o" aria-hidden="true" @click="edit('expInfo', $index)"></i><i class="fa fa-trash-o" aria-hidden="true" @click="del('expInfo', $index)"></i></span>
+                    <span class="list-operate exp-operate" v-show="!isResign && !isMyProfile"><i class="fa fa-pencil-square-o" aria-hidden="true" @click="edit('expInfo', index)"></i><i class="fa fa-trash-o" aria-hidden="true" @click="del('expInfo', index)"></i></span>
                   </div>
                   <div class="edit-form edit-bg" v-show="show.expInfo">
-                    <v-form v-ref:expform :model="exp" :schema="expSchema" label-width="220" label-suffix="" :cols="4" form-style="update-interns-form">
+                    <v-form ref="expform" :model="exp" :schema="expSchema" label-width="220" label-suffix="" :cols="4" form-style="update-interns-form">
                       <text-field property="positionName" editor-width="220"></text-field>
                       <text-field property="company" editor-width="220"></text-field>
                       <text-field property="startDate" :max-date="exp.endDate" editor-width="220"></text-field>
@@ -676,15 +676,15 @@
                       <text-field property="witnessContact" editor-width="220"></text-field>
                     </v-form>
                     <div class="save-info-group">
-                        <ui-button color="primary mr10" @click="submitForm('expInfo')">Save</ui-button>
-                        <ui-button class="btn-default-bd" @click="cancel('expInfo')" type="flat">Cancel</ui-button>
+                        <ui-button color="primary mr10" @click="submitForm('expInfo')">{{$t('button.save')}}</ui-button>
+                        <ui-button class="btn-default-bd" @click="cancel('expInfo')" type="flat">{{$t('button.cancel')}}</ui-button>
                     </div>
                   </div>
                 </div>
               </div>
               <div class="edit-tab" v-if="isEmployee">
                 <div class="tab-header">
-                  <span>Dispatch Experience</span>
+                  <span>{{$t('staff.dispatchExperience')}}</span>
                 </div>
                 <div class="vuetable-wrapper">
                   <vuetable :api-url="tableUrl.disExpUrl" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="tableColumns.disExpColumns" per-page="10">
@@ -693,7 +693,7 @@
               </div>
               <div class="edit-tab" v-if="isEmployee">
                 <div class="tab-header">
-                  <span>Promotion Records</span>
+                  <span>{{$t('staff.promotionRecords')}}</span>
                 </div>
                 <div class="vuetable-wrapper">
                   <vuetable :api-url="tableUrl.proRecUrl" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="tableColumns.proRecColumns" per-page="10">
@@ -702,7 +702,7 @@
               </div>
               <div class="edit-tab" v-if="isEmployee">
                 <div class="tab-header">
-                  <span>Transfer Records</span>
+                  <span>{{$t('staff.transferRecords')}}</span>
                 </div>
                 <div class="vuetable-wrapper">
                   <vuetable :api-url="tableUrl.traRecUrl" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="tableColumns.traRecColumns" per-page="10">
@@ -710,10 +710,10 @@
                 </div>
               </div>
             </ui-tab>
-            <ui-tab header="Additional Information" id='additional-info'>
+            <ui-tab :title="$t('staff.additionalInformation')" id='additional-info'>
               <div class="edit-tab">
                 <div class="tab-header">
-                  <span>Additional Information</span>
+                  <span>{{$t('staff.additionalInformation')}}</span>
                   <i v-show="!show.additionalInfo && !isResign && !isMyProfile" class="fa fa-pencil-square-o" aria-hidden="true" @click="edit('additionalInfo')"></i>
                 </div>
                 <div class="additional-tab tab-content">
@@ -726,18 +726,18 @@
                     </ul>
                   </div>
                   <div class="edit-form edit-bg" v-show="show.additionalInfo">
-                    <v-form v-ref:areaform :model="template" :schema="templateSchema" label-width="250" label-suffix="" :cols="4" form-style="update-interns-form">
+                    <v-form ref="areaform" :model="template" :schema="templateSchema" label-width="250" label-suffix="" :cols="4" form-style="update-interns-form">
                         <select-field :select-change="changeTemplate" property="templateArea" :mapping="templateList" editor-width="250"></select-field>
                     </v-form>
-                    <v-form v-ref:areatemplate :model="detailsList" :schema="detailsListSchema" label-width="250" label-suffix="" :cols="4" form-style="update-interns-form">
+                    <v-form ref="areatemplate" :model="detailsList" :schema="detailsListSchema" label-width="250" label-suffix="" :cols="4" form-style="update-interns-form">
                       <template v-for="item in areaTemplateDetails">
                         <text-field v-if="item.fieldType === '0' && item.isShow === 'Y'" :property="item.fieldName" editor-width="250"></text-field>
                         <select-field v-if="item.fieldType === '1' && item.isShow === 'Y'" :property="item.fieldName" editor-width="250"></select-field>
                       </template>
                     </v-form>
                     <div class="save-info-group">
-                        <ui-button color="primary mr10" @click="submitForm('additionalInfo')">Save</ui-button>
-                        <ui-button class="btn-default-bd" @click="cancel('additionalInfo')" type="flat">Cancel</ui-button>
+                        <ui-button color="primary mr10" @click="submitForm('additionalInfo')">{{$t('button.save')}}</ui-button>
+                        <ui-button class="btn-default-bd" @click="cancel('additionalInfo')" type="flat">{{$t('button.cancel')}}</ui-button>
                     </div>
                   </div>
                 </div>
@@ -790,61 +790,61 @@ export default {
       var isMyProfile = this.$route.name === 'myProfile';
       var internsPerData = {
           givenName: {
-              label: 'Given Name',
+              label: this.$t('staff.givenName'),
               required: true
           },
           middleName: {
-              label: 'Middle Name'
+              label: this.$t('staff.middleName')
           },
           familyName: {
-              label: 'Family Name',
+              label: this.$t('staff.familyName'),
               required: true
           },
           preferredName: {
-            label: 'Preferred Name'
+            label: this.$t('staff.preferredName')
           },
           gender: {
-              label: 'Gender',
+              label: this.$t('staff.gender'),
               required: true
           },
           bloodType: {
-              label: 'Blood Type'
+              label: this.$t('staff.bloodType')
           },
           areaCitizenship: {
-              label: 'Citizenship',
+              label: this.$t('staff.citizenship'),
               required: true
           },
           birthDate: {
-              label: 'Date of Birth',
+              label: this.$t('staff.dateofBirth'),
               required: true,
               type: 'date'
           },
           placeBirthName: {
-              label: 'Place of Birth'
+              label: this.$t('staff.placeofBirth')
           },
           placeBirth: {},
           maritalStatus: {
-              label: 'Marital Status',
+              label: this.$t('staff.maritalStatus'),
               required: true
           },
           idRegisteredAddress: {
-            label: 'ID Registered Address',
+            label: this.$t('staff.IDRegisteredAddress')
           },
           englishLevel: {
-              label: 'English Level',
+              label: this.$t('staff.englishLevel'),
               required: true
           },
           employeeSource: {
-            label: 'Recruited From'
+            label: this.$t('staff.recruitedFrom')
           },
           isOvertimeValid: {
-            label: 'Overtime Classification'
+            label: this.$t('staff.overtimeClassification')
           },
           emergencyContact: {
-              label: 'Emergency Contact Name'
+              label: this.$t('staff.emergencyContactName')
           },
           emergencyContactPhone: {
-              label: 'Emergency Contact Phone',
+              label: this.$t('staff.emergencyContactPhone'),
               required: true
           },
           photoId: {}
@@ -861,25 +861,25 @@ export default {
       if (isMyProfile) {
         internsPerData = {
           maritalStatus: {
-              label: 'Marital Status',
+              label: this.$t('staff.maritalStatus'),
               required: true
           },
           emergencyContact: {
-              label: 'Emergency Contact Name'
+              label: this.$t('staff.emergencyContactName')
           },
           emergencyContactPhone: {
-              label: 'Emergency Contact Phone',
+              label: this.$t('staff.emergencyContactPhone'),
               required: true
           }
         };
       }
       var idSchema = new Schema({
           idType: {
-              label: 'ID Type',
+              label: this.$t('staff.idType'),
               required: true
           },
           idNumber: {
-              label: 'ID Number',
+              label: this.$t('staff.IDNumber'),
               required: true,
               rules: {
                 type: 'custom',
@@ -891,47 +891,47 @@ export default {
           },
           idIssueDate: {
               type: 'date',
-              label: 'Issue Date Of ID'
+              label: this.$t('staff.issueDateOfID')
           },
           idExpiredDate: {
               type: 'date',
-              label: 'Expiry Date Of ID'
+              label: this.$t('staff.expiryDateOfID')
           },
           attachmentId: {
-              label: 'ID Attachment'
+              label: this.$t('staff.IDAttachment')
           },
           mainDocuments: {
-            label: 'Primary ID',
+            label: this.$t('staff.primaryID'),
             default: '0'
           }
       });
       var perContactData = {
           homeAddress: {
-              label: 'Home Address',
+              label: this.$t('staff.homeAddress'),
               required: true,
               whitespace: false
           },
           homeCityTown: {
-              label: 'City or Town'
+              label: this.$t('staff.cityorTown')
           },
           homeState: {
-              label: 'State'
+              label: this.$t('staff.state')
           },
           homeCountry: {
-              label: 'Country'
+              label: this.$t('staff.country')
           },
           homeZipcode: {
-              label: 'ZIP Code(Personal)',
+              label: this.$t('staff.ZIPCodePersonal'),
               required: true
           },
           personalPhone: {
-              label: 'Phone(Personal)'
+              label: this.$t('staff.phonePersonal')
           },
           personalMobile: {
-              label: 'Mobile(Personal)'
+              label: this.$t('staff.mobilePersonal')
           },
           personalEmail: {
-              label: 'Email(Personal)',
+              label: this.$t('staff.emailPersonal'),
               rules: {
                 type: 'custom',
                 message: this.$t('staff.message.typeError'),
@@ -941,30 +941,30 @@ export default {
               }
           },
           workAddress: {
-              label: 'Work Address',
+              label: this.$t('staff.workAddress'),
               required: true
           },
           workCityTown: {
-              label: 'City or Town'
+              label: this.$t('staff.cityorTown')
           },
           workState: {
-              label: 'State'
+              label: this.$t('staff.state')
           },
           workCountry: {
-              label: 'Country'
+              label: this.$t('staff.country')
           },
           workZipcode: {
-              label: 'ZIP Code(Work)',
+              label: this.$t('staff.ZIPCodeWork'),
               required: true
           },
           workPhone: {
-              label: 'Phone(Work)'
+              label: this.$t('staff.phoneWork')
           },
           workMobile: {
-              label: 'Mobile(Work)'
+              label: this.$t('staff.mobileWork')
           },
           workEmail: {
-              label: 'Email(Work)',
+              label: this.$t('staff.emailWork'),
               rules: {
                 type: 'custom',
                 message: this.$t('staff.message.typeError'),
@@ -974,69 +974,69 @@ export default {
               }
           },
           skype: {
-              label: 'Skype'
+              label: this.$t('staff.skype')
           },
           facebook: {
-              label: 'Facebook'
+              label: this.$t('staff.facebook')
           },
           google: {
-              label: 'Google'
+              label: this.$t('staff.google')
           },
           linkedin: {
-              label: 'Linkedin'
+              label: this.$t('staff.linkedin')
           },
           twitter: {
-              label: 'Twitter'
+              label: this.$t('staff.twitter')
           }
       };
       var familySchema = new Schema({
           name: {
-              label: 'Name',
+              label: this.$t('staff.name'),
               required: true
           },
           relationship: {
-              label: 'Relationship',
+              label: this.$t('staff.relationship'),
               required: true
           },
           isInternalRelatives: {
-              label: 'Internal Relatives',
+              label: this.$t('staff.internalRelatives'),
               default: '2'
           },
           familyCompany: {
-              label: 'Company'
+              label: this.$t('staff.company')
           },
           primaryPhone: {
-              label: 'Primary Phone'
+              label: this.$t('staff.primaryPhone')
           }
       });
       var bankSchema = new Schema({
           brakName: {
-              label: 'Branch Name of Bank',
+              label: this.$t('staff.branchNameofBank'),
               required: true
           },
           bankHolder: {
-              label: 'Bank Holder',
+              label: this.$t('staff.bankHolder'),
               required: true
           },
           bankNumber: {
-              label: 'Bank Account Number',
+              label: this.$t('staff.bankAccountNumber'),
               type: 'number',
               required: true
           },
           medicareNumber: {
-              label: 'Medical Insurance Number',
+              label: this.$t('staff.medicalInsuranceNumber'),
               type: 'number',
               required: true
           },
           taxableNumber: {
-              label: 'Taxable Number',
+              label: this.$t('staff.taxableNumber'),
               type: 'number',
               required: true
           }
       });
       var jobData = {
           localEmployeeCode: {
-              label: 'Local Employee ID'
+              label: this.$t('staff.localEmployeeId')
           },
           positionName: {},
           positionId: {},
@@ -1045,13 +1045,13 @@ export default {
           unitId: {},
           mibGrade: {},
           businessCardTitle: {
-              label: 'Position'
+              label: this.$t('staff.position')
           },
           localJobGrade: {
-              label: 'Job Grade'
+              label: this.$t('staff.jobGrade')
           },
           mentor: {
-              label: 'Mentor',
+              label: this.$t('staff.mentor'),
               required: false
           }
       };
@@ -1067,146 +1067,146 @@ export default {
       }
       var trainingSchema = new Schema({
           trainingName: {
-              label: 'Training Name',
+              label: this.$t('staff.trainingName'),
               required: true
           },
           courses: {
-              label: 'Course',
+              label: this.$t('staff.course'),
               required: true
           },
           startDate: {
-              label: 'Start Date',
+              label: this.$t('staff.startDate'),
               type: 'date',
               required: true
           },
           endDate: {
               type: 'date',
-              label: 'End Date',
+              label: this.$t('staff.endDate'),
               required: true
           },
           certificate: {
-              label: 'Name of Certificate'
+              label: this.$t('staff.nameofCertificate')
           },
           trainingType: {
-              label: 'Type of Training'
+              label: this.$t('staff.typeofTraining')
           }
       });
       var eduSchema = new Schema({
           institution: {
-              label: 'Alma Mater',
+              label: this.$t('staff.almaMater'),
               required: true
           },
           major: {
-              label: 'Major',
+              label: this.$t('staff.major'),
               required: true
           },
           admissionDate: {
               type: 'date',
-              label: 'Admission Date',
+              label: this.$t('staff.admissionDate'),
               required: true
           },
           graduationDate: {
               type: 'date',
-              label: 'Graduation Date',
+              label: this.$t('staff.graduationDate'),
               required: true
           },
           educationLevel: {
-              label: 'Academic Degree'
+              label: this.$t('staff.academicDegree')
           },
           certificateNumber: {
-              label: 'Certificate Number'
+              label: this.$t('staff.certificateNumber')
           },
           learnType: {
-              label: 'Study Mode'
+              label: this.$t('staff.studyMode')
           },
           isTopGrade: {
-              label: 'Highest-Level Certificate',
+              label: this.$t('staff.highestLevelCertificate'),
               default: '2'
           },
           grade: {
-              label: 'Graduation Grade'
+              label: this.$t('staff.graduationGrade')
           }
       });
       var skillSchema = new Schema({
         skillType: {
-            label: 'Skill or Language Label',
+            label: this.$t('staff.skillorLanguageLabel'),
             required: true
         },
         skillLevel: {
-            label: 'Grade',
+            label: this.$t('staff.grade'),
             required: true
         }
       });
       var expSchema = new Schema({
           positionName: {
-              label: 'Previous Position',
+              label: this.$t('staff.previousPosition'),
               required: true
           },
           company: {
-              label: 'Previous Company',
+              label: this.$t('staff.previousCompany'),
               required: true
           },
           startDate: {
-              label: 'Start Date',
+              label: this.$t('staff.startDate'),
               type: 'date',
               required: true
           },
           endDate: {
               type: 'date',
-              label: 'End Date',
+              label: this.$t('staff.endDate'),
               required: true
           },
           witness: {
-              label: 'References'
+              label: this.$t('staff.references')
           },
           witnessContact: {
-              label: 'Contact Info of References'
+              label: this.$t('staff.contactInfoofReferences')
           }
       });
       var contractSchema = new Schema({
           contractNo: {
-              label: 'Contract Number'
+              label: this.$t('staff.contractNumber')
           },
           contractType: {
-              label: 'Contract Type',
+              label: this.$t('staff.contractType'),
               required: true
           },
           startDate: {
-              label: 'Start Date',
+              label: this.$t('staff.startDate'),
               type: 'date',
               required: true
           },
           endDate: {
-              label: 'End Date',
+              label: this.$t('staff.endDate'),
               type: 'date',
               required: true
           },
           contractLength: {
-              label: 'Length Of Contract',
+              label: this.$t('staff.lengthOfContract'),
               required: true
           },
           contractSubject: {
-              label: 'Subject Of Contract',
+              label: this.$t('staff.subjectOfContract'),
               required: true,
               whitespace: false
           },
           isConfidentia: {
-              label: 'Confidential Items',
+              label: this.$t('staff.confidentialItems'),
           },
           isNonCompetition: {
-              label: 'Non-competition Items',
+              label: this.$t('staff.nonCompetitionItems'),
           },
           confidentiaAgreement: {
-              label: 'Attachment',
+              label: this.$t('staff.attachment'),
           },
           nonCompetitionAgreement: {
-              label: 'Attachment',
+              label: this.$t('staff.attachment'),
           },
           confidentiaAgreementName: {}
       });
       var templateSchema = new Schema({
         templateArea: {
-          label: 'Information Template',
+          label: this.$t('staff.informationTemplate'),
           required: true
         }
       });
@@ -1288,7 +1288,7 @@ export default {
           },
           contractFile: {
             url: Vue.config.APIURL + '/system/attachment/uploadFile',
-            accept: 'image/*,application/msexcel,application/msword,application/pdf',
+            accept: 'image/:,application+/msexcel,application/msword,application/pdf',
             size: 1024 * 1024 * 2,
             multiple: false,
             extensions: 'gif,jpg,jpeg,png,pdf,doc,docx,xlsx,xls',
@@ -1301,7 +1301,7 @@ export default {
           },
           files: {
             url: Vue.config.APIURL + '/system/attachment/uploadFile',
-            accept: 'image/*,application/msexcel,application/msword,application/pdf',
+            accept: 'image/:,application+/msexcel,application/msword,application/pdf',
             size: 1024 * 1024 * 2,
             multiple: false,
             extensions: 'gif,jpg,jpeg,png,pdf,doc,docx,xlsx,xls',
@@ -1380,15 +1380,15 @@ export default {
             partTimeColumns: [
               {
                 name: 'unitName',
-                title: 'Part-time Organization'
+                title: this.$t('staff.parttimeOrganization')
               },
               {
                 name: 'positionName',
-                title: 'Part-Time Role'
+                title: this.$t('staff.partTimeRole')
               },
               {
                 name: 'beginDate',
-                title: 'Start Date',
+                title: this.$t('staff.startDate'),
                 dataClass: 'tr',
                 titleClass: 'mw80',
                 callback(value) {
@@ -1397,7 +1397,7 @@ export default {
               },
               {
                 name: 'endDate',
-                title: 'End Date',
+                title: this.$t('staff.endDate'),
                 dataClass: 'tr',
                 titleClass: 'mw80',
                 callback(value) {
@@ -1408,38 +1408,38 @@ export default {
             disExpColumns: [
               {
                 name: 'disptachUnitName',
-                title: 'Host Company'
+                title: this.$t('staff.hostCompany')
               },
               {
                 name: 'dispatchAddress',
-                title: 'Host Address'
+                title: this.$t('staff.expatriationAddress')
               },
               {
                 name: 'dispatchPositionName',
-                title: 'MIB Position'
+                title: this.$t('staff.mibPostion')
               },
               {
                 name: 'expatriationCategory',
-                title: 'Expatriation',
+                title: this.$t('staff.expatriation'),
                 callback: function(value) {
                     return _self.fixDist(value, 'expatriationCategory');
                 }
               },
               {
                 name: 'roles',
-                title: 'Roles & Responsibilities'
+                title: this.$t('staff.rolesResponsibilities')
               },
               {
                 name: 'startDate',
                 dataClass: 'tr',
                 titleClass: 'mw80',
-                title: 'Start Date'
+                title: this.$t('staff.startDate')
               },
               {
                 name: 'endDate',
                 dataClass: 'tr',
                 titleClass: 'mw80',
-                title: 'End Date'
+                title: this.$t('staff.endDate')
               },
               {
                 name: 'expatriationCategory',
@@ -1450,11 +1450,11 @@ export default {
               },
               {
                 name: '__component:visa',
-                title: 'Visa Attachment'
+                title: this.$t('staff.visaAttachment')
               },
               {
                 name: 'isFirstDispatch',
-                title: 'First expatriation assignment',
+                title: this.$t('staff.firstexpatriationassignment'),
                 callback: function(value) {
                     return _self.fixDist(value, 'whetherType');
                 }
@@ -1465,33 +1465,33 @@ export default {
                 name: 'effectiveDate',
                 dataClass: 'tr',
                 titleClass: 'mw80',
-                title: 'Effective Date'
+                title: this.$t('staff.effectiveDate')
               },
               {
                 name: 'transferUnitName',
-                title: 'Organization after Promotion'
+                title: this.$t('staff.organizationafterPromotion')
               },
               {
                 name: 'transferPositionName',
-                title: 'Position after Promotion'
+                title: this.$t('staff.positionafterPromotion')
               },
               {
                 name: 'jobGrade',
-                title: 'Job Grade after Promotion'
+                title: this.$t('staff.jobGradeafterPromotion')
               },
               {
                 name: 'localGrade',
-                title: 'Local Grade after Promotion'
+                title: this.$t('staff.localGradeafterPromotion')
               },
               {
                 name: 'workCity',
-                title: 'Work City of Promotion'
+                title: this.$t('staff.workCityAfterPromotion')
               }
             ],
             traRecColumns: [
               {
                 name: 'reason',
-                title: 'Reason for Transfer',
+                title: this.$t('staff.reasonforTransfer'),
                 callback: function(value) {
                     return _self.fixDist(value, 'changeReason');
                 }
@@ -1500,23 +1500,23 @@ export default {
                 name: 'effectiveDate',
                 dataClass: 'tr',
                 titleClass: 'mw80',
-                title: 'Effective Date'
+                title: this.$t('staff.effectiveDate')
               },
               {
                 name: 'transferUnitName',
-                title: 'Organization after Transfer'
+                title: this.$t('staff.organizationafterTransfer')
               },
               {
                 name: 'transferPositionName',
-                title: 'Position after Transfer'
+                title: this.$t('staff.positionafterTransfer')
               },
               {
                 name: 'jobGrade',
-                title: 'Job Grade after Transfer'
+                title: this.$t('staff.jobGradeafterTransfer')
               },
               {
                 name: 'workCity',
-                title: 'Work City of Promotion'
+                title: this.$t('staff.workCityAfterTransfer')
               }
             ]
           }
@@ -1638,7 +1638,7 @@ export default {
         this.setEmployementCategory(newVal);
       }
     },
-    ready() {
+    mounted() {
       this.perInfo = this.internsPerSchema.newModel();
       this.perContact = this.perContactSchema.newModel();
       this.family = this.familySchema.newModel();
@@ -1650,8 +1650,11 @@ export default {
       this.exp = this.expSchema.newModel();
       this.contract = this.contractSchema.newModel();
     },
-    attached() {},
+    
     methods: {
+      openSelector(selector) {
+        this.$refs[selector].open();
+      },
       isEmail(value) {
         return !value || /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/.test(value);
       },
@@ -1948,7 +1951,7 @@ export default {
                 }
                 break;
             }
-            passed = this.id.$schema.isFormValidate(this.$refs.idform);
+            passed = this.$refs.idform.isFormValidate();
             this.idNumberValiate = true;
             if (!passed) {
               return;
@@ -2006,7 +2009,7 @@ export default {
             });
             break;
           case 'perInfo':
-            passed = this.perInfo.$schema.isFormValidate(this.$refs.perinfoform);
+            passed = this.$refs.perinfoform.isFormValidate();
             if (!passed) {
               return;
             }
@@ -2031,7 +2034,7 @@ export default {
             });
             break;
           case 'jobInfo':
-            passed = this.jobInfo.$schema.isFormValidate(this.$refs.jobform);
+            passed = this.$refs.jobform.isFormValidate();
             if (!passed) {
               return;
             }
@@ -2056,7 +2059,7 @@ export default {
           case 'perContact':
             this.personalEmail = this.isEmail(this.perContact.personalEmail);
             this.workEmail = this.isEmail(this.perContact.workEmail);
-            passed = this.perContact.$schema.isFormValidate(this.$refs.percontactform);
+            passed = this.$refs.percontactform.isFormValidate();
             if (!passed) {
               this.personalEmail = true;
               this.workEmail = true;
@@ -2097,7 +2100,7 @@ export default {
             }
             break;
           case 'familyInfo':
-            passed = this.family.$schema.isFormValidate(this.$refs.familyform);
+            passed = this.$refs.familyform.isFormValidate();
             if (!passed) {
               return;
             }
@@ -2132,7 +2135,7 @@ export default {
             }
             break;
           case 'bankInfo':
-            passed = this.bank.$schema.isFormValidate(this.$refs.bankform);
+            passed = this.$refs.bankform.isFormValidate();
             if (!passed) {
               return;
             }
@@ -2168,7 +2171,7 @@ export default {
             }
             break;
           case 'trainingInfo':
-            passed = this.training.$schema.isFormValidate(this.$refs.trainingform);
+            passed = this.$refs.trainingform.isFormValidate();
             if (!passed) {
               return;
             }
@@ -2209,7 +2212,7 @@ export default {
             }
             break;
           case 'eduInfo':
-            passed = this.edu.$schema.isFormValidate(this.$refs.eduform);
+            passed = this.$refs.eduform.isFormValidate();
             if (!passed) {
               return;
             }
@@ -2254,7 +2257,7 @@ export default {
             });
             break;
           case 'skillInfo':
-            passed = this.skill.$schema.isFormValidate(this.$refs.skillform);
+            passed = this.$refs.skillform.isFormValidate();
             if (!passed) {
               return;
             }
@@ -2286,7 +2289,7 @@ export default {
             }
             break;
           case 'expInfo':
-            passed = this.exp.$schema.isFormValidate(this.$refs.expform);
+            passed = this.$refs.expform.isFormValidate();
             if (!passed) {
               return;
             }
@@ -2329,7 +2332,7 @@ export default {
             if (this.contract.contractLength === '2') {
               this.contract.endDate = formatDate(new Date());
             }
-            passed = this.contract.$schema.isFormValidate(this.$refs.contractform);
+            passed = this.$refs.contractform.isFormValidate();
             if (this.contract.contractLength === '2') {
               this.contract.endDate = '';
             }
@@ -2337,29 +2340,6 @@ export default {
               return;
             }
             var contractId = this.contractTemp.contractId;
-            // this.$refs.upload.active = true;
-            // var formData = new FormData();
-            // if (contractId) {
-            //   formData.append('contractId', contractId);
-            // }
-            // formData.append('employeeId', this.employeeId);
-            // formData.append('contractNo', this.contract.contractNo);
-            // formData.append('contractType', this.contract.contractType);
-            // formData.append('startDate', formatDate(new Date(this.contract.startDate)));
-            // formData.append('endDate', formatDate(new Date(this.contract.endDate)));
-            // formData.append('contractLength', this.contract.contractLength);
-            // formData.append('contractSubject', this.contract.contractSubject);
-            //
-            // formData.append('isConfidentia', this.contract.isConfidentia);
-            // formData.append('isNonCompetition', this.contract.isNonCompetition);
-            //
-            // formData.append('confidentiaAgreement', this.contract.confidentiaAgreement);
-            // this.file.confidentiaAgreementFile.forEach(function(file) {
-            //     formData.append('confidentiaAgreementFile', file);
-            // });
-            // this.file.nonCompetitionAgreementFile.forEach(function(file) {
-            //     formData.append('nonCompetitionAgreementFile', file);
-            // });
             var data = {
               employeeId: this.employeeId,
               contractNo: this.contract.contractNo || '',
@@ -2398,11 +2378,11 @@ export default {
             this.$refs.upload.active = true;
             break;
           case 'additionalInfo':
-            passed = this.detailsList.$schema.isFormValidate(this.$refs.areatemplate);
+            passed = this.$refs.areatemplate.isFormValidate();
             if (!passed) {
               return;
             }
-            passed = this.template.$schema.isFormValidate(this.$refs.areaform);
+            passed = this.$refs.areaform.isFormValidate();
             if (!passed) {
               return;
             }
@@ -2579,21 +2559,6 @@ export default {
         this.file.nonConfidentiaAgreementFile = [];
         this.contract.nonConfidentiaAgreement = '';
       },
-      // changeIdFile(e) {
-      //   var rawFile = e.srcElement.files;
-      //   var files = Array.prototype.slice.call(rawFile, 0);
-      //   if (!this.checkFileSize(files)) {
-      //     return;
-      //   }
-      //   var formData = new FormData();
-      //   files.forEach(function(file) {
-      //       formData.append('file', file);
-      //   });
-      //   this.$http.post('/system/attachment/uploadFile', formData).then(function(res) {
-      //     //this.data.contractId = res.body;
-      //     this.id.attachmentId = res.body;
-      //   });
-      // },
       delIdFile() {
         this.id.attachmentId = '';
         this.idFileName = '';
@@ -2768,83 +2733,81 @@ export default {
         if (value === '2') {
           this.contract.endDate = undefined;
         }
-      }
-    },
-    events: {
-        'active-tab-changed': function(tabId) {
-          switch (tabId) {
-            case 'professional-info':
-              this.getProfessionalInfo();
-              break;
-            case 'job-info':
-              this.getExpInfo();
-              this.tableUrl.partTimeUrl = '/employee/employees/' + this.employeeId +'/partTime';
-              break;
-            case 'work-exp':
-              this.getExpInfo();
-              this.tableUrl.disExpUrl = '/employee/employees/'+ this.employeeId + '/expatriation';
-              this.tableUrl.proRecUrl = '/employee/employees/'+ this.employeeId + '/transfer/1';
-              this.tableUrl.traRecUrl = '/employee/employees/'+ this.employeeId + '/transfer/2';
-              break;
-            case 'additional-info':
-            var employementCategory;
-            if (this.isInterns) {
-              employementCategory = 7;
-            } else if (this.isOutsource) {
-              employementCategory = 6;
-            } else {
-              employementCategory = 9;
-            }
-            this.$http.get('/area/template/active?employementCategory=' + employementCategory).then(function(response) {
-              if(response.data) {
-                let data = response.data;
-                let result = {};
-                if(data && data instanceof Array) {
-                  for(let i = 0;i < data.length;i++) {
-                    result[data[i].areaTemplateName] = data[i].areaTemplateId
-                  }
+      },
+      tabChange(tabId) {
+        switch (tabId) {
+          case 'professional-info':
+            this.getProfessionalInfo();
+            break;
+          case 'job-info':
+            this.getExpInfo();
+            this.tableUrl.partTimeUrl = '/employee/employees/' + this.employeeId +'/partTime';
+            break;
+          case 'work-exp':
+            this.getExpInfo();
+            this.tableUrl.disExpUrl = '/employee/employees/'+ this.employeeId + '/expatriation';
+            this.tableUrl.proRecUrl = '/employee/employees/'+ this.employeeId + '/transfer/1';
+            this.tableUrl.traRecUrl = '/employee/employees/'+ this.employeeId + '/transfer/2';
+            break;
+          case 'additional-info':
+          var employementCategory;
+          if (this.isInterns) {
+            employementCategory = 7;
+          } else if (this.isOutsource) {
+            employementCategory = 6;
+          } else {
+            employementCategory = 9;
+          }
+          this.$http.get('/area/template/active?employementCategory=' + employementCategory).then(function(response) {
+            if(response.data) {
+              let data = response.data;
+              let result = {};
+              if(data && data instanceof Array) {
+                for(let i = 0;i < data.length;i++) {
+                  result[data[i].areaTemplateName] = data[i].areaTemplateId
                 }
-                this.templateList = result;
               }
-            })
-              this.$http.get('/employee/employees/empAreaTemplates/' + this.employeeId).then(function(res) {
-                var data = res.data;
-                if (!data.areaTemplateId) {
-                  return;
-                }
-                this.templateArea = data.areaTemplateId;
-                this.additionalData = res.data;
-                this.areaTemplateId = data.areaTemplateId;
-                this.template.templateArea = data.areaTemplateId;
-                this.setAreaTemplate(data.areaTemplateId, data);
-              });
-              break;
-          }
-        },
-        addFileUpload(file, component) {
-          if (this.files.auto && component.name === 'file') {
-            component.active = true;
-          } else {
-            this.contract.confidentiaAgreementName = file.name;
-            this.contract.confidentiaAgreement = '';
-          }
-        },
-        afterFileUpload(file, component) {
-          if (component.name === 'file') {
-            this.id.attachmentId = file.data;
-            this.id.attachmentName = file.name;
-            this.idFileName = file.name;
-          } else {
-            if(!this.contractTemp.contractId) {
-            	this.contractTemp.contractId = file.data;
+              this.templateList = result;
             }
-            this.$refs.upload.active = false;
-            this.$refs.upload.files = [];
-            this.show.contractInfo = false;
-            this.getContract();
-            this.saveSuccess();
-          }
+          })
+            this.$http.get('/employee/employees/empAreaTemplates/' + this.employeeId).then(function(res) {
+              var data = res.data;
+              if (!data.areaTemplateId) {
+                return;
+              }
+              this.templateArea = data.areaTemplateId;
+              this.additionalData = res.data;
+              this.areaTemplateId = data.areaTemplateId;
+              this.template.templateArea = data.areaTemplateId;
+              this.setAreaTemplate(data.areaTemplateId, data);
+            });
+            break;
         }
+      },
+      addFileUpload(file, component) {
+        if (this.files.auto && component.name === 'file') {
+          component.active = true;
+        } else {
+          this.contract.confidentiaAgreementName = file.name;
+          this.contract.confidentiaAgreement = '';
+        }
+      },
+      afterFileUpload(file, component) {
+        if (component.name === 'file') {
+          this.id.attachmentId = file.data;
+          this.id.attachmentName = file.name;
+          this.idFileName = file.name;
+        } else {
+          if(!this.contractTemp.contractId) {
+            this.contractTemp.contractId = file.data;
+          }
+          this.$refs.upload.active = false;
+          this.$refs.upload.files = [];
+          this.show.contractInfo = false;
+          this.getContract();
+          this.saveSuccess();
+        }
+      }
     },
     components: {
         EmployeeCommonInfo: require('./employeeCommonInfo.vue'),

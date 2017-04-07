@@ -37,19 +37,19 @@
     }
     .level {
         .ico-baseSty();
-        background: url(../../static/images/public/department.png) no-repeat;
+        background: url(../../assets/images/public/department.png) no-repeat;
     }
     .phone {
         .ico-baseSty();
-        background: url(../../static/images/public/staff-interns-phone.png) no-repeat;
+        background: url(../../assets/images/public/staff-interns-phone.png) no-repeat;
     }
     .user {
         .ico-baseSty();
-        background: url(../../static/images/public/staff-interns-person.png) no-repeat;
+        background: url(../../assets/images/public/staff-interns-person.png) no-repeat;
     }
     .email {
         .ico-baseSty();
-        background: url(../../static/images/public/staff-interns-mail.png) no-repeat;
+        background: url(../../assets/images/public/staff-interns-mail.png) no-repeat;
     }
     table {
         tr:last-child td {
@@ -117,7 +117,7 @@
             </tr>
         </table>
         <div class="vuetable-pagination fix ui bottom attached segment grid mt16">
-            <div class="vuetable-pagination-info left floated left aligned six wide column">Displaying {{pageIndex}} to {{pageSize}} of {{total}} items</div>
+            <div class="vuetable-pagination-info left floated left aligned six wide column">{{$t('vuetable.paginationInfoTemplate', {from: pageIndex, to: pageSize, total: total})}}</div>
             <div class="vuetable-pagination-pages">
                 <!-- <span>pages</span> -->
                 <select class="vuetable-pagination-pages-num" v-model="pageSize">
@@ -220,12 +220,12 @@ export default {
                     if (photoId)
                         return Vue.config.APIURL + `/system/attachment/downloadImg/${photoId}`;
                     else
-                        return `../../static/images/public/xwz.png`;
+                        return `../../assets/images/public/xwz.png`;
                 },
                 postData(data) {
                     this.loading = true;
                     if (this.$route.params.type === 'search' || this.searchFlag ) {
-                        this.searchTit = 'Search Results';
+                        this.searchTit = this.$t('home.searchResults');
                         this.$http.post('/employee/employees/quickQuery', data, {
                             emulateJSON: true
                         }).then((response) => {
@@ -240,7 +240,7 @@ export default {
                             this.initpnext();
                         });
                     } else {
-                        this.searchTit = 'My Team';
+                        this.searchTit = this.$t('home.myTeam');
                         this.$http.post('/pos/positions/teammateProfileByPage', data, {
                             emulateJSON: true
                         }).then((response) => {

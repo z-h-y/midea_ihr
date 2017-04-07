@@ -46,76 +46,76 @@
         }
     }
     .file-upload-content {
-      width: 400px;
-      position: relative;
-      .file-upload {
-          display: inline-block;
-          height: 32px;
-          width: 80px;
-          background-color: #6ec3ff;
-      }
-      .file-upload span{
-          display: block;
-          font-size: 16px;
-          line-height: 32px;
-          color: #fff;
-          text-align: center;
-      }
-      span.file-name {
-        position: absolute;
-        width: 270px;
-        height: 28px;
-        line-height: 28px;
-        margin-left: 10px;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-      }
-      i {
-        position: absolute;
-        right: 0;
-        top: 6px;
-        font-size: 16px;
-        cursor: pointer;
-      }
+        width: 400px;
+        position: relative;
+        .file-upload {
+            display: inline-block;
+            height: 32px;
+            width: 80px;
+            background-color: #6ec3ff;
+        }
+        .file-upload span {
+            display: block;
+            font-size: 16px;
+            line-height: 32px;
+            color: #fff;
+            text-align: center;
+        }
+        span.file-name {
+            position: absolute;
+            width: 270px;
+            height: 28px;
+            line-height: 28px;
+            margin-left: 10px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+        i {
+            position: absolute;
+            right: 0;
+            top: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
     }
 }
 
 </style>
 
 <template lang="html">
+<div>
+    <div class="content-wrap ihr-position-notificationUpdate">
+        <panel :title="panelTitle" class="panel-b" header="panel-header">
+            <v-form ref="messageform" :model="message" :schema="messageSchema" label-width="160" label-suffix="" :cols="1" form-style="org-form">
+                <text-field property="messageTitle" editor-width="400"></text-field>
+                <text-field class="textarea" property="messageBody" type="textarea" :editor-height="50" editor-width="400"></text-field>
+                <!-- <text-field property="sendScope"  editor-width="400"></text-field> -->
+                <text-field property="sendScopeName" editor-width="260" type="selector" :readonly="true" :show.sync="show"></text-field>
+                <text-increment property="messageAttachment" editor-width="" class="hide-text-editor upload">
+                    <!-- <button type="button" class="btn btn-default btn-file">
+                        <input type="file" name="messageAttachment" value="" @change="changeFile($event, 'messageAttachment')" id="fileupload">
+                        <span class="d-icon-plus">+</span>Add
+                    </button>
+                    <span class="fileName">{{fileName}}</span>
+                    <i class="fa fa-remove poi f14" @click="delFile" v-if="fileName != null && fileName != '' "></i> -->
+                    <!-- <ui-button style="height: 36px;" v-if="fileName != null && fileName != '' " @click="delFile" class="mr10 dis-tc btn-default-bd" icon="fa-remove" type="flat">Del Attachment</ui-button> -->
+                    <div class="file-upload-content">
+                        <file-upload ref="upload" title="Add" class="file-upload" name="messageFile" :post-action="files.url" :extensions="files.extensions" :accept="files.accept" :multiple="files.multiple" :size="files.size" :drop="files.drop"></file-upload>
+                        <span class="file-name" :title="fileName">{{fileName}}</span>
+                        <i class="fa fa-remove poi f14 ml5" v-if="fileName != null && fileName != '' " @click="delFile"></i>
+                    </div>
+                </text-increment>
+            </v-form>
+        </panel>
+        <div class="btn-group">
+            <ui-button @click="submit" color="primary mr10">{{$t('button.submit')}}</ui-button>
+            <ui-button @click="cancel" class="btn-default-bd" type="flat">{{$t('button.cancel')}}</ui-button>
+        </div>
 
-<div class="content-wrap ihr-position-notificationUpdate">
-    <panel :title="panelTitle" class="panel-b" header="panel-header">
-        <v-form v-ref:messageform :model="message" :schema="messageSchema" label-width="160" label-suffix="" :cols="1" form-style="org-form">
-            <text-field property="messageTitle" editor-width="400"></text-field>
-            <text-field class="textarea" property="messageBody" type="textarea" :editor-height="50" editor-width="400"></text-field>
-            <!-- <text-field property="sendScope"  editor-width="400"></text-field> -->
-            <text-field property="sendScopeName" editor-width="260" type="selector" :readonly="true" :show.sync="show"></text-field>
-            <text-increment property="messageAttachment" editor-width="" class="hide-text-editor upload">
-                <!-- <button type="button" class="btn btn-default btn-file">
-                    <input type="file" name="messageAttachment" value="" @change="changeFile($event, 'messageAttachment')" id="fileupload">
-                    <span class="d-icon-plus">+</span>Add
-                </button>
-                <span class="fileName">{{fileName}}</span>
-                <i class="fa fa-remove poi f14" @click="delFile" v-if="fileName != null && fileName != '' "></i> -->
-                <!-- <ui-button style="height: 36px;" v-if="fileName != null && fileName != '' " @click="delFile" class="mr10 dis-tc btn-default-bd" icon="fa-remove" type="flat">Del Attachment</ui-button> -->
-                <div class="file-upload-content">
-                  <file-upload v-ref:upload title="Add" class="file-upload" name="messageFile" :post-action="files.url" :extensions="files.extensions" :accept="files.accept" :multiple="files.multiple" :size="files.size" :drop="files.drop"></file-upload>
-                  <span class="file-name" :title="fileName">{{fileName}}</span>
-                  <i class="fa fa-remove poi f14 ml5" v-if="fileName != null && fileName != '' " @click="delFile"></i>
-                </div>
-            </text-increment>
-        </v-form>
-    </panel>
-    <div class="btn-group">
-        <ui-button @click="submit" color="primary mr10">Submit</ui-button>
-        <ui-button @click="cancel" class="btn-default-bd" type="flat">Cancel</ui-button>
     </div>
-
+    <organization-check-selector :show.sync="show"> </organization-check-selector>
 </div>
-<organization-check-selector :show.sync="show"> </organization-check-selector>
-
 </template>
 
 <script>
@@ -132,61 +132,60 @@ import {
     default as Message
 }
 from '../../../components/basic/message';
-let messageSchema = new Schema({
-    messageTitle: {
-        label: 'Subject',
-        required: true,
-        whitespace: false
-    },
-    messageBody: {
-        label: 'Body',
-        required: true,
-        whitespace: false
-    },
-    sendScope: {
-        label: 'Restrict to',
-        required: true,
-        whitespace: false
-    },
-    sendScopeName: {
-        label: 'Restrict To',
-        required: true,
-        whitespace: false
-    },
-    messageType: {
-        label: 'Type',
-        mapping: {
-            '系统信息': 'SYS'
-        }
-    },
-    messageId: {
-
-    },
-    messageAttachment: {
-        label: 'Attachment',
-    }
-});
 
 export default {
-
     data() {
+            let messageSchema = new Schema({
+                messageTitle: {
+                    label: this.$t('notification.label.subject'),
+                    required: true,
+                    whitespace: false
+                },
+                messageBody: {
+                    label: this.$t('notification.label.body'),
+                    required: true,
+                    whitespace: false
+                },
+                sendScope: {
+                    label: this.$t('notification.label.restrictTo'),
+                    required: true,
+                    whitespace: false
+                },
+                sendScopeName: {
+                    label: this.$t('notification.label.restrictTo'),
+                    required: true,
+                    whitespace: false
+                },
+                messageType: {
+                    label: this.$t('notification.label.type'),
+                    mapping: {
+                        '系统信息': 'SYS'
+                    }
+                },
+                messageId: {
+
+                },
+                messageAttachment: {
+                    label: this.$t('notification.columns.attachment'),
+                }
+            });
             return {
-                panelTitle: 'Add Notification',
+                panelTitle: this.$t('notification.panelTitle'),
                 messageSchema: messageSchema,
                 message: messageSchema.newModel(),
                 messageFile: [],
                 files: {
-                  url: Vue.config.APIURL + '/system/message/createMessage',
-                  accept: 'image/*,application/msexcel,application/msword,application/pdf',
-                  size: 1024 * 1024 * 2,
-                  multiple: false,
-                  extensions: 'gif,jpg,jpeg,png,pdf,doc,docx,xlsx,xls',
-                  // extensions: ['gif','jpg','png'],
-                  // extensions: /\.(gif|png|jpg)$/i,
-                  files: [],
-                  upload: {},
-                  drop: true,
-                  auto: false
+                    url: Vue.config.APIURL + '/system/message/createMessage',
+                    accept: 'image/*,application/msexcel,application/msword,application/pdf',
+                    size: 1024 * 1024 * 2,
+                    multiple: false,
+                    extensions: 'gif,jpg,jpeg,png,pdf,doc,docx,xlsx,xls',
+                    // extensions: ['gif','jpg','png'],
+                    // extensions: /\.(gif|png|jpg)$/i,
+                    files: [],
+                    upload: {},
+                    drop: true,
+                    auto: false
                 },
                 fileName: '',
                 show: {
@@ -224,16 +223,16 @@ export default {
                     //     });
                     // });
                     var uploadData = {
-                      messageTitle: _messageModel.messageTitle,
-                      messageBody: _messageModel.messageBody,
-                      sendScope: _messageModel.sendScope,
-                      planSendDate: formatDate(new Date(), 'YYYY-MM-DD HH:mm:ss'),
-                      businessType: '1',
-                      messageType: 'SMS'
+                        messageTitle: _messageModel.messageTitle,
+                        messageBody: _messageModel.messageBody,
+                        sendScope: _messageModel.sendScope,
+                        planSendDate: formatDate(new Date(), 'YYYY-MM-DD HH:mm:ss'),
+                        businessType: '1',
+                        messageType: 'SMS'
                     };
                     var upload = this.$refs.upload;
                     upload.request = {
-                      data: uploadData
+                        data: uploadData
                     };
                     this.$refs.upload.active = true;
                 },

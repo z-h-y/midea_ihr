@@ -24,7 +24,7 @@
 
 <template>
 
-<span class="text-editor {{ haveTrigger ? 'have-trigger' : '' }} {{ pickerVisible ? 'active' : '' }}">
+<span :class="['text-editor', haveTrigger ? 'have-trigger' : '', pickerVisible ? 'active' : '']">
     <increment></increment>
 </span>
 
@@ -39,18 +39,10 @@ export default {
     },
     computed: {
 
-            visualValue: {
-                get() {
-                        var value = this.value;
-                        return value;
-                },
-
-                    set(value) {
-                        this.value = value;
-                }
-            },
+            visualValue() {
+                return this.value
+            }
     },
-
     components: {
         increment: {
             inherit: true,

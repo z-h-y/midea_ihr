@@ -37,22 +37,22 @@
     <div class="mb20 pt20">
         <div class="search-area">
             <v-form :class="{expended: expended}" :model="reportLine" :schema="reportLineSchema" label-width="130" :cols="3" form-style="reportLine-form">
-                <text-field type="selector" :readonly="true" :show.sync="org" property="organization" editor-width="150"></text-field>
+                <text-field type="selector" @open-selector="openSelector" :readonly="true" :show="org" property="organization" editor-width="150"></text-field>
                 <text-field property='employeeId' editor-width="150"></text-field>
                 <text-field property='employeeName' editor-width="150"></text-field>
             </v-form>
-            <organization-selector :show.sync="org"></organization-selector>
+            <organization-selector ref="orgselect" :show="org" :handel-select="selectOrg"></organization-selector>
             <!-- <ui-icon-button class="expend-btn" :class="{expended: expended}" :icon="expendIcon" @click="expendSearch"></ui-icon-button> -->
             <div class="query-btn">
-                <ui-button class="query-btn-search mr10" color="primary" @click="searchTable">Search</ui-button>
-                <ui-button class="query-btn-reset btn-default-bd" type="flat" @click="resetTable">Reset</ui-button>
+                <ui-button class="query-btn-search mr10" color="primary" @click="searchTable">{{$t('button.search')}}</ui-button>
+                <ui-button class="query-btn-reset btn-default-bd" type="flat" @click="resetTable">{{$t('button.reset')}}</ui-button>
             </div>
         </div>
         <div class="group">
-            <ui-button class="mr10 dis-tc btn-primary-bd" @click="downloadAsExcel" color="primary" text="Download" button-type="button"></ui-button>
+            <ui-button class="mr10 dis-tc btn-primary-bd" @click="downloadAsExcel" color="primary" button-type="button">{{$t('button.download')}}</ui-button>
         </div>
         <div class="vuetable-wrapper pl16 pr16 pb16">
-            <vuetable :api-url="tableUrl" :selected-to="selectedRow" :append-params="queryParams" :fields="columns" pagination-path="" table-wrapper=".vuetable-wrapper pl16 pr16 pb16" :sort-order="sortOrder" :item-actions="itemActions" per-page="10">
+            <vuetable ref="vuetable" :api-url="tableUrl" :selected-to="selectedRow" :append-params="queryParams" :fields="columns" pagination-path="" table-wrapper=".vuetable-wrapper pl16 pr16 pb16" :sort-order="sortOrder" :item-actions="itemActions" per-page="10">
             </vuetable>
         </div>
     </div>
@@ -67,21 +67,23 @@ import {
 }
 from '../../schema/index';
 
-let reportLineSchema = new Schema({
-    organization: {
-        label: ' Organization'
-    },
-    employeeId: {
-        label: 'Employee ID'
-    },
-    employeeName: {
-        label: 'Employee Name'
-    },
-    unitId: {}
-});
+
 
 export default {
     data() {
+      let self = this;
+      let reportLineSchema = new Schema({
+          organization: {
+              label: self.$t('staff.organization')
+          },
+          employeeId: {
+              label: self.$t('staff.employeeId')
+          },
+          employeeName: {
+              label: self.$t('staff.employeeName')
+          },
+          unitId: {}
+      });
             return {
                 // tableUrl:`/org/orgs/{unitId}/reportLine`,
                 reportLineSchema: reportLineSchema,
@@ -113,39 +115,28 @@ export default {
                     title: ''
                 }, {
                     name: 'fullName',
-                    title: 'Employee Name'
+                    title: this.$t('staff.employeeName')
                 }, {
                     name: 'employeeCode',
                     dataClass: 'tr',
-                    title: 'Employee ID'
+                    title: this.$t('staff.employeeId')
                 }, {
                     name: 'positionName',
-                    title: 'Position'
+                    title: this.$t('performance.position')
                 }, {
                     name: 'reportLinePositionName',
-                    title: 'Report Line'
+                    title: this.$t('staff.reportLine')
                 }, {
                     name: 'reportLineEmployeeName',
-                    title: 'Report to',
+                    title: this.$t('performance.teportto'),
                     dataClass: 'employeeCode'
                 }, {
                     name: 'dottedReportLinepositionName',
-                    title: 'Dotted Report Line'
+                    title: this.$t('staff.dottedReportLine')
                 }, {
                     name: 'dottedReportLineEmployeeName',
-                    title: 'Dotted Report to',
+                    title: this.$t('performance.dottedReportto'),
                     dataClass: 'employeeCode'
-                }],
-                shareMenuOptions: [{
-                    id: 'edit',
-                    text:  this.$t('button.download'),
-                    icon: 'edit',
-                    secondaryText: 'Ctrl+E'
-                }, {
-                    id: 'duplicate',
-                    text: 'upload as excel',
-                    icon: 'content_copy',
-                    secondaryText: 'Ctrl+D'
                 }]
             }
         },
@@ -165,37 +156,36 @@ export default {
                     return `/performance/reportLine`;
                 }
         },
-        ready() {},
-        attached() {},
-        events: {
-            'organization-selector:selected': function(value) {
+        methods: {
+            selectOrg(value) {
 
                 if (value) {
                     this.reportLine.organization = value.orgShortName;
                     this.reportLine.unitId = value.orgId;
                 }
-            }
-        },
-        methods: {
+            },
+            openSelector() {
+              this.$refs.orgselect.open();
+            },
             searchTable() {
                     this.$nextTick(function() {
-                        this.$broadcast('vuetable:refresh')
+                        this.$refs.vuetable.reloadData()
                     })
                 },
             resetTable() {
                 this.reportLine.reset();
                 this.$nextTick(() => {
-                    this.$broadcast('vuetable:refresh');
+                    this.$refs.vuetable.reloadData();
                 })
             },
             expendSearch() {
                 this.expended = !this.expended;
                 this.expendIcon = this.expended ? 'fa-angle-double-up' : 'fa-angle-double-down';
-                this.$broadcast('vuetable:refresh');
+                this.$refs.vuetable.reloadData();
             },
             confirmed() {
                 this.show.delConfirm = false;
-                this.$broadcast('vuetable:refresh');
+                this.$refs.vuetable.reloadData();
             },
             menuOptionSelected(option) {
                 console.log(option);

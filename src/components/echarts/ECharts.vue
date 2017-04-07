@@ -243,29 +243,6 @@ export default {
             chart: null
         }
     },
-    computed: {
-        // Only recalculated when accessed from JavaScript.
-        // Won't update DOM on value change because getters
-        // don't depend on reactive values
-        width: {
-            cache: false,
-            getter: function() {
-                return this.chart.getWidth()
-            }
-        },
-        height: {
-            cache: false,
-            getter: function() {
-                return this.chart.getHeight()
-            }
-        },
-        isDisposed: {
-            cache: false,
-            getter: function() {
-                return this.chart.isDisposed()
-            }
-        }
-    },
     methods: {
         // provide a explicit merge option method
         mergeOptions: function(options) {
@@ -295,48 +272,50 @@ export default {
         }
     },
     mounted: function() {
-      this.$nextTick(function() {
-        let chart = echarts.init(this.$el, this.theme, this.initOptions)
-            // use assign statements to tigger "options" and "group" setters
-        chart.setOption(this.options)
-        this.$watch('options', options => {
-            chart.setOption(options, true)
-        }, {
-            deep: true
-        })
+        this.$nextTick(function() {
+            let chart = echarts.init(this.$el, this.theme, this.initOptions)
+                // use assign statements to tigger "options" and "group" setters
+            chart.setOption(this.options)
+            this.$watch('options', options => {
+                chart.setOption(options, true)
+            }, {
+                deep: true
+            })
 
-        chart.group = this.group
-        this.$watch('group', (group) => {
-            chart.group = group
-        })
+            chart.group = this.group
+            this.$watch('group', (group) => {
+                chart.group = group
+            })
 
-        // expose ECharts events as custom events
-        ACTION_EVENTS.forEach(event => {
+            // expose ECharts events as custom events
+            ACTION_EVENTS.forEach(event => {
+                    chart.on(event, params => {
+                        this.$emit(event, params)
+                    })
+                })
+                // mouse events of ECharts should be renamed to prevent
+                // name collision with DOM events
+            MOUSE_EVENTS.forEach(event => {
                 chart.on(event, params => {
-                    this.$dispatch(event, params)
+                    this.$emit(event, params)
+                        // for backward compatibility, may remove in the future
+                    this.$emit('chart' + event, params)
                 })
             })
-            // mouse events of ECharts should be renamed to prevent
-            // name collision with DOM events
-        MOUSE_EVENTS.forEach(event => {
-            chart.on(event, params => {
-                this.$dispatch('chart' + event, params)
-            })
-        })
 
-        this.chart = chart
-        window.addEventListener('resize', function() {
-            chart.resize();
-        });
-
-        document.getElementById('menuExpanded').addEventListener('click', function() {
-            var timer;
-            clearTimeout(timer);
-            timer = setTimeout(() => {
+            this.chart = chart
+            window.addEventListener('resize', function() {
                 chart.resize();
-            }, 200);
-        });
-      })
+            });
+
+            document.getElementById('menuExpanded').addEventListener('click', function() {
+                var timer;
+                clearTimeout(timer);
+                timer = setTimeout(() => {
+                    chart.resize();
+                }, 200);
+            });
+        })
     },
     connect: function(group) {
         if (typeof group !== 'string') {

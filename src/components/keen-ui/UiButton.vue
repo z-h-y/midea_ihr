@@ -1,296 +1,73 @@
-<style lang="stylus">
-
-@import './styles/imports';
-@require './styles/components/drop';
-.ui-button {
-    font-family: $font-stack;
-    @extends $md-text-button;
-    line-height: 1;
-    background: none;
-    overflow: hidden;
-    outline: none;
-    border: none;
-    position: relative;
-    border-radius: 2px;
-    padding: 8px 16px;
-    min-width: 80px;
-    height: 40px;
-    display: inline-block;
-    &::-moz-focus-inner {
-        border: 0;
-    }
-    &.autofocus:focus,
-    body[modality="keyboard"] &:focus {
-        outline-style: solid;
-    }
-    &[disabled] {
-        opacity: 0.6;
-    }
-    &:not([disabled]) {
-        cursor: pointer;
-    }
-    .ui-button-dropdown-menu {
-        display: none;
-    }
-    .ui-button-spinner {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-    }
-}
-
-.ui-button-raised {
-    box-shadow: 0 0 2px alpha(black, 0.12), 0 2px 2px alpha(black, 0.2);
-    transition: box-shadow 0.1s;
-    &.autofocus:focus,
-    body[modality="keyboard"] &:focus {
-        outline: none;
-        box-shadow: 0 0 5px alpha(black, 0.22), 0 3px 6px alpha(black, 0.3);
-    }
-}
-
-.ui-button-normal {
-    &.autofocus:focus,
-    body[modality="keyboard"] &:focus {
-        outline-width: 2px;
-        outline-offset: 2px;
-    }
-    &.color-primary,
-    &.color-white,
-    &.color-accent,
-    &.color-success,
-    &.color-warning,
-    &.color-danger {
-        color: white;
-        .ui-ripple-ink .ripple.held {
-            opacity: 0.7;
-        }
-    }
-    &.color-default {
-        color: #222;
-        background-color: $md-grey-200;
-        &:hover:not([disabled]),
-        &.dropdown-open {
-            background-color: darken($md-grey-200, 7.5%);
-        }
-        &.autofocus:focus,
-        body[modality="keyboard"] &:focus {
-            background-color: darken($md-grey-200, 15%);
-            outline-color: darken($md-grey-200, 30%);
-        }
-        .ui-ripple-ink .ripple.held {
-            opacity: 0.2;
-        }
-        .ui-button-icon,
-        .ui-button-dropdown-icon {
-            color: $md-dark-secondary;
-        }
-    }
-    &.color-white {
-        color: #545454;
-        background-color: $md-brand-white;
-        &:hover:not([disabled]),
-        &.dropdown-open {
-            background-color: darken($md-brand-white, 7.5%);
-        }
-        &.autofocus:focus,
-        body[modality="keyboard"] &:focus {
-            background-color: darken($md-brand-white, 10%);
-            outline-color: darken($md-brand-white, 20%);
-        }
-    }
-    &.color-primary {
-        background-color: $md-brand-primary;
-        &:hover:not([disabled]),
-        &.dropdown-open {
-            background-color: darken($md-brand-primary, 15%);
-        }
-        &.autofocus:focus,
-        body[modality="keyboard"] &:focus {
-            background-color: darken($md-brand-primary, 20%);
-            outline-color: darken($md-brand-primary, 20%);
-        }
-    }
-    &.color-accent {
-        background-color: $md-brand-accent;
-        &:hover:not([disabled]),
-        &.dropdown-open {
-            background-color: darken($md-brand-accent, 15%);
-        }
-        &.autofocus:focus,
-        body[modality="keyboard"] &:focus {
-            background-color: darken($md-brand-accent, 20%);
-            outline-color: darken($md-brand-accent, 20%);
-        }
-    }
-    &.color-success {
-        background-color: $md-green;
-        &:hover:not([disabled]),
-        &.dropdown-open {
-            background-color: darken($md-green, 15%);
-        }
-        &.autofocus:focus,
-        body[modality="keyboard"] &:focus {
-            background-color: darken($md-green, 20%);
-            outline-color: darken($md-green, 20%);
-        }
-    }
-    &.color-warning {
-        background-color: $md-orange;
-        &:hover:not([disabled]),
-        &.dropdown-open {
-            background-color: darken($md-orange, 15%);
-        }
-        &.autofocus:focus,
-        body[modality="keyboard"] &:focus {
-            background-color: darken($md-orange, 20%);
-            outline-color: darken($md-orange, 20%);
-        }
-    }
-    &.color-danger {
-        background-color: $md-red;
-        &:hover:not([disabled]),
-        &.dropdown-open {
-            background-color: darken($md-red, 15%);
-        }
-        &.autofocus:focus,
-        body[modality="keyboard"] &:focus {
-            background-color: darken($md-red, 20%);
-            outline-color: darken($md-red, 20%);
-        }
-    }
-}
-
-.ui-button-flat {
-    background-color: #fff;
-    &:hover:not([disabled]),
-    &.dropdown-open {
-        background-color: darken($md-grey-200, 3%);
-    }
-    &.autofocus:focus,
-    body[modality="keyboard"] &:focus {
-        outline-width: 2px;
-        outline-offset: 0;
-    }
-    &.color-default {
-        color: $md-dark-text;
-        .ui-button-icon {
-            color: $md-dark-text;
-        }
-        &.autofocus:focus,
-        body[modality="keyboard"] &:focus {
-            outline-color: darken($md-grey-200, 25%);
-        }
-    }
-    &.color-primary {
-        color: $md-brand-primary;
-    }
-    &.color-accent {
-        color: $md-brand-accent;
-    }
-    &.color-success {
-        color: $md-green-600;
-    }
-    &.color-warning {
-        color: $md-orange;
-    }
-    &.color-danger {
-        color: $md-red;
-    }
-}
-// ihr more按钮,样式
-.group {
-    .drop-target {
-        .fa-caret-down {
-            float: right;
-        }
-        .ui-button-text {
-            float: left;
-        }
-    }
-}
-
-.ui-button-icon {
-    font-size: 14px;
-    margin-right: 4px;
-    margin-left: -4px;
-    &.position-right {
-        order: 1;
-        margin-left: 4px;
-        margin-right: -4px;
-    }
-}
-
-.ui-button-content {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    &.invisible {
-        visibility: hidden;
-    }
-}
-
-.ui-button-dropdown-icon {
-    font-size: 18px;
-    margin-right: -8px;
-    margin-left: 1px;
-}
-
-.ui-button-group {
-    display: flex;
-    flex-wrap: wrap;
-}
-
-.ui-button-text {
-    display: inline-block;
-}
-
-</style>
-
 <template>
+    <button
+        class="ui-button"
+        ref="button"
 
-<button class="ui-button" :class="styleClasses" :type="buttonType" v-disabled="disabled || loading" ref="button">
-    <div class="ui-button-content" :class="{ 'invisible': loading }">
-        <ui-icon class="ui-button-icon" :class="{ 'position-right': iconRight }" :icon="icon" v-if="showIcon"></ui-icon>
+        :class="classes"
+        :disabled="disabled || loading"
+        :type="buttonType"
 
-        <div class="ui-button-text">
-            <slot>
-                <span v-text="text"></span>
-            </slot>
+        @click="onClick"
+        @focus.once="onFocus"
+    >
+        <div class="ui-button-content">
+            <div class="ui-button-icon" v-if="icon || $slots.icon">
+                <slot name="icon">
+                    <ui-icon :icon="icon"></ui-icon>
+                </slot>
+            </div>
+
+            <slot></slot>
+
+            <ui-icon
+                class="ui-button-dropdown-icon"
+                v-if="hasDropdown && iconPosition !== 'right'"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                    <path d="M6.984 9.984h10.03L12 15z"/>
+                </svg>
+            </ui-icon>
         </div>
 
-        <!-- <ui-icon
-                class="ui-button-dropdown-icon" icon="&#xE5C5;"
-                v-if="!iconRight && showDropdownIcon && (hasDropdownMenu || hasPopover)"
-            ></ui-icon> -->
-    </div>
+        <div class="ui-button-focus-ring" :style="focusRingStyle"></div>
 
-    <ui-progress-circular class="ui-button-spinner" :color="spinnerColor" :size="18" :stroke="4.5" disable-transition v-show="loading"></ui-progress-circular>
+        <ui-progress-circular
+            class="ui-button-progress"
+            disable-transition
 
-    <!-- <ui-ripple-ink v-if="!hideRippleInk && !disabled" :trigger="$els.button"></ui-ripple-ink>
+            :color="progressColor"
+            :size="18"
+            :stroke="4.5"
 
-    <ui-menu class="ui-button-dropdown-menu" :trigger="$els.button" :options="menuOptions" :show-icons="showMenuIcons" :show-secondary-text="showMenuSecondaryText" :open-on="openDropdownOn" @option-selected="menuOptionSelect" :dropdown-position="dropdownPosition"
-    v-if="hasDropdownMenu"></ui-menu>
+            v-show="loading"
+        ></ui-progress-circular>
 
-    <ui-popover :trigger="$els.button" :open-on="openDropdownOn" :dropdown-position="dropdownPosition" v-if="hasPopover">
-        <slot name="popover"></slot>
-    </ui-popover> -->
-</button>
+        <ui-ripple-ink trigger="button" v-if="!disableRipple && !disabled"></ui-ripple-ink>
 
+        <ui-popover
+            ref="dropdown"
+            trigger="button"
+
+            :dropdown-position="dropdownPosition"
+            :open-on="openDropdownOn"
+
+            @close="onDropdownClose"
+            @open="onDropdownOpen"
+
+            v-if="hasDropdown"
+        >
+            <slot name="dropdown"></slot>
+        </ui-popover>
+    </button>
 </template>
 
 <script>
-
 import UiIcon from './UiIcon.vue';
-import UiMenu from './UiMenu.vue';
 import UiPopover from './UiPopover.vue';
 import UiProgressCircular from './UiProgressCircular.vue';
+import UiRippleInk from './UiRippleInk.vue';
 
-import disabled from './directives/disabled';
-
-import HasDropdown from './mixins/HasDropdown';
-import ShowsRippleInk from './mixins/ShowsRippleInk';
+import config from './config';
 
 export default {
     name: 'ui-button',
@@ -298,10 +75,7 @@ export default {
     props: {
         type: {
             type: String,
-            default: 'normal', // 'normal' or 'flat'
-            coerce(type) {
-                return 'ui-button-' + type;
-            }
+            default: 'primary' // 'primary' or 'secondary'
         },
         buttonType: {
             type: String,
@@ -309,89 +83,444 @@ export default {
         },
         color: {
             type: String,
-            default: 'default', // 'default', 'primary', 'accent', 'success', 'warning', or 'danger'
-            coerce(color) {
-                return 'color-' + color;
-            }
+            default: 'default' // 'default', 'primary', 'accent', 'green', 'orange', or 'red'
+        },
+        size: {
+            type: String,
+            default: 'normal' // 'small', 'normal', 'large'
         },
         raised: {
             type: Boolean,
             default: false
         },
-        text: String,
         icon: String,
-        iconRight: {
-            type: Boolean,
-            default: false
+        iconPosition: {
+            type: String,
+            default: 'left' // 'left' or 'right'
         },
         loading: {
             type: Boolean,
             default: false
         },
-        showDropdownIcon: {
+        hasDropdown: {
             type: Boolean,
-            default: true
+            default: false
+        },
+        dropdownPosition: {
+            type: String,
+            default: 'bottom left'
+        },
+        openDropdownOn: {
+            type: String,
+            default: 'click' // 'click', 'hover', 'focus', or 'always'
+        },
+        disableRipple: {
+            type: Boolean,
+            default: config.data.disableRipple
         },
         disabled: {
             type: Boolean,
             default: false
         }
     },
+
     data() {
-      return {
-        els: ''
-      }
-    },
-    mount() {
-      debugger
-      this.$nextTick(function() {
-        debugger
-        this.els = this.$els;
-      })
-    },
-    computed: {
-        styleClasses() {
-                let classes = [this.type, this.color];
-
-                if (this.raised) {
-                    classes.push('ui-button-raised');
-                }
-
-                if (this.hasDropdownMenu || this.hasPopover) {
-                    classes.push('has-dropdown');
-                }
-
-                return classes;
-            },
-
-            spinnerColor() {
-                if (this.color === 'color-default' || this.type === 'ui-button-flat') {
-                    return 'black';
-                }
-
-                return 'white';
-            },
-
-            showIcon() {
-                return Boolean(this.icon);
+        return {
+            focusRing: {
+                top: 0,
+                left: 0,
+                size: 0
             }
+        };
+    },
+
+    computed: {
+        classes() {
+            return [
+                `ui-button-type-${this.type}`,
+                `ui-button-color-${this.color}`,
+                `ui-button-icon-position-${this.iconPosition}`,
+                `ui-button-size-${this.size}`,
+                { 'is-raised': this.raised },
+                { 'is-loading': this.loading },
+                { 'is-disabled': this.disabled || this.loading },
+                { 'has-dropdown': this.hasDropdown }
+            ];
+        },
+
+        focusRingStyle() {
+            return {
+                height: this.focusRing.size + 'px',
+                width: this.focusRing.size + 'px',
+                top: this.focusRing.top + 'px',
+                left: this.focusRing.left + 'px'
+            };
+        },
+
+        progressColor() {
+            if (this.color === 'default' || this.type === 'secondary') {
+                return 'black';
+            }
+
+            return 'white';
+        }
+    },
+
+    methods: {
+        onClick(e) {
+            this.$emit('click', e);
+        },
+
+        onFocus() {
+            const bounds = {
+                width: this.$el.clientWidth,
+                height: this.$el.clientHeight
+            };
+
+            this.focusRing.size = bounds.width - 16; // 8px of padding on left and right
+            this.focusRing.top = -1 * (this.focusRing.size - bounds.height) / 2;
+            this.focusRing.left = (bounds.width - this.focusRing.size) / 2;
+        },
+
+        onDropdownOpen() {
+            this.$emit('dropdown-open');
+        },
+
+        onDropdownClose() {
+            this.$emit('dropdown-close');
+        },
+
+        openDropdown() {
+            if (this.$refs.dropdown) {
+                this.$refs.dropdown.open();
+            }
+        },
+
+        closeDropdown() {
+            if (this.$refs.dropdown) {
+                this.$refs.dropdown.close();
+            }
+        },
+
+        toggleDropdown() {
+            if (this.$refs.dropdown) {
+                this.$refs.dropdown.toggle();
+            }
+        }
     },
 
     components: {
         UiIcon,
-        UiMenu,
         UiPopover,
-        UiProgressCircular
-    },
-
-    mixins: [
-        HasDropdown,
-        ShowsRippleInk
-    ],
-
-    directives: {
-        disabled
+        UiProgressCircular,
+        UiRippleInk
     }
 };
-
 </script>
+
+<style lang="scss">
+@import './styles/imports';
+
+.ui-button {
+    align-items: center;
+    background: none;
+    border-radius: $ui-default-border-radius;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    font-family: $font-stack;
+    font-size: $ui-button-font-size;
+    font-weight: 500;
+    height: $ui-button-height;
+    justify-content: center;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    min-width: rem-calc(80px);
+    outline: none;
+    overflow: hidden;
+    padding: 0;
+    padding-left: rem-calc(16px);
+    padding-right: rem-calc(16px);
+    position: relative;
+    touch-action: manipulation; // IE
+
+    // Remove the Firefox dotted outline
+    &::-moz-focus-inner {
+        border: 0;
+    }
+
+    &.has-focus-ring:focus,
+    body[modality="keyboard"] &:focus {
+        .ui-button-focus-ring {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    &.is-raised {
+        box-shadow: 0 0 2px rgba(black, 0.12), 0 2px 2px rgba(black, 0.2);
+        transition: box-shadow 0.1s;
+
+        &.has-focus-ring:focus,
+        body[modality="keyboard"] &:focus {
+            box-shadow: 0 0 5px rgba(black, 0.22), 0 3px 6px rgba(black, 0.3);
+        }
+    }
+
+    &.is-loading {
+        .ui-button-content {
+            opacity: 0;
+        }
+    }
+
+    &.is-disabled {
+        cursor: default;
+        opacity: 0.6;
+    }
+}
+
+.ui-button-content {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    position: relative; // IE: prevents shifting when the button is pressed
+    transition: opacity 0.3s ease;
+    z-index: 1;
+}
+
+.ui-button-icon {
+    margin-left: rem-calc(-4px);
+    margin-right: rem-calc(6px);
+    margin-top: rem-calc(-2px);
+}
+
+.ui-button-dropdown-icon {
+    font-size: rem-calc(18px);
+    margin-left: rem-calc(2px);
+    margin-right: rem-calc(-6px);
+}
+
+.ui-button-focus-ring {
+    background-color: rgba(black, 0.12);
+    border-radius: 50%;
+    left: 0;
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    transform-origin: center;
+    transform: scale(0);
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.ui-progress-circular.ui-button-progress {
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.ui-button-group {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+// ================================================
+// Icon positions
+// ================================================
+
+.ui-button-icon-position-right {
+    .ui-button-icon {
+        margin-left: rem-calc(6px);
+        margin-right: rem-calc(-4px);
+        order: 1;
+    }
+}
+
+// ================================================
+// Sizes
+// ================================================
+
+.ui-button-size-small {
+    font-size: $ui-button-font-size-small;
+    height: $ui-button-height-small;
+    padding-left: rem-calc(12px);
+    padding-right: rem-calc(12px);
+
+    .ui-button-icon {
+        margin-left: 0;
+        margin-top: 0;
+
+        .ui-icon {
+            font-size: rem-calc(18px);
+        }
+    }
+
+    .ui-button-dropdown-icon {
+        margin-right: rem-calc(-4px);
+    }
+
+    &.ui-button-icon-position-right {
+        .ui-button-icon {
+            margin-left: rem-calc(6px);
+            margin-right: 0;
+        }
+    }
+}
+
+.ui-button-size-large {
+    font-size: $ui-button-font-size-large;
+    height: $ui-button-height-large;
+    padding-left: rem-calc(24px);
+    padding-right: rem-calc(24px);
+
+    .ui-button-icon {
+        margin-left: rem-calc(-4px);
+        margin-right: rem-calc(8px);
+    }
+
+    .ui-button-dropdown-icon {
+        font-size: rem-calc(24px);
+        margin-left: rem-calc(4px);
+    }
+
+    &.ui-button-icon-position-right {
+        .ui-button-icon {
+            margin-left: rem-calc(8px);
+            margin-right: rem-calc(-4px);
+        }
+    }
+}
+
+// ================================================
+// Types and colors
+// ================================================
+
+.ui-button-type-primary {
+    &.ui-button-color-default {
+        background-color: $md-grey-200;
+        color: $primary-text-color;
+
+        &:hover:not(.is-disabled),
+        &.has-dropdown-open,
+        &.has-focus-ring:focus,
+        body[modality="keyboard"] &:focus {
+            background-color: darken($md-grey-200, 7.5%);
+        }
+
+        .ui-ripple-ink-ink {
+            opacity: 0.2;
+        }
+
+        .ui-button-icon,
+        .ui-button-dropdown-icon {
+            color: $secondary-text-color;
+        }
+    }
+
+    &.ui-button-color-primary,
+    &.ui-button-color-accent,
+    &.ui-button-color-green,
+    &.ui-button-color-orange,
+    &.ui-button-color-red {
+        color: white;
+
+        .ui-ripple-ink-ink {
+            opacity: 0.4;
+        }
+    }
+
+    &.ui-button-color-primary {
+        background-color: $brand-primary-color;
+
+        &:hover:not(.is-disabled),
+        &.has-dropdown-open,
+        &.has-focus-ring:focus,
+        body[modality="keyboard"] &:focus {
+            background-color: darken($brand-primary-color, 10%);
+        }
+    }
+
+    &.ui-button-color-accent {
+        background-color: $brand-accent-color;
+
+        &:hover:not(.is-disabled),
+        &.has-dropdown-open,
+        &.has-focus-ring:focus,
+        body[modality="keyboard"] &:focus {
+            background-color: darken($brand-accent-color, 10%);
+        }
+    }
+
+    &.ui-button-color-green {
+        background-color: $md-green;
+
+        &:hover:not(.is-disabled),
+        &.has-dropdown-open,
+        &.has-focus-ring:focus,
+        body[modality="keyboard"] &:focus {
+            background-color: darken($md-green, 10%);
+        }
+    }
+
+    &.ui-button-color-orange {
+        background-color: $md-orange;
+
+        &:hover:not(.is-disabled),
+        &.has-dropdown-open,
+        &.has-focus-ring:focus,
+        body[modality="keyboard"] &:focus {
+            background-color: darken($md-orange, 10%);
+        }
+    }
+
+    &.ui-button-color-red {
+        background-color: $md-red;
+
+        &:hover:not(.is-disabled),
+        &.has-dropdown-open,
+        &.has-focus-ring:focus,
+        body[modality="keyboard"] &:focus {
+            background-color: darken($md-red, 10%);
+        }
+    }
+}
+
+.ui-button-type-secondary {
+    background-color: transparent;
+
+    &:hover:not(.is-disabled),
+    &.has-dropdown-open,
+    &.has-focus-ring:focus,
+    body[modality="keyboard"] &:focus {
+        background-color: darken($md-grey-200, 3%);
+    }
+
+    &.ui-button-color-default {
+        color: $primary-text-color;
+
+        .ui-button-icon {
+            color: $secondary-text-color;
+        }
+    }
+
+    &.ui-button-color-primary {
+        color: $brand-primary-color;
+    }
+
+    &.ui-button-color-accent {
+        color: $brand-accent-color;
+    }
+
+    &.ui-button-color-green {
+        color: $md-green-600;
+    }
+
+    &.ui-button-color-orange {
+        color: $md-orange;
+    }
+
+    &.ui-button-color-red {
+        color: $md-red;
+    }
+}
+</style>

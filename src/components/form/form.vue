@@ -28,7 +28,12 @@ export default {
         },
         watch: {
             model() {
-                this.$broadcast('formModelChange');
+                // this.$broadcast('formModelChange');
+                this.$children.forEach(function(item) {
+                  if (item.formModelChange) {
+                    item.formModelChange()
+                  }
+                })
             }
         },
         props: {
@@ -57,6 +62,19 @@ export default {
                 }
                 return '';
             }
+        },
+        methods: {
+          isFormValidate() {
+            var pass = true;
+            this.$children.forEach(function(item) {
+              if (item.checkFormValidate) {
+                if (!item.checkFormValidate()) {
+                  pass = false;
+                }
+              }
+            })
+            return pass;
+          }
         }
 };
 

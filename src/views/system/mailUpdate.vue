@@ -12,7 +12,7 @@
 
 <div class="content-wrap ihr-position-mailServer">
     <panel :title="panelTitle" class="panel-b" header="panel-header">
-        <v-form v-ref:emailform :model="email" :schema="emailSchema" label-width="150" label-suffix="" :cols="1" form-style="org-form">
+        <v-form ref="emailform" :model="email" :schema="emailSchema" label-width="150" label-suffix="" :cols="1" form-style="org-form">
             <text-field property='companyId' editor-width="400"></text-field>
             <text-field property='companyName' editor-width="400"></text-field>
             <text-field property='companyCode' editor-width="400"></text-field>
@@ -29,8 +29,8 @@
         </v-form>
     </panel>
     <div class="btn-group">
-        <ui-button @click="submit" color="primary mr10">Submit</ui-button>
-        <ui-button @click="cancel" class="btn-default-bd" type="flat">Cancel</ui-button>
+        <ui-button @click="submit" color="primary mr10">{{$t('button.submit')}}</ui-button>
+        <ui-button @click="cancel" class="btn-default-bd" type="flat">{{$t('button.cancel')}}</ui-button>
     </div>
 </div>
 
@@ -52,79 +52,80 @@ import {
     default as Message
 }
 from '../../components/basic/message';
-let emailSchema = new Schema({
-    companyId: {
-        label: 'companyId',
-        required: true,
-        whitespace: false
-    },
-    companyName: {
-        label: 'companyName',
-        required: true,
-        whitespace: false
-    },
-    companyCode: {
-        label: 'companyCode',
-        required: true,
-        whitespace: false
-    },
-    email: {
-        label: 'email',
-        required: true,
-        whitespace: false
-    },
-    emailAccount: {
-        label: 'emailAccount',
-        required: true,
-        whitespace: false
-    },
-    pwd: {
-        label: 'password',
-        required: true,
-        whitespace: false
-    },
-    maxReceiverNum: {
-        label: 'maxReceiverNum',
-        required: true,
-        whitespace: false
-    },
-    onceSendNum: {
-        label: 'onceSendNum',
-        required: true,
-        whitespace: false
-    },
-    ip: {
-        label: 'ip',
-        required: true,
-        whitespace: false
-    },
-    port: {
-        label: 'port',
-        required: true,
-        whitespace: false
-    },
-    encryptType: {
-        label: 'encryptType',
-        mapping: {
-            'SSL': 'SSL',
-            'ON': 'ON'
-        }
-    },
-    status: {
-        label: 'status',
-        mapping: function() {
-            return getDictMapping('IS_ENABLED');
-        }
-    },
-    emaililConfigId: {
 
-    }
-
-});
 
 export default {
 
     data() {
+            let emailSchema = new Schema({
+                companyId: {
+                    label: this.$t('system.mailUpdate.companyId'),
+                    required: true,
+                    whitespace: false
+                },
+                companyName: {
+                    label: this.$t('system.mailUpdate.companyName'),
+                    required: true,
+                    whitespace: false
+                },
+                companyCode: {
+                    label: this.$t('system.mailUpdate.companyCode'),
+                    required: true,
+                    whitespace: false
+                },
+                email: {
+                    label: this.$t('system.mailUpdate.email'),
+                    required: true,
+                    whitespace: false
+                },
+                emailAccount: {
+                    label: this.$t('system.mailUpdate.emailAccount'),
+                    required: true,
+                    whitespace: false
+                },
+                pwd: {
+                    label: this.$t('system.mailUpdate.pwd'),
+                    required: true,
+                    whitespace: false
+                },
+                maxReceiverNum: {
+                    label: this.$t('system.mailUpdate.maxReceiverNum'),
+                    required: true,
+                    whitespace: false
+                },
+                onceSendNum: {
+                    label: this.$t('system.mailUpdate.onceSendNum'),
+                    required: true,
+                    whitespace: false
+                },
+                ip: {
+                    label: this.$t('system.mailUpdate.ip'),
+                    required: true,
+                    whitespace: false
+                },
+                port: {
+                    label: this.$t('system.mailUpdate.port'),
+                    required: true,
+                    whitespace: false
+                },
+                encryptType: {
+                    label: this.$t('system.mailUpdate.encryptType'),
+                    mapping: {
+                        'SSL': 'SSL',
+                        'ON': 'ON'
+                    }
+                },
+                status: {
+                    label: 'status',
+                    mapping: function() {
+                        return getDictMapping('IS_ENABLED');
+                    }
+                },
+                emaililConfigId: {
+
+                }
+
+            });
             return {
                 panelTitle: '',
                 emailSchema: emailSchema,
@@ -227,7 +228,7 @@ export default {
             }
         },
         components: {
-          Panel: require('../../components/basic/panel.vue')
+            Panel: require('../../components/basic/panel.vue')
         }
 }
 

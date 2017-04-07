@@ -1,8 +1,8 @@
 <template>
-  <div class="select-option" :class="{ selected: !showCheckbox && value === $parent.value, 'select-option-disable': isDisable }" @click="handleClick">
+  <div :class="['select-option',{ selectedItme: !showCheckbox && value === $parent.value, 'select-option-disable': isDisable }]" @click.stop="handleClick">
     <!-- <input type="checkbox" v-if="showCheckbox" v-model="selected" /> -->
-    <div :class="{'ui-checkbox': true, 'checked': selected}" v-if="showCheckbox">
-      <input type="checkbox" v-model="selected" />
+    <div :class="['ui-checkbox', {checked:selectedItme}]" v-if="showCheckbox">
+      <input type="checkbox" v-model="selectedItme" />
       <div class="ui-checkbox-checkmark">
           <div class="ui-checkbox-focus-ring"></div>
       </div>
@@ -57,20 +57,21 @@
         type: Boolean,
         default: false
       },
-      selected: {
-        type: Boolean
-      },
       isDisable: {
         type: Boolean
       }
     },
-
-    ready() {
+    data() {
+      return {
+        selectedItme: false
+      }
+    },
+    mounted() {
       if (this.$parent.multiSelect) {
         this.showCheckbox = true;
         const parentValue = this.$parent.value;
         if (parentValue instanceof Array) {
-          this.selected = parentValue.indexOf(this.value) !== -1;
+          this.selectedItme = parentValue.indexOf(this.value) !== -1;
         }
       }
     },
@@ -81,11 +82,10 @@
           return;
         }
         if (this.showCheckbox) {
-          this.selected = !this.selected;
+          this.selectedItme = !this.selectedItme;
           this.$parent.$emit('selection-change');
         } else {
-          this.$parent.value = this.value;
-          this.$parent.$emit('select', this.value);
+          this.$parent.$emit('selectItem', this.value);
         }
       }
     }

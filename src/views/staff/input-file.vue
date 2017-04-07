@@ -1,6 +1,6 @@
 <template lang="html">
   <div class="upload-file-com">
-    <input v-model="file" type="file" :name="name" value="" @change="change($event)" :accept="accept">
+    <input v-on:change="file" type="file" :name="name" value="" @change="change($event)" :accept="accept">
     <span class="button-name">Upload</span>
     <span class="file-name" :title="fileName">{{fileName}}</span>
     <i v-show="fileName || fileName === '0'" class="fa fa-trash-o" aria-hidden="true" @click="del"></i>
@@ -48,8 +48,8 @@ export default {
     };
   },
   computed: {},
-  ready() {},
-  attached() {},
+  mounted() {},
+  
   methods: {
     change(e) {
       this.changeFile(e);

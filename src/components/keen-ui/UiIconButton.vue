@@ -1,51 +1,69 @@
 <template>
     <button
-        class="ui-icon-button" :class="styleClasses" :aria-label="ariaLabel || tooltip"
-        :type="buttonType" v-disabled="disabled || loading" v-el:button
+        class="ui-icon-button"
+        ref="button"
+
+        :aria-label="ariaLabel || tooltip"
+        :class="classes"
+        :disabled="disabled || loading"
+        :type="buttonType"
+
+        @click="onClick"
     >
-        <ui-icon
-            class="ui-icon-button-icon" :icon="icon" v-show="!loading"
-        ></ui-icon>
+        <div class="ui-icon-button-icon" v-if="icon || $slots.default">
+            <slot>
+                <ui-icon :icon="icon"></ui-icon>
+            </slot>
+        </div>
+
+        <div class="ui-icon-button-focus-ring"></div>
 
         <ui-progress-circular
-            class="ui-icon-button-spinner" :color="spinnerColor" :size="24" :stroke="4.5"
-            disable-transition v-show="loading"
+            class="ui-icon-button-progress"
+
+            :color="progressColor"
+            :size="size === 'large' ? 24 : 18"
+            :stroke="4.5"
+
+            v-show="loading"
         ></ui-progress-circular>
 
-        <ui-ripple-ink v-if="!hideRippleInk && !disabled" :trigger="$els.button"></ui-ripple-ink>
-
-        <ui-tooltip
-            :trigger="$els.button" :content="tooltip" :position="tooltipPosition" v-if="tooltip"
-            :open-on="openTooltipOn"
-        ></ui-tooltip>
-
-        <ui-menu
-            class="ui-button-dropdown-menu" :trigger="$els.button" :options="menuOptions"
-            :show-icons="showMenuIcons" :show-secondary-text="showMenuSecondaryText"
-            :open-on="openDropdownOn" @option-selected="menuOptionSelect"
-            :dropdown-position="dropdownPosition" v-if="hasDropdownMenu"
-        ></ui-menu>
+        <ui-ripple-ink trigger="button" v-if="!disableRipple && !disabled"></ui-ripple-ink>
 
         <ui-popover
-            :trigger="$els.button" :open-on="openDropdownOn" :dropdown-position="dropdownPosition"
-            v-if="hasPopover"
+            ref="dropdown"
+            trigger="button"
+
+            :dropdown-position="dropdownPosition"
+            :open-on="openDropdownOn"
+
+            @close="onDropdownClose"
+            @open="onDropdownOpen"
+
+            v-if="hasDropdown"
         >
-            <slot name="popover"></slot>
+            <slot name="dropdown"></slot>
         </ui-popover>
+
+        <ui-tooltip
+            trigger="button"
+
+            :open-on="openTooltipOn"
+            :position="tooltipPosition"
+
+            v-if="tooltip"
+        >{{ tooltip }}</ui-tooltip>
     </button>
 </template>
 
 <script>
 import UiIcon from './UiIcon.vue';
-import UiMenu from './UiMenu.vue';
 import UiPopover from './UiPopover.vue';
 import UiProgressCircular from './UiProgressCircular.vue';
+import UiRippleInk from './UiRippleInk.vue';
+import UiTooltip from './UiTooltip.vue';
 
-import disabled from './directives/disabled';
-
-import HasDropdown from './mixins/HasDropdown';
-import ShowsTooltip from './mixins/ShowsTooltip';
-import ShowsRippleInk from './mixins/ShowsRippleInk';
+import config from './config';
 
 export default {
     name: 'ui-icon-button',
@@ -53,10 +71,7 @@ export default {
     props: {
         type: {
             type: String,
-            default: 'normal', // 'normal' or 'flat' or 'clear'
-            coerce(type) {
-                return 'ui-icon-button-' + type;
-            }
+            default: 'primary' // 'primary' or 'secondary'
         },
         buttonType: {
             type: String,
@@ -64,19 +79,36 @@ export default {
         },
         color: {
             type: String,
-            default: 'default', // 'default', 'primary', 'accent', 'success', 'warning', or 'danger'
-            coerce(color) {
-                return 'color-' + color;
-            }
+            default: 'default' // 'default', 'primary', 'accent', 'green', 'orange', or 'red'
         },
-        icon: {
+        size: {
             type: String,
-            required: true
+            default: 'normal' // 'small', normal', or 'large'
         },
+        icon: String,
         ariaLabel: String,
         loading: {
             type: Boolean,
             default: false
+        },
+        hasDropdown: {
+            type: Boolean,
+            default: false
+        },
+        dropdownPosition: {
+            type: String,
+            default: 'bottom left'
+        },
+        openDropdownOn: {
+            type: String,
+            default: 'click' // 'click', 'hover', 'focus', or 'always'
+        },
+        tooltip: String,
+        openTooltipOn: String,
+        tooltipPosition: String,
+        disableRipple: {
+            type: Boolean,
+            default: config.data.disableRipple
         },
         disabled: {
             type: Boolean,
@@ -85,298 +117,385 @@ export default {
     },
 
     computed: {
-        styleClasses() {
-            let classes = [this.type, this.color];
-
-            if (this.hasDropdown) {
-                classes.push('ui-dropdown');
-            }
-
-            return classes;
+        classes() {
+            return [
+                `ui-icon-button-type-${this.type}`,
+                `ui-icon-button-color-${this.color}`,
+                `ui-icon-button-size-${this.size}`,
+                { 'is-loading': this.loading },
+                { 'is-disabled': this.disabled || this.loading },
+                { 'has-dropdown': this.hasDropdown }
+            ];
         },
 
-        spinnerColor() {
-            if (this.color === 'color-default' || this.color === 'color-black') {
-                return 'black';
+        progressColor() {
+            if (this.type === 'primary') {
+                if (this.color === 'default' || this.color === 'black') {
+                    return 'black';
+                }
+
+                return 'white';
             }
 
-            return 'white';
+            if (this.color === 'white') {
+                return 'white';
+            }
+
+            return 'black';
+        }
+    },
+
+    methods: {
+        onClick(e) {
+            this.$emit('click', e);
+        },
+
+        onDropdownOpen() {
+            this.$emit('dropdown-open');
+        },
+
+        onDropdownClose() {
+            this.$emit('dropdown-close');
+        },
+
+        openDropdown() {
+            if (this.$refs.dropdown) {
+                this.$refs.dropdown.open();
+            }
+        },
+
+        closeDropdown() {
+            if (this.$refs.dropdown) {
+                this.$refs.dropdown.close();
+            }
+        },
+
+        toggleDropdown() {
+            if (this.$refs.dropdown) {
+                this.$refs.dropdown.toggle();
+            }
         }
     },
 
     components: {
         UiIcon,
-        UiMenu,
         UiPopover,
-        UiProgressCircular
-    },
-
-    mixins: [
-        HasDropdown,
-        ShowsTooltip,
-        ShowsRippleInk
-    ],
-
-    directives: {
-        disabled
+        UiProgressCircular,
+        UiRippleInk,
+        UiTooltip
     }
 };
 </script>
 
-<style lang="stylus">
+<style lang="scss">
 @import './styles/imports';
-@require './styles/components/drop';
+
+$ui-icon-button-size            : rem-calc(36px) !default;
+$ui-icon-button-size-small     : rem-calc(32px) !default;
+$ui-icon-button-size-large     : rem-calc(48px) !default;
 
 .ui-icon-button {
+    align-items: center;
     background: none;
-    outline: none;
-    border: none;
-    position: relative;
-    overflow: hidden;
-    -webkit-mask-image: -webkit-radial-gradient(circle, white, black);
-    width: 30px;
-    height: 30px;
     border-radius: 50%;
-    float:right;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    justify-content: center;
+    margin: 0;
+    outline: none;
+    overflow: hidden;
+    padding: 0;
+    position: relative;
+
+    // Fix for border radius not clipping internal content of positioned elements (Chrome/Opera)
+    -webkit-mask-image: -webkit-radial-gradient(circle, white, black);
+
+    &,
+    .ui-icon-button-focus-ring {
+        height: $ui-icon-button-size;
+        width: $ui-icon-button-size;
+    }
+
+    body[modality="keyboard"] &:focus {
+        .ui-icon-button-focus-ring {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    // Remove the Firefox dotted outline
     &::-moz-focus-inner {
-      border: 0;
+        border: 0;
     }
 
-    &[disabled] {
+    &.is-loading {
+        .ui-icon-button-icon {
+            opacity: 0;
+        }
+    }
+
+    &.is-disabled {
+        cursor: default;
         opacity: 0.6;
-    }
-
-    &:not([disabled]) {
-        cursor: pointer;
-    }
-
-    .ui-dropdown-menu {
-        display: none;
     }
 }
 
-.ui-icon-button-normal {
-    &.color-primary,
-    &.color-accent,
-    &.color-success,
-    &.color-warning,
-    &.color-danger {
-        color: white;
+.ui-icon-button-icon {
+    height: initial;
+    opacity: 1;
+    position: relative;
+    transition-delay: 0.1s;
+    transition: opacity 0.2s ease;
+    width: 100%; // Firefox: needs the width and height reset for flexbox centering
+    z-index: 1;
+}
 
-        .ui-ripple-ink .ripple.held {
-            opacity: 0.7;
-        }
+.ui-icon-button-focus-ring {
+    border-radius: 50%;
+    height: $ui-icon-button-size;
+    left: 0;
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    transform-origin: center;
+    transform: scale(0);
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    width: $ui-icon-button-size;
+}
+
+.ui-progress-circular.ui-icon-button-progress {
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+// ================================================
+// Sizes
+// ================================================
+
+.ui-icon-button-size-small {
+    &,
+    .ui-icon-button-focus-ring {
+        height: $ui-icon-button-size-small;
+        width: $ui-icon-button-size-small;
     }
 
-    &.color-default {
+    .ui-icon {
+        font-size: rem-calc(18px);
+    }
+}
+
+.ui-icon-button-size-large {
+    &,
+    .ui-icon-button-focus-ring {
+        height: $ui-icon-button-size-large;
+        width: $ui-icon-button-size-large;
+    }
+}
+
+// ================================================
+// Colors
+// ================================================
+
+.ui-icon-button-color-black,
+.ui-icon-button-color-white {
+    background-color: transparent;
+
+    &:hover:not(.is-disabled),
+    &.has-dropdown-open {
+        background-color: rgba(black, 0.1);
+    }
+
+    .ui-icon-button-focus-ring {
+        background-color: rgba(black, 0.15);
+    }
+}
+
+.ui-icon-button-color-black {
+    color: $secondary-text-color;
+
+    .ui-icon-button-icon {
+        color: $secondary-text-color;
+    }
+}
+
+.ui-icon-button-color-white {
+    color: $secondary-text-color;
+
+    .ui-icon-button-icon {
+        color: white;
+    }
+}
+
+// ================================================
+// Types
+// ================================================
+
+.ui-icon-button-type-primary {
+    &.ui-icon-button-color-default {
         background-color: $md-grey-200;
 
-        &:hover:not([disabled]),
-        &.dropdown-open {
+        &:hover:not(.is-disabled),
+        &.has-dropdown-open {
             background-color: darken($md-grey-200, 7.5%);
         }
 
-        body[modality="keyboard"] &:focus {
-            background-color: darken($md-grey-200, 20%);
+        .ui-icon-button-focus-ring {
+            background-color: darken($md-grey-200, 15%);
         }
 
-        .ui-ripple-ink .ripple.held {
+        .ui-ripple-ink-ink {
             opacity: 0.2;
         }
 
         .ui-icon-button-icon  {
-            color: $md-dark-text;
+            color: $primary-text-color;
         }
     }
 
-    &.color-primary {
-        background-color: $md-brand-primary;
+    &.ui-icon-button-color-primary,
+    &.ui-icon-button-color-accent,
+    &.ui-icon-button-color-green,
+    &.ui-icon-button-color-orange,
+    &.ui-icon-button-color-red {
+        color: white;
 
-        &:hover:not([disabled]),
-        &.dropdown-open {
-            background-color: darken($md-brand-primary, 15%);
-        }
-
-        body[modality="keyboard"] &:focus {
-            background-color: darken($md-brand-primary, 25%);
-        }
-    }
-
-    &.color-accent {
-        background-color: $md-brand-accent;
-
-        &:hover:not([disabled]),
-        &.dropdown-open {
-            background-color: darken($md-brand-accent, 15%);
-        }
-
-        body[modality="keyboard"] &:focus {
-            background-color: darken($md-brand-accent, 25%);
+        .ui-ripple-ink-ink {
+            opacity: 0.4;
         }
     }
 
-    &.color-success {
+    &.ui-icon-button-color-primary {
+        background-color: $brand-primary-color;
+
+        &:hover:not(.is-disabled),
+        &.has-dropdown-open {
+            background-color: darken($brand-primary-color, 10%);
+        }
+
+        .ui-icon-button-focus-ring {
+            background-color: darken($brand-primary-color, 15%);
+        }
+    }
+
+    &.ui-icon-button-color-accent {
+        background-color: $brand-accent-color;
+
+        &:hover:not(.is-disabled),
+        &.has-dropdown-open {
+            background-color: darken($brand-accent-color, 10%);
+        }
+
+        .ui-icon-button-focus-ring {
+            background-color: darken($brand-accent-color, 15%);
+        }
+    }
+
+    &.ui-icon-button-color-green {
         background-color: $md-green;
 
-        &:hover:not([disabled]),
-        &.dropdown-open {
+        &:hover:not(.is-disabled),
+        &.has-dropdown-open {
+            background-color: darken($md-green, 10%);
+        }
+
+        .ui-icon-button-focus-ring {
             background-color: darken($md-green, 15%);
         }
-
-        body[modality="keyboard"] &:focus {
-            background-color: darken($md-green, 25%);
-        }
     }
 
-    &.color-warning {
+    &.ui-icon-button-color-orange {
         background-color: $md-orange;
 
-        &:hover:not([disabled]),
-        &.dropdown-open {
-            background-color: darken($md-orange, 15%);
+        &:hover:not(.is-disabled),
+        &.has-dropdown-open {
+            background-color: darken($md-orange, 10%);
         }
 
-        body[modality="keyboard"] &:focus {
-            background-color: darken($md-orange, 25%);
+        .ui-icon-button-focus-ring {
+            background-color: darken($md-orange, 15%);
         }
     }
 
-    &.color-danger {
+    &.ui-icon-button-color-red {
         background-color: $md-red;
 
-        &:hover:not([disabled]),
-        &.dropdown-open {
-            background-color: darken($md-red, 15%);
+        &:hover:not(.is-disabled),
+        &.has-dropdown-open {
+            background-color: darken($md-red, 10%);
         }
 
-        body[modality="keyboard"] &:focus {
-            background-color: darken($md-red, 25%);
+        .ui-icon-button-focus-ring {
+            background-color: darken($md-red, 15%);
         }
     }
 }
 
-.ui-icon-button-flat {
-    &.color-default,
-    &.color-primary,
-    &.color-accent,
-    &.color-success,
-    &.color-warning,
-    &.color-danger {
-        &:hover:not([disabled]),
-        &.dropdown-open {
-            background-color: darken($md-grey-200, 3%);
-        }
-    }
-
-    &.color-default {
-        color: $md-dark-text;
-
-        body[modality="keyboard"] &:focus {
-            border: 2px solid darken($md-grey-200, 25%);
-        }
+.ui-icon-button-type-secondary {
+    &.ui-icon-button-color-default {
+        color: $primary-text-color;
 
         .ui-icon-button-icon {
-            color: $md-dark-text;
+            color: $primary-text-color;
         }
     }
 
-    &.color-primary {
-        color: $md-brand-primary;
-
-        body[modality="keyboard"] &:focus {
-            border: 2px solid $md-brand-primary;
+    &.ui-icon-button-color-default,
+    &.ui-icon-button-color-primary,
+    &.ui-icon-button-color-accent,
+    &.ui-icon-button-color-green,
+    &.ui-icon-button-color-orange,
+    &.ui-icon-button-color-red {
+        &:hover:not(.is-disabled),
+        &.has-dropdown-open {
+            background-color: rgba(black, 0.1);
         }
+
+        .ui-icon-button-focus-ring {
+            background-color: rgba(black, 0.15);
+        }
+    }
+
+    &.ui-icon-button-color-primary {
+        color: $brand-primary-color;
 
         .ui-icon-button-icon {
-            color: $md-brand-primary;
+            color: $brand-primary-color;
         }
     }
 
-    &.color-accent {
-        color: $md-brand-accent;
-
-        body[modality="keyboard"] &:focus {
-            border: 2px solid $md-brand-accent;
-        }
+    &.ui-icon-button-color-accent {
+        color: $brand-accent-color;
 
         .ui-icon-button-icon {
-            color: $md-brand-accent;
+            color: $brand-accent-color;
         }
     }
 
-    &.color-success {
+    &.ui-icon-button-color-green {
         color: $md-green-600;
-
-        body[modality="keyboard"] &:focus {
-            border: 2px solid $md-green-600;
-        }
 
         .ui-icon-button-icon {
             color: $md-green-600;
         }
     }
 
-    &.color-warning {
+    &.ui-icon-button-color-orange {
         color: $md-orange;
-
-        body[modality="keyboard"] &:focus {
-            border: 2px solid $md-orange;
-        }
 
         .ui-icon-button-icon {
             color: $md-orange;
         }
     }
 
-    &.color-danger {
+    &.ui-icon-button-color-red {
         color: $md-red;
-
-        body[modality="keyboard"] &:focus {
-            border: 2px solid $md-red;
-        }
 
         .ui-icon-button-icon {
             color: $md-red;
         }
     }
-}
-
-.ui-icon-button-clear {
-    background-color: transparent;
-
-    body[modality="keyboard"] &:focus,
-    &:hover:not([disabled]),
-    &.dropdown-open {
-        background-color: alpha(black, 0.1);
-    }
-
-    &.color-white {
-        color: $md-dark-secondary;
-
-        body[modality="keyboard"] &:focus {
-            border: 2px solid alpha(white, 0.8);
-        }
-
-        .ui-icon-button-icon {
-            color: white;
-        }
-    }
-
-    &.color-black {
-        color: $md-dark-secondary;
-
-        body[modality="keyboard"] &:focus {
-            border: 2px solid alpha(black, 0.25);
-        }
-
-        .ui-icon-button-icon {
-            color: $md-dark-secondary;
-        }
-    }
-}
-
-.ui-icon-button-icon {
-    width: 100%; // Firefox: needs the width and height reset for flexbox centering
-    height: initial;
 }
 </style>

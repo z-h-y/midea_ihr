@@ -1,6 +1,6 @@
 <template>
   <div class="tree">
-    <tree-node v-for="child in data" :data="child"></tree-node>
+    <tree-node v-for="child in data" :key="child.id" :data="child" ref="treenode"></tree-node>
   </div>
 </template>
 
@@ -59,7 +59,10 @@
         return checkedNodes;
       },
       delCheckedNodes(selectNode, id) {
-        this.$broadcast('treeDelNode' , selectNode[id], id);
+        var treenode = this.$refs.treenode || [];
+        for (let i = 0, len = treenode.length; i < len; i++) {
+          this.$refs.treenode[i].treeDelNode(selectNode[id], id);
+        }
         var childrenProperty = this.levelConfig.childrenProperty || 'children';
         var data = this.data;
         var walk = function(data, node) {
@@ -83,10 +86,13 @@
         }
       },
       setNodeActive(id, key) {
-        this.$broadcast('setNodeActive', id, key);
+        var treenode = this.$refs.treenode || [];
+        for (let i = 0, len = treenode.length; i < len; i++) {
+          this.$refs.treenode[i].setNodeActive(id, key);
+        }
       }
     },
-    ready() {
+    mounted() {
       if (this.levelConfig && this.levelConfig.lazy !== undefined) {
         var loadFn = this.levelConfig.load;
         if (!loadFn) return;

@@ -37,10 +37,10 @@
 
 <div class="content-wrap ihr-setting-templateUpdate">
     <panel :title="panelTitle" class="panel-b" header="panel-header">
-        <v-form v-ref:templateform :model="areaTemplate" :schema="areaTemplateSchema" label-width="145" label-suffix="" :cols="1" form-style="org-form">
-            <select-field property='employementCategory' editor-width="250" :readonly="true"></select-field>
-            <text-field property="areaTemplateName" editor-width="250" :readonly="true"></text-field>
-            <select-field property="areaId" editor-width="250" :readonly="true"></select-field>
+        <v-form ref="templateform" :model="areaTemplate" :schema="areaTemplateSchema" label-width="145" label-suffix="" :cols="1" form-style="org-form">
+            <select-field property='employementCategory' editor-width="250" readonly="true"></select-field>
+            <text-field property="areaTemplateName" editor-width="250" readonly="true"></text-field>
+            <select-field property="areaId" editor-width="250" readonly="true"></select-field>
         </v-form>
         <div class="content-wrap ihr-setting-templateUpdate">
 
@@ -48,45 +48,45 @@
             <div class="label-hide" property="details">
                 <div class="field-row">
                     <div class="cell tl w160 pl4">
-                        <label>Default Label</label>
+                        <label>{{$t('system.template.defaultLabel')}}</label>
                     </div>
                     <div class="cell tl w160">
-                        <label>Label</label>
+                        <label>{{$t('system.template.label')}}</label>
                     </div>
                     <div class="cell tl w160">
-                        <label>Field Type</label>
+                        <label>{{$t('system.template.fieldType')}}</label>
                     </div>
                     <div class="cell tl w160">
-                        <label>Data Dictionary</label>
+                        <label>{{$t('system.template.dataDictionary')}}</label>
                     </div>
                     <div class="cell tl w160">
-                        <label>Mandatory</label>
+                        <label>{{$t('system.template.mandatory')}}</label>
                     </div>
                     <div class="cell tl w160">
-                        <label>Enabled</label>
+                        <label>{{$t('system.template.enabled')}}</label>
                     </div>
                 </div>
                 <template v-for="item in templateDetailsList">
                     <v-form class="mt5" :model="item" :schema="templateDetailsSchema" label-width="0" label-suffix="" :cols="1">
                         <div class="field-row">
                             <div class="cell w160 tl">
-                                <text-increment label-width="0" property='fieldName' editor-width="160" :hide-label="true" :readonly="true"></text-increment>
+                                <text-increment label-width="0" property='fieldName' editor-width="160" :hide-label="true" readonly="true"></text-increment>
                             </div>
                             <div class="cell w160">
-                                <text-field label-width="0" :hide-label="true" property='fieldBusinessName' :hide-label="true" editor-width="140" :readonly="true"></text-field>
+                                <text-field label-width="0" :hide-label="true" property='fieldBusinessName' editor-width="140" readonly="true"></text-field>
                             </div>
                             <div class="cell w160">
-                                <select-field label-width="0" :hide-label="true" property='fieldType' :hide-label="true" editor-width="140" :readonly="true"></select-field>
+                                <select-field label-width="0" :hide-label="true" property='fieldType' editor-width="140" readonly="true"></select-field>
                             </div>
                             <div class="cell w160">
-                                <text-field v-if="item.fieldType === '1'" :readonly="true" label-width="0" :hide-label="true" property='dataDictionary' :hide-label="true" editor-width="140"></text-field>
-                                <text-field v-if="item.fieldType === '2'" :readonly="true" label-width="0" :hide-label="true" property='dataDictionary' :hide-label="true" editor-width="140" :readonly="true"></text-field>
+                                <text-field v-if="item.fieldType === '1'" readonly="true" label-width="0" :hide-label="true" property='dataDictionary' editor-width="140"></text-field>
+                                <text-field v-if="item.fieldType === '2'" readonly="true" label-width="0" :hide-label="true" property='dataDictionary' editor-width="140" :readonly="true"></text-field>
                             </div>
                             <div class="cell w160">
-                                <text-increment label-width="0" property='isMustFill' editor-width="160" :hide-label="true" :readonly="true"></text-increment>
+                                <text-increment label-width="0" property='isMustFill' editor-width="160" :hide-label="true" readonly="true"></text-increment>
                             </div>
                             <div class="cell w160">
-                                <text-increment label-width="0" property='isShow' editor-width="160" :hide-label="true" :readonly="true"></text-increment>
+                                <text-increment label-width="0" property='isShow' editor-width="160" :hide-label="true" readonly="true"></text-increment>
                             </div>
                         </div>
                     </v-form>
@@ -94,7 +94,7 @@
             </div>
         </div>
         <div class="btn-group">
-            <ui-button @click="cancel" class="btn-default-bd" type="flat">Back</ui-button>
+            <ui-button @click="cancel" class="btn-default-bd" type="flat">{{$t('button.back')}}</ui-button>
         </div>
     </panel>
 </div>
@@ -150,17 +150,17 @@ var templateDetailsData = {
 
 let areaTemplateSchema = new Schema({
     areaTemplateName: {
-        label: 'Template Name',
+        label: this.$t('system.template.areaTemplateName'),
         required: true,
         whitespace: false,
     },
     areaName: {
-        label: 'Restrict to Country',
+        label: this.$t('system.template.areaRestrictToCountry'),
         required: true,
         whitespace: false,
     },
     areaId: {
-        label: 'Restrict to Country',
+        label: this.$t('system.template.areaRestrictToCountry'),
         whitespace: false,
         required: true,
         mapping: function() {
@@ -198,7 +198,7 @@ export default {
     data() {
             let _self = this;
             return {
-                panelTitle: 'Add Country Template',
+                panelTitle: this.$t('system.template.addCountryTemplate'),
                 templateDetailsSchema: new Schema(templateDetailsData),
                 areaTemplateSchema: areaTemplateSchema,
                 areaTemplate: areaTemplateSchema.newModel(),
@@ -238,7 +238,7 @@ export default {
             data(transition) {
                 let _self = this;
                 _self.areaTemplate.areaTemplateId = transition.to.params.areaTemplateId;
-                _self.panelTitle = 'View Country Templatet';
+                _self.panelTitle = this.$t('system.template.viewCountryTemplatet');
 
                 _self.$http.post('/area/template/getAreaTemplateById', {
                     areaTemplateId: _self.areaTemplate.areaTemplateId

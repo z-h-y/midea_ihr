@@ -52,29 +52,29 @@
 <div class="ihr-viewNotification">
     <panel :title="panelTitle" class="panel-b" header="panel-header">
         <div class="mb20">
-            <label class="label" for="">Subject</label>
+            <label class="label" for="">{{ $t('notification.label.subject') }}</label>
             <span class="text">{{message.messageTitle}}</span>
         </div>
         <div class="mb20">
-            <label class="label">Body</label>
+            <label class="label">{{ $t('notification.label.body') }}</label>
             <span class="text">{{message.messageBody}}</span>
         </div>
         <div class="mb20">
-            <label class="label">Creation Date</label>
+            <label class="label">{{ $t('notification.label.creationDate') }}</label>
             <span class="text">{{message.createDate | formatDate }}</span>
         </div>
         <div class="mb20">
-            <label class="label">Recipients</label>
+            <label class="label">{{ $t('notification.label.recipients') }}</label>
             <span class="text">{{message.unitShortName}}</span>
         </div>
         <div class="mb20"  v-if="message.attachmentId!=null && message.attachmentId!=''" >
-            <label class="label">Attachment(s)</label>
+            <label class="label">{{ $t('notification.label.attachments') }}(s)</label>
             <span class="text" >{{message.attachmentName}}</span>
-            <ui-button class="download-btn" @click="downloadFile" color="primary">Download</ui-button>
+            <ui-button class="download-btn" @click="downloadFile" color="primary">{{ $t('button.download') }}</ui-button>
         </div>
     </panel>
     <div class="btn-group">
-        <ui-button @click="cancel" class="btn-default-bd" type="flat">Close</ui-button>
+        <ui-button @click="cancel" class="btn-default-bd" type="flat">{{ $t('button.close') }}</ui-button>
     </div>
 </div>
 
@@ -99,7 +99,7 @@ from '../../util/assist.js';
 export default {
     data() {
             return {
-                panelTitle: 'Notification Details',
+                panelTitle: this.$t('notification.notificationDetails'),
                 message: {},
                 operationType: ''
             }

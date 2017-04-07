@@ -4,9 +4,7 @@
 
 </style>
 
-<template lang="html">
-
-<template v-for="(index,item) in data">
+<template lang="html" v-for="(index,item) in data">
     <div class="indicators-item" v-show="!item.isEdit">
         <div class="indicators-head">
             <div class="title">
@@ -16,26 +14,26 @@
         </div>
         <div class="indicators-body">
             <div class="cell-1-1">
-                <label class="prop-name">Weight</label>
+                <label class="prop-name">{{$t('myperformance.evaluate.weight')}}</label>
                 <div class="field-content"><span class="text-editor">{{item.weight}} %</span></div>
             </div>
             <div class="cell-1-1">
-                <label class="prop-name">Targets</label>
+                <label class="prop-name">{{$t('myperformance.evaluate.targets')}}</label>
                 <div class="field-content"><span class="text-editor">{{item.target}}</span></div>
             </div>
             <div class="cell-1-1">
-                <label class="prop-name">Criteria/Formula</label>
+                <label class="prop-name">{{$t('myperformance.evaluate.criteria')}}</label>
                 <div class="field-content"><span class="text-editor">{{item.criteria}}</span></div>
             </div>
             <div class="cell-1-1">
-                <label class="prop-name">Data Source Dept</label>
+                <label class="prop-name">{{$t('myperformance.evaluate.dataSourceDept')}}</label>
                 <div class="field-content"><span class="text-editor">{{item.dataSources}}</span></div>
             </div>
             <!-- 审批者填写评语 -->
             <div class="score" v-if="item.selfScoreDetails!=null">
                 <!-- 展示员工自评 -->
                 <div class="cell-g">
-                    <div class="cell-1-1 score-type"><span>Self Evaluation</span></div>
+                    <div class="cell-1-1 score-type"><span>{{$t('myperformance.evaluate.selfEvaluation')}}</span></div>
                     <div class="cell-1-1 score-ctn">
                         <div class="avater">
                             <div class="img-wrap">
@@ -52,7 +50,7 @@
                 </div>
                 <!-- 审批者填写评语区域 -->
                 <div class="cell-g">
-                    <div class="cell-1-1 score-type"><span>Mutual Evaluation</span></div>
+                    <div class="cell-1-1 score-type"><span>{{$t('myperformance.evaluate.mutualEvaluation')}} </span></div>
                     <div class="cell-1-1 score-ctn">
                         <div class="avater">
                             <div class="img-wrap">
@@ -67,8 +65,7 @@
                 </div>
             </div>
         </div>
-</template>
-
+    </div>
 </template>
 
 <script>
@@ -89,33 +86,7 @@ import {
     convert
 }
 from '../../util/assist';
-let indicatorSchema = new Schema({
-    employeeSelfScore: {
-        label: 'Score',
-        required: true,
-        whitespace: false,
-        rules: {
-            type: 'custom',
-            message: 'Please enter a 1~999 positive integer!',
-            validate() {
-                var isValidate = true;
-                if (this.employeeSelfScore < 0 || this.employeeSelfScore > 999) {
-                    isValidate = false;
-                } else {
-                    if (this.employeeSelfScore % 1 !== 0) {
-                        isValidate = false;
-                    }
-                }
-                return isValidate;
-            }
-        }
-    },
-    comment: {
-        label: 'Comment',
-        required: true,
-        whitespace: false
-    }
-});
+
 
 export default {
     props: [{
@@ -123,6 +94,34 @@ export default {
         type: Array
     }],
     data() {
+        let indicatorSchema = new Schema({
+            employeeSelfScore: {
+                label: this.$t('myperformance.approve.score'),
+                required: true,
+                whitespace: false,
+                rules: {
+                    type: 'custom',
+                    message: this.$t('myperformance.approve.eee'),
+                    validate() {
+                        var isValidate = true;
+                        if (this.employeeSelfScore < 0 || this.employeeSelfScore > 999) {
+                            isValidate = false;
+                        } else {
+                            if (this.employeeSelfScore % 1 !== 0) {
+                                isValidate = false;
+                            }
+                        }
+                        return isValidate;
+                    }
+                }
+            },
+            comment: {
+                label: this.$t('myperformance.approve.comment'),
+                required: true,
+                whitespace: false
+            }
+        });
+
         return {
             panelTitle: '',
             basicInfo: {}, //基本信息
@@ -156,7 +155,7 @@ export default {
             if (photoId)
                 return Vue.config.APIURL + `/system/attachment/downloadImg/${photoId}`;
             else
-                return `/static/images/public/xwz.png`;
+                return `/assets/images/public/xwz.png`;
         },
         handleParams() {
             let tempParams = {

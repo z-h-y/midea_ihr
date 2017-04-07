@@ -1,8 +1,9 @@
 <template lang="html">
+<div>
   <v-form :model="data" :schema="internsShipSchema" label-width="250" label-suffix="" :cols="4" form-style="update-interns-form">
       <text-increment v-show="isEdit" property='employeeCode' editor-width="250"></text-increment>
       <text-field property='localEmployeeCode' editor-width="250" v-if="!isInterns"></text-field>
-      <text-field v-if="!isEdit || isReHire" type="selector" :readonly="true" :show.sync="position" property='positionName' editor-width="250"></text-field>
+      <text-field v-if="!isEdit || isReHire" type="selector" @open-selector="openSelector('posselect')" :readonly="true" :show="position" property='positionName' editor-width="250"></text-field>
       <text-field v-if="isEdit && !isReHire" :readonly="true" property='positionName' editor-width="250"></text-field>
       <text-field property='businessCardTitle' editor-width="250"></text-field>
       <text-field property='unitShortName' editor-width="250" :readonly="true" :placeholder="$t('staff.selectPosition')"></text-field>
@@ -16,12 +17,13 @@
       <select-field :readonly="isEdit && !isReHire" :select-change="changeHeight" property='isProbation' :mapping="dist.whetherType" v-if="(isEmployee && !isReHire) || (isReHire && data.employementCategory ==='9')" editor-width="250"></select-field>
       <select-field :readonly="isEdit && !isReHire" :select-change="changeHeight" property='probationType' v-show="data.isProbation === '1'" :mapping="dist.probationTypeDist" editor-width="250"></select-field>
       <select-field :readonly="isEdit && !isReHire" :select-change="changeProbationDay" property='probationDay' v-show="data.isProbation === '1' && data.probationType === '1'" :mapping="dist.hireBeginDateDist" editor-width="250"></select-field>
-      <text-field property="mentor" type="selector" :readonly="true" :show.sync="mentor" editor-width="250" v-if="isInterns"></text-field>
+      <text-field property="mentor" type="selector" @open-selector="openSelector('perselect')" :readonly="true" :show="mentor" editor-width="250" v-if="isInterns"></text-field>
       <text-field :readonly="isEdit && !isReHire" :type="(isEdit && !isReHire) ? '' : 'date'" property="registerDate" :max-date="data.endDate" editor-width="250" v-show="!isEmployee || data.isProbation === '1'"></text-field>
       <text-field :readonly="isEdit && !isReHire" :type="(isEdit && !isReHire) ? '' : 'date'" property="endDate" :min-date="data.registerDate" editor-width="250" v-show="((!isEmployee || data.isProbation === '1') && !isOutsource && !isInterns) && !isAdd"></text-field>
   </v-form>
-  <person-selector :show.sync="mentor" :handle-comfirmed="selectMentor" :multi-selected="false"></person-selector>
-  <position-selector :show.sync="position" :handle-comfirmed="selectPosition"></position-selector>
+  <person-selector ref="perselect" :show="mentor" :handle-comfirmed="selectMentor" :multi-selected="false"></person-selector>
+  <position-selector ref="posselect" :show="position" :handle-comfirmed="selectPosition"></position-selector>
+</div>
 </template>
 
 <script>
@@ -33,104 +35,100 @@ import {
     getDictMapping,formatDate
 } from '../../../util/assist';
 export default {
-    props: [{
-        name: 'data',
-        default: {}
-    },{
-      name: 'dist',
-      type: Object
-    }],
+    props: {
+      dist: {}
+    },
     data() {
-        var isInterns = this.$route.extra === '/ihr/staff/interns';
-        var isOutsource = this.$route.extra === '/ihr/staff/outsource';
+        var isInterns = this.$route.meta.extra === '/ihr/staff/interns';
+        var isOutsource = this.$route.meta.extra === '/ihr/staff/outsource';
         var isReHire = this.$route.name === 'resignedEmployeeEdit';
         var isEmployee = !isInterns && !isOutsource;
         let internsShipData = {
             employeeCode: {
-                label: 'Employee ID'
+                label: this.$t('staff.employeeId')
             },
             localEmployeeCode: {
-                label: 'Local Employee ID'
+                label: this.$t('staff.localEmployeeId')
             },
             positionName: {
-                label: 'MIB Position',
+                label: this.$t('staff.mibPostion'),
                 required: true
             },
             positionId: {},
             positionCode: {},
             businessCardTitle: {
-                label: 'Position'
+                label: this.$t('staff.position')
             },
             unitShortName: {
-                label: 'Organization',
+                label: this.$t('staff.organization'),
                 required: true,
                 whitespace: false
             },
             outsourceType: {
-                label: 'Outsource Type',
+                label: this.$t('staff.outsourceType'),
                 required: true
             },
             unitId: {},
             mibGrade: {
-                label: 'MIB Grade',
+                label: this.$t('staff.mibGrade'),
                 required: true
             },
             localJobGrade: {
-                label: 'Job Grade'
+                label: this.$t('staff.jobGrade')
             },
             employementCategory: {
-                label: 'Employement Category',
+                label: this.$t('staff.employementCategory'),
                 required: true
             },
             hireDate: {
-                label: 'Hire Date',
+                label: this.$t('staff.hireDate'),
                 required: true
             },
             hireDateRules: {
-              label: 'Date of Calculating Service Year'
+              label: this.$t('staff.dateofCalculatingServiceYear')
             },
             hireBeginDate: {
-              label: 'Certain Date'
+              label: this.$t('staff.certainDate')
             },
             probationDay: {
-              label: 'Duration'
+              label: this.$t('staff.duration')
             },
             probationType: {
-              label: 'Probation Type'
+              label: this.$t('staff.probationType')
             },
             isProbation: {
-                label: 'Probation',
+                label: this.$t('staff.probation'),
                 required: true
             },
             mentor: {
-                label: 'Mentor',
+                label: this.$t('staff.mentor'),
                 required: false
             },
             registerDate: {
-                label: 'Start Date of Probation',
+                label: this.$t('staff.probationstartDate'),
                 required: true,
                 default () {
                     return new Date();
                 }
             },
             endDate: {
-                label: 'End Date of Probation',
+                label: this.$t('staff.endDateofProbation'),
                 required: true
             }
         };
         if (isInterns) {
-            internsShipData.registerDate.label = 'Start Date of Internship';
-            internsShipData.endDate.label = 'End Date of Internship';
+            internsShipData.registerDate.label = this.$t('staff.startDateofInternship');
+            internsShipData.endDate.label = this.$t('staff.endDateofInternship');
             delete internsShipData.localEmployeeCode;
             delete internsShipData.hireDateRules;
         } else if (isOutsource) {
-            internsShipData.registerDate.label = 'Start Date of Outsourcing';
-            internsShipData.endDate.label = 'End Date of Outsourcing';
+            internsShipData.registerDate.label = this.$t('staff.startDateofOutsourcing');
+            internsShipData.endDate.label = this.$t('staff.endDateofOutsourcing');
             delete internsShipData.hireDateRules;
         }
         if (!isEmployee) {
             internsShipData.endDate.required = false;
-            internsShipData.employeeCode.label = 'Intern ID';
+            internsShipData.employeeCode.label = this.$t('staff.internId');
             delete internsShipData.hireDate;
             delete internsShipData.employementCategory;
             delete internsShipData.isProbation;
@@ -142,13 +140,14 @@ export default {
             delete internsShipData.reportLine;
             delete internsShipData.outsourceCategory;
         } else {
-            internsShipData.employeeCode.label = 'Outsource ID';
+            internsShipData.employeeCode.label = this.$t('staff.outsourceId');
             delete internsShipData.endDate;
         }
         if (!isReHire) {
           delete internsShipData.employementCategory;
         }
         return {
+            data: {},
             isEdit: !!this.$route.params.employeeId,
             isEmployee: isEmployee,
             isInterns: isInterns,
@@ -186,7 +185,7 @@ export default {
         if (newVal === '1') {
           this.data.registerDate = this.data.hireDate;
         }
-        this.$dispatch('ui-collapsible::refresh-height', 'job-info');
+        this.changeHeight();
       },
       'data.registerDate': function(newVal, oldVal) {
         if (this.data.probationType === '1' && this.data.probationDay) {
@@ -205,7 +204,7 @@ export default {
         }
       });
     },
-    ready() {
+    mounted() {
       if (this.isReHire) {
         this.$http.get('/employee/employees/dicts/EMPLOYEE_CATEGORY/items/1').then(function(res) {
           if(res.data) {
@@ -219,10 +218,13 @@ export default {
       }
         this.data = this.internsShipSchema.newModel();
     },
-    attached() {},
+
     methods: {
+      openSelector(selector) {
+        this.$refs[selector].open();
+      },
       changeHeight() {
-        this.$dispatch('ui-collapsible::refresh-height', 'job-info');
+        this.$emit('refresh', 'collapsiblejob');
       },
         changeProbationDay(value) {
           if (!this.data.registerDate) {

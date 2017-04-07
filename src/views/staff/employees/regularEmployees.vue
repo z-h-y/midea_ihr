@@ -34,6 +34,9 @@
         font-weight: bold;
         font-size: 22px;
     }
+    .no-margin-left .field-content {
+      margin-left: 0!important
+    }
 }
 
 </style>
@@ -42,22 +45,22 @@
 
 <div class="content-wrap bg-w ihr-staff-emp-reg">
     <div class="mb20 pt20">
-        <organization-selector :show.sync="org"></organization-selector>
+        <organization-selector ref="orgselect" :show="org" :handel-select="selectOrg"></organization-selector>
         <div class="search-area">
             <v-form :class="{expended: expended}" :model="regular" :schema="regularSchema" label-width="170" label-suffix="" :cols="3" form-style="regular-form">
                 <text-field property='fullName' editor-width="150"></text-field>
                 <text-field property="employeeCode" editor-width="150"></text-field>
                 <text-field property="positionName" editor-width="150"></text-field>
-                <text-field v-show="expended" type="selector" :readonly="true" :show.sync="org" property="orgUnitName" editor-width="150"></text-field>
+                <text-field v-show="expended" @open-selector="openSelector" type="selector" :readonly="true" :show="org" property="orgUnitName" editor-width="150"></text-field>
                 <select-field v-show="expended" property="contractType" :mapping="dist.employeeContract" editor-width="150"></select-field>
                 <select-field v-show="expended" property="employeeStatus" :mapping="dist.searchStatus" editor-width="150"></select-field>
                 <div v-show="expended" class='field cell-2-3'>
                     <label style="width:170px;">{{$t('staff.hireDate')}}</label>
                     <div class="field-content" style="margin-left:170px;">
-                        <div class="">
-                            <text-field property="hireDateStart" label-width="0" :hide-label="true" editor-width="150" style="width:154px;"></text-field>
+                        <div class="no-margin-left">
+                            <text-field property="hireDateStart" :hide-label="true" editor-width="150" style="width:154px;"></text-field>
                             <span class="content-line"></span>
-                            <text-field property="hireDateEnd" label-width="0" :hide-label="true" editor-width="150"></text-field>
+                            <text-field property="hireDateEnd" :hide-label="true" editor-width="150"></text-field>
                         </div>
                     </div>
                 </div>
@@ -70,30 +73,40 @@
             </div>
         </div>
         <div class="group">
-            <ui-button class="mr10 dis-tc btn-primary-bd" @click="goAdd" color="primary" icon="fa-plus" :text="$t('button.add')" button-type="button"></ui-button>
-            <ui-button class="mr10 dis-tc btn-default-bd" @click="goEdit" icon="fa-pencil-square-o" type="flat" :text="$t('button.edit')" button-type="button"></ui-button>
-            <ui-button class="dis-tc-t btn-default-bd" type="flat" @opened="openMenu" show-menu-icons has-dropdown-menu :menu-options="shareMenuOptions" icon="fa-caret-down" button-type="button" :icon-right="true" open-dropdown-on="click" @menu-option-selected="menuOptionSelected" :text="$t('button.more')"></ui-button>
-            <!-- <input id="excelFile" type="file" name="file" v-on:change="uploadExcel($event)"> -->
-            <file-upload title="upload" id="excelFile" class="menu-option-upload file-upload" name="regularEmployeeFile" :post-action="files.url" :extensions="files.extensions" :accept="files.accept" :multiple="files.multiple" :size="files.size" v-ref:upload :drop="files.drop"></file-upload>
+            <ui-button class="mr10 dis-tc btn-primary-bd" @click="goAdd" color="primary" icon="fa-plus" button-type="button">{{$t('button.add')}}</ui-button>
+            <ui-button class="mr10 dis-tc btn-default-bd" @click="goEdit" icon="fa-pencil-square-o" type="flat" button-type="button">{{$t('button.edit')}}</ui-button>
+            <ui-button class="dis-tc-t btn-default-bd" icon="fa-caret-down" @dropdown-open="openMenu"  has-dropdown ref="dropdownButton" size="normal" iconPosition="right">
+                    <ui-menu
+                        contain-focus
+                        has-icons
+                        has-secondary-text
+                        slot="dropdown"
+                        :options="shareMenuOptions"
+                        @select="menuOptionSelected"
+                        @close="$refs.dropdownButton.closeDropdown()"
+                    ></ui-menu>
+                    {{$t('button.more')}}
+                </ui-button>
+            <file-upload @addFileUpload="addFileUpload" @afterFileUpload="afterFileUpload" :title="$t('button.upload')" id="excelFile" class="menu-option-upload file-upload" name="regularEmployeeFile" :post-action="files.url" :extensions="files.extensions" :accept="files.accept" :multiple="files.multiple" :size="files.size" ref="upload" :drop="files.drop"></file-upload>
         </div>
         <div class="vuetable-wrapper">
-            <vuetable v-ref:vuetable :api-url="employeeUrl" :append-params="moreParams" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="columns" per-page="10">
+            <vuetable ref="vuetable" :api-url="employeeUrl" :append-params="moreParams" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="columns" per-page="10">
             </vuetable>
         </div>
 
     </div>
 
-    <ui-modal :show.sync="task.modal" header="Feedback" :body="taskShowText">
+    <ui-modal ref="modal" :show="task.modal" title="Feedback" :body="taskShowText">
         <div slot="footer">
-            <ui-button v-show=" importStatus == '2'" @click="downloadTaskFile" color="primary">Download feedback</ui-button>
-            <ui-button @click="canDownloadTask">Close</ui-button>
+            <ui-button v-show=" importStatus == '2'" @click="downloadTaskFile" color="primary">{{$t('staff.downloadfeedback')}}</ui-button>
+            <ui-button @click="canDownloadTask">{{$t('button.close')}}</ui-button>
         </div>
     </ui-modal>
 
-    <ui-modal :show.sync="task.loading" header="">
+    <ui-modal ref="loading" :show="task.loading" header="">
         <div class="tc">
-            <img src="../../../static/images/public/gears.gif" alt="">
-            <div class="loading-txt">Data processing</div>
+            <img src="assets/images/public/gears.gif" alt="">
+            <div class="loading-txt">{{$t('staff.dataprocessing')}}</div>
         </div>
         <div slot="footer"></div>
     </ui-modal>
@@ -128,7 +141,7 @@ export default {
                     label: this.$t('staff.employeeId')
                 },
                 positionName: {
-                    label: this.$t('staff.position')
+                    label: this.$t('staff.mibPostion')
                 },
                 orgUnitName: {
                     label: this.$t('staff.organization')
@@ -211,7 +224,7 @@ export default {
                     title: this.$t('staff.employeeId')
                 }, {
                     name: 'positionName',
-                    title: this.$t('staff.position')
+                    title: this.$t('staff.mibPostion')
                 }, {
                     name: 'unitShortName',
                     title: this.$t('staff.organization')
@@ -230,7 +243,7 @@ export default {
                     title: this.$t('staff.mibGrade')
                 }, {
                     name: 'isParttime',
-                    title: this.$t('staff.partTimeRole'),
+                    title: this.$t('staff.isPartTimeRole'),
                     callback: 'isParttime'
                 }, {
                     name: 'employeeStatus',
@@ -239,10 +252,10 @@ export default {
                 }],
                 shareMenuOptions: [{
                         id: 'transfer',
-                        text: this.$t('staff.transferEmployee')
+                        label: this.$t('staff.transferEmployee')
                     }, {
                         id: 'promote',
-                        text: this.$t('staff.promoteEmployee')
+                        label: this.$t('staff.promoteEmployee')
                     },
                     // {
                     //     id: 'role',
@@ -250,19 +263,19 @@ export default {
                     // },
                     {
                         id: 'overseas',
-                        text: this.$t('staff.overseasPosting')
+                        label: this.$t('staff.overseasPosting')
                     }, {
                         id: 'terminate',
-                        text: this.$t('staff.terminateEmployement')
+                        label: this.$t('staff.terminateEmployement')
                     }, {
                         id: 'template',
-                        text: this.$t('staff.downloadTemplate')
+                        label: this.$t('staff.downloadTemplate')
                     }, {
                         id: 'import',
-                        text: this.$t('button.batchImport')
+                        label: this.$t('button.batchImport')
                     }, {
                         id: 'download',
-                        text: this.$t('button.download')
+                        label: this.$t('button.download')
                     }
                 ]
             };
@@ -306,11 +319,13 @@ export default {
                 }
             })
         },
-        ready() {
+        mounted() {
             this.checkTask();
         },
-        attached() {},
         methods: {
+          openSelector() {
+            this.$refs['orgselect'].open();
+          },
             openMenu() {
                     var el = document.getElementById('excelFile');
                     el.style.display = "block";
@@ -352,7 +367,7 @@ export default {
                         }
                     }
                     this.$nextTick(function() {
-                        this.$broadcast('vuetable:refresh')
+                      this.$refs.vuetable.reloadData();
                     })
                 },
                 reset() {
@@ -360,14 +375,14 @@ export default {
                     this.regular.unitId = '';
                 },
                 goAdd() {
-                    this.$route.router.go({
+                    this.$router.push({
                         name: 'employeeAdd'
                     });
                 },
                 goEdit() {
                     var tableData = this.$refs.vuetable.tableData;
                     if (this.selectedRow.length === 1) {
-                        this.$route.router.go({
+                        this.$router.push({
                             name: 'regularEmployeesView',
                             params: {
                                 employeeId: tableData[this.selectedRow[0]].employeeId
@@ -385,7 +400,7 @@ export default {
                     switch (option.id) {
                         case 'transfer':
                             if (this.selectedRow.length === 1) {
-                                this.$route.router.go({
+                                this.$router.push({
                                     name: 'transferEmployee',
                                     params: {
                                         employeeId: tableData[this.selectedRow[0]].employeeId
@@ -400,7 +415,7 @@ export default {
                             break;
                         case 'promote':
                             if (this.selectedRow.length === 1) {
-                                this.$route.router.go({
+                                this.$router.push({
                                     name: 'promoteEmployee',
                                     params: {
                                         employeeId: tableData[this.selectedRow[0]].employeeId
@@ -415,7 +430,7 @@ export default {
                             break;
                             // case 'role':
                             //   if (this.selectedRow.length === 1) {
-                            //     this.$route.router.go({ name: 'partTimeRole', params: { employeeId: tableData[this.selectedRow[0]].employeeId }});
+                            //     this.$router.push({ name: 'partTimeRole', params: { employeeId: tableData[this.selectedRow[0]].employeeId }});
                             //   } else {
                             //     Message({
                             //         type: 'error',
@@ -425,7 +440,7 @@ export default {
                             //   break;
                         case 'overseas':
                             if (this.selectedRow.length === 1) {
-                                this.$route.router.go({
+                                this.$router.push({
                                     name: 'overseasPosting',
                                     params: {
                                         employeeId: tableData[this.selectedRow[0]].employeeId
@@ -440,7 +455,7 @@ export default {
                             break;
                         case 'terminate':
                             if (this.selectedRow.length === 1) {
-                                this.$route.router.go({
+                                this.$router.push({
                                     name: 'empTerminate',
                                     params: {
                                         employeeId: tableData[this.selectedRow[0]].employeeId
@@ -470,7 +485,7 @@ export default {
                     this.expendIcon = this.expended ? 'fa-angle-double-up' : 'fa-angle-double-down';
                 },
                 cName(value, data) {
-                    return `<a href="${location.href}/${data.employeeId}">${value}</a>`;
+                    return `<a href="${location.href}/view/${data.employeeId}">${value}</a>`;
                 },
                 // 格式化时间
                 format(value) {
@@ -555,12 +570,14 @@ export default {
 
                             if (this.task.loading === false && this.task.close === false) {
                                 this.task.loading = true;
+                                this.$refs.loading.open()
                                 this.task.close = true;
                             }
                         }
                         if (res.data.importStatus === '2') {
                             if (this.task.loading === true) {
                                 this.task.loading = false;
+                                this.$refs.loading.close()
                             }
                             _self.taskAttachmentId = res.data.businessId;
                             _self.taskShowText = 'Data import failure, please download the  feedback excel. You can modify the data according to error tips and then upload it again.';
@@ -568,6 +585,7 @@ export default {
                         if (res.data.importStatus === '3') {
                             if (this.task.loading === true) {
                                 this.task.loading = false;
+                                this.$refs.loading.close()
                             }
                             Message({
                                 type: 'error',
@@ -578,6 +596,7 @@ export default {
                         if (res.data.importStatus === '4') {
                             if (this.task.loading === true) {
                                 this.task.loading = false;
+                                this.$refs.loading.close()
                             }
                             Message({
                                 type: 'success',
@@ -590,7 +609,7 @@ export default {
                             }, 3000);
                         }
                         if (res.data.importStatus === '2') {
-                            _self.task.modal = true;
+                            _self.$refs.modal.open();
                         }
 
                     })
@@ -598,7 +617,7 @@ export default {
                 downloadTaskFile() {
                     if (this.taskAttachmentId) {
                         var attachmentId = this.taskAttachmentId;
-                        this.task.modal = false;
+                        this.$refs.modal.close();
                         this.$http.get(`/employee/employees/getUploadStatus?businessType=emp_regular&&importStatus=-2`).then(function(res) {
                             downloadFile('/system/attachment/downloadFile', {
                                 attachmentId: attachmentId
@@ -615,39 +634,36 @@ export default {
                 canDownloadTask() {
                     let _self = this;
                     _self.$http.get(`/employee/employees/getUploadStatus?businessType=emp_regular&&importStatus=-2`).then(function(res) {
-                        this.task.modal = false;
+                        this.$refs.modal.close();
                     })
+                },
+                selectOrg(value) {
+                  if (value) {
+                      this.regular.orgUnitName = value.orgShortName;
+                      this.regular.unitId = value.orgId;
+                  }
+                },
+                addFileUpload(file, component) {
+                    if (this.files.auto) {
+                        component.active = true;
+                    }
+                },
+                afterFileUpload(file, component) {
+                    if (file.data === 'true' || file.data === true) {
+                        Message({
+                            type: 'success',
+                            message: this.$t('staff.message.importUploadSuccess')
+                        });
+                        this.checkTask();
+                    } else {
+                        Message({
+                            type: 'error',
+                            message: file.data.message || this.$t('staff.message.importUploadFail')
+                        });
+                    }
                 }
-        },
-        events: {
-            'organization-selector:selected': function(value) {
-                if (value) {
-                    this.regular.orgUnitName = value.orgShortName;
-                    this.regular.unitId = value.orgId;
-                }
-            },
-            addFileUpload(file, component) {
-                if (this.files.auto) {
-                    component.active = true;
-                }
-            },
-            afterFileUpload(file, component) {
-                if (file.data === 'true' || file.data === true) {
-                    Message({
-                        type: 'success',
-                        message: this.$t('staff.message.importUploadSuccess')
-                    });
-                    this.checkTask();
-                } else {
-                    Message({
-                        type: 'error',
-                        message: file.data.message || this.$t('staff.message.importUploadFail')
-                    });
-                }
-            }
         },
         components: {
-            SelectTemplate: require('../selectTemplate.vue'),
             FileUpload: require('../../../components/basic/FileUpload.vue')
         }
 };

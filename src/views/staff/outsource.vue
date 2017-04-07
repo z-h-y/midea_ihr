@@ -30,12 +30,12 @@
 
 <div class="content-wrap bg-w ihr-staff-outsource">
     <div class="mb20 pt20">
-        <organization-selector :show.sync="org"></organization-selector>
+        <organization-selector ref="orgselect" :show="org" :handel-select="selectOrg"></organization-selector>
         <div class="search-area">
             <v-form :class="{expended: expended}" :model="outsource" :schema="outsourceSchema" label-width="170" label-suffix="" :cols="3" form-style="outsource-form">
                 <text-field property='fullName' editor-width="150"></text-field>
                 <text-field property="employeeCode" editor-width="150"></text-field>
-                <text-field type="selector" :readonly="true" :show.sync="org" property="orgUnitName" editor-width="150"></text-field>
+                <text-field type="selector" :readonly="true" @open-selector="openSelector" :show="org" property="orgUnitName" editor-width="150"></text-field>
                 <text-field v-show="expended" property="positionName" editor-width="150"></text-field>
             </v-form>
             <ui-icon-button :class="[{expended: expended},'expend-btn']" :icon="expendIcon" @click="expendSearch"></ui-icon-button>
@@ -45,32 +45,42 @@
             </div>
         </div>
         <div class="group">
-            <ui-button class="mr10 dis-tc btn-primary-bd" @click="goAdd" color="primary" icon="fa-plus" :text="$t('button.add')" button-type="button"></ui-button>
-            <ui-button class="mr10 dis-tc btn-default-bd" @click="goEdit" icon="fa-pencil-square-o" type="flat" :text="$t('button.edit')" button-type="button"></ui-button>
-            <ui-button class="dis-tc-t btn-default-bd" @opened="openMenu" type="flat" show-menu-icons has-dropdown-menu :menu-options="shareMenuOptions" button-type="button" icon="fa-caret-down" :icon-right="true" open-dropdown-on="click" @menu-option-selected="menuOptionSelected" :text="$t('button.more')"></ui-button>
-            <!-- <input id="excelFile" type="file" name="file" v-on:change="uploadExcel($event)"> -->
-            <file-upload title="upload" id="excelFile" class="menu-option-upload file-upload" name="outsourceEmployeeFile" :post-action="files.url" :extensions="files.extensions" :accept="files.accept" :multiple="files.multiple" :size="files.size" v-ref:upload :drop="files.drop"></file-upload>
+            <ui-button class="mr10 dis-tc btn-primary-bd" @click="goAdd" color="primary" icon="fa-plus" button-type="button">{{$t('button.add')}}</ui-button>
+            <ui-button class="mr10 dis-tc btn-default-bd" @click="goEdit" icon="fa-pencil-square-o" type="flat" button-type="button">{{$t('button.edit')}}</ui-button>
+            <ui-button class="dis-tc-t btn-default-bd" icon="fa-caret-down" @dropdown-open="openMenu"  has-dropdown ref="dropdownButton" size="normal" iconPosition="right">
+                    <ui-menu
+                        contain-focus
+                        has-icons
+                        has-secondary-text
+                        slot="dropdown"
+                        :options="shareMenuOptions"
+                        @select="menuOptionSelected"
+                        @close="$refs.dropdownButton.closeDropdown()"
+                    ></ui-menu>
+                    {{$t('button.more')}}
+                </ui-button>
+            <file-upload @addFileUpload="addFileUpload" @afterFileUpload="afterFileUpload" :title="$t('button.upload')" id="excelFile" class="menu-option-upload file-upload" name="outsourceEmployeeFile" :post-action="files.url" :extensions="files.extensions" :accept="files.accept" :multiple="files.multiple" :size="files.size" ref="upload" :drop="files.drop"></file-upload>
         </div>
         <div class="vuetable-wrapper">
-          <vuetable v-ref:vuetable :append-params="moreParams" api-url="/employee/employees/" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="columns" per-page="10">
+          <vuetable ref="vuetable" :append-params="moreParams" api-url="/employee/employees/" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="columns" per-page="10">
           </vuetable>
         </div>
 
     </div>
 
 
-    <ui-modal :show.sync="task.modal" header="Feedback" :body="taskShowText">
+    <ui-modal ref="modal" :show="task.modal" title="Feedback" :body="taskShowText">
         <div slot="footer">
-            <ui-button v-show=" importStatus == '2'" @click="downloadTaskFile" color="primary">Download feedback</ui-button>
-            <ui-button @click="canDownloadTask">Close</ui-button>
+            <ui-button v-show=" importStatus == '2'" @click="downloadTaskFile" color="primary">{{$t('staff.downloadfeedback')}}</ui-button>
+            <ui-button @click="canDownloadTask">{{$t('button.close')}}</ui-button>
         </div>
     </ui-modal>
 
 
-    <ui-modal :show.sync="task.loading" header="">
+    <ui-modal ref="loading" :show="task.loading" header="">
         <div class="tc">
-            <img src="../../static/images/public/gears.gif" alt="">
-            <div class="loading-txt">Data processing</div>
+            <img src="assets/images/public/gears.gif" alt="">
+            <div class="loading-txt">{{$t('staff.dataprocessing')}}</div>
         </div>
         <div slot="footer"></div>
     </ui-modal>
@@ -100,7 +110,7 @@ export default {
           label: this.$t('staff.organization')
         },
         positionName: {
-            label: this.$t('staff.position')
+            label: this.$t('staff.mibPostion')
         }
       });
             return {
@@ -155,7 +165,7 @@ export default {
                     },
                     {
                       name: 'positionName',
-                      title: this.$t('staff.position')
+                      title: this.$t('staff.mibPostion')
                     },
                     {
                       name: 'unitShortName',
@@ -171,16 +181,16 @@ export default {
                 shareMenuOptions: [
                   {
                       id: 'terminate',
-                      text: this.$t('staff.terminateOutsourcing')
+                      label: this.$t('staff.terminateOutsourcing')
                   }, {
                       id: 'template',
-                      text: this.$t('staff.downloadTemplate')
+                      label: this.$t('staff.downloadTemplate')
                   },{
                       id: 'import',
-                      text: this.$t('button.batchImport')
+                      label: this.$t('button.batchImport')
                   }, {
                       id: 'download',
-                      text: this.$t('button.download')
+                      label: this.$t('button.download')
                   }
               ]
             };
@@ -191,42 +201,15 @@ export default {
             this.moreParams.push('unitId=' + organizationId);
           }
         },
-        computed: {},
-        ready() {
-          // debugger
-          // var el = document.getElementById('excelFile');
-          // document.getElementsByClassName('ui-menu-option')[2].appendChild(el);
-        },
-        attached() {},
         methods: {
+          openSelector() {
+            this.$refs['orgselect'].open();
+          },
           openMenu() {
             var el = document.getElementById('excelFile');
             el.style.display = "block";
             document.getElementsByClassName('ui-menu-option')[2].appendChild(el);
           },
-          // uploadExcel(e) {
-          //   var srcElement__src = e.srcElement.files;
-          //   var files = Array.prototype.slice.call(srcElement__src, 0);
-          //   var formData = new FormData();
-          //   files.forEach(function(file) {
-          //       formData.append('file', file);
-          //   });
-          //   e.srcElement.value = '';
-          //   this.$http.post('/employee/employees/importOutsourceEmployeeFile', formData).then(function(res) {
-          //     if (res.body === 'true' || res.body === true) {
-          //       Message({
-          //           type: 'success',
-          //           message: this.$t('staff.message.importSuccess')
-          //       });
-          //     } else {
-          //       downloadFile('/system/attachment/downloadFile', {attachmentId: res.body});
-          //       Message({
-          //           type: 'error',
-          //           message: this.$t('staff.message.importFail')
-          //       });
-          //     }
-          //   });
-          // },
             search() {
               this.moreParams = ['employementCategory=6'];
               for (let i = 0, len = this.moreParamsKeys.length; i < len; i++) {
@@ -237,7 +220,7 @@ export default {
                 }
               }
               this.$nextTick(function() {
-                this.$broadcast('vuetable:refresh')
+                this.$refs.vuetable.reloadData();
               })
             },
             reset() {
@@ -245,11 +228,11 @@ export default {
               this.outsource.unitId = '';
             },
             goAdd() {
-              this.$route.router.go({ name: 'outsourceAdd'});
+              this.$router.push({ name: 'outsourceAdd'});
             },
             goEdit() {
               if (this.selectedRow.length === 1) {
-                this.$route.router.go({ name: 'outsourceView', params: { employeeId: this.selectedRow[0] }});
+                this.$router.push({ name: 'outsourceView', params: { employeeId: this.selectedRow[0] }});
               } else {
                 Message({
                     type: 'error',
@@ -261,7 +244,7 @@ export default {
               switch(option.id) {
                 case 'terminate':
                   if (this.selectedRow.length === 1) {
-                    this.$route.router.go({ name: 'terminate', params: { employeeId: this.selectedRow[0] }});
+                    this.$router.push({ name: 'terminate', params: { employeeId: this.selectedRow[0] }});
                   } else {
                     Message({
                         type: 'error',
@@ -302,7 +285,7 @@ export default {
               this.expendIcon = this.expended ? 'fa-angle-double-up' : 'fa-angle-double-down';
             },
             cname(value, data) {
-              return `<a href="${location.href}/${data.employeeId}">${value}</a>`;
+              return `<a href="${location.href}/view/${data.employeeId}">${value}</a>`;
             },
             checkTask() {
                 let _self = this;
@@ -326,12 +309,14 @@ export default {
 
                         if (this.task.loading === false && this.task.close === false) {
                             this.task.loading = true;
+                            this.$refs.loading.open()
                             this.task.close = true;
                         }
                     }
                     if (res.data.importStatus === '2') {
                         if (this.task.loading === true) {
                             this.task.loading = false;
+                            this.$refs.loading.close()
                         }
                         _self.taskAttachmentId = res.data.businessId;
                         _self.taskShowText = 'Data import failure, please download the  feedback excel. You can modify the data according to error tips and then upload it again.';
@@ -339,6 +324,7 @@ export default {
                     if (res.data.importStatus === '3') {
                         if (this.task.loading === true) {
                             this.task.loading = false;
+                            this.$refs.loading.close()
                         }
                         Message({
                             type: 'error',
@@ -349,6 +335,7 @@ export default {
                     if (res.data.importStatus === '4') {
                         if (this.task.loading === true) {
                             this.task.loading = false;
+                            this.$refs.loading.close()
                         }
                         Message({
                             type: 'success',
@@ -361,7 +348,7 @@ export default {
                         }, 3000);
                     }
                     if (res.data.importStatus === '2') {
-                        _self.task.modal = true;
+                        _self.$refs.modal.open();
                     }
 
                 })
@@ -369,7 +356,7 @@ export default {
             downloadTaskFile() {
                 if (this.taskAttachmentId) {
                     var attachmentId = this.taskAttachmentId;
-                    this.task.modal = false;
+                    this.$refs.modal.close();
                     this.$http.get(`/employee/employees/import/getUploadStatus?businessType=emp_outsource&&importStatus=-2`).then(function(res) {
                         downloadFile('/system/attachment/downloadFile', {
                             attachmentId: attachmentId
@@ -386,16 +373,14 @@ export default {
             canDownloadTask() {
                 let _self = this;
                 _self.$http.get(`/employee/employees/import/getUploadStatus?businessType=emp_outsource&&importStatus=-2`).then(function(res) {
-                    this.task.modal = false;
+                    this.$refs.modal.close();
                 })
-            }
-        },
-        events: {
-            'organization-selector:selected': function(value) {
-                if (value) {
-                    this.outsource.unitShortName = value.orgShortName;
-                    this.outsource.unitId = value.orgId;
-                }
+            },
+            selectOrg(value) {
+              if (value) {
+                  this.outsource.orgUnitName = value.orgShortName;
+                  this.outsource.unitId = value.orgId;
+              }
             },
             addFileUpload(file, component) {
               if (this.files.auto) {
@@ -418,7 +403,6 @@ export default {
             }
         },
         components: {
-          SelectTemplate: require('./selectTemplate.vue'),
           FileUpload: require('../../components/basic/FileUpload.vue')
         }
 };

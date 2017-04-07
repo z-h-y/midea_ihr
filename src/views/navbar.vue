@@ -92,7 +92,7 @@
     width: 17px;
     height: 17px;
     background-size: contain;
-    background: url("/static/images/public/help.png") center center no-repeat;
+    background: url("/assets/images/public/help.png") center center no-repeat;
 }
 
 #navbar-user img {
@@ -216,6 +216,14 @@
 .ihr-logo-warp img {
     width: 55px;
 }
+.language {
+  // margin-left: 16px;
+  margin-left: 35px;
+  padding: 2px;
+  background-color: #fff;
+  color: black;
+  font-weight: bold;
+}
 
 </style>
 
@@ -224,7 +232,7 @@
 <div class="navbar" style="height:64px;">
     <div class="ihr-logo-warp">
         <a class="aside-logo-link">
-            <img src="../static/images/public/left-logo.png" alt="" />
+            <img src="assets/images/public/left-logo.png" alt="" />
         </a>
     </div>
     <div class="l rel">
@@ -241,7 +249,8 @@
             <input v-show="searchQuery" type="text" placeholder="Search Employee Name Or ID" @keydown="onkeydown($event)" v-model="searchText">
             <i class="fa fa-search poi" v-bind:class="{'c-2a3c59':searchQuery}" @click="search" aria-hidden="true"></i>
         </div>
-        <a href="./static/doc/help.pdf" target="_blank" class="navbar-icon"></a>
+        <a href="./assets/doc/help.pdf" target="_blank" class="navbar-icon"></a>
+        <a class="language" href="javascript:;" @click="changeLang">{{lang.text}}</a>
         <a id="navbar-user" v-on:click.stop="toggle">
             <img width="32px" height="32px" :src='photoUrl(profile.photoId)' alt="" />
         </a>
@@ -254,7 +263,7 @@
                 <div class="navbar-username">{{profile.fullName}}</div>
                 <!-- <a class="navbar-usermore">View Profile</a> -->
             </div>
-            <ui-button @click.native="exit" class="btn-default-bd navbar-exit" type="flat">Sign Out</ui-button>
+            <ui-button  class="btn-default-bd navbar-exit" type="flat" @click="exit">Sign Out</ui-button>
             <span v-if="flag ==='0' && isAdminFlag" @click="administratorMode('1')" class="navbar-switch"><i class="fa fa-user mr5" aria-hidden="true"></i>Admin<i class="fa fa-angle-right ml5" aria-hidden="true"></i></span>
             <span v-if="flag ==='1' && isAdminFlag" @click="administratorMode('0')" class="navbar-switch"><i class="fa fa-user mr5" aria-hidden="true"></i>Staff<i class="fa fa-angle-right ml5" aria-hidden="true"></i></span>
         </div>
@@ -269,10 +278,7 @@ import {
     default as Dropdown
 }
 from '../util/dropdown';
-// import {
-//     default as locales
-// }
-// from '../locales/index';
+
 export default {
     data() {
             return {
@@ -284,18 +290,18 @@ export default {
                 searchQuery: false,
                 searchText: "",
                 lang: {
-                    name: 'en',
+                    name: 'en_US',
                     value: 0,
-                    text: 'English'
+                    text: 'EN'
                 },
                 langArr: [{
-                    name: 'en',
+                    name: 'en_US',
                     value: 0,
-                    text: 'English'
+                    text: 'EN'
                 }, {
-                    name: 'zh',
+                    name: 'zh_CN',
                     value: 1,
-                    text: 'Chinese'
+                    text: 'CN'
                 }]
             };
         },
@@ -315,7 +321,6 @@ export default {
                 }
             }
             lang = isExist ? lang : 'en';
-            // this.setLang('en');
         },
         mounted: function () {
           this.$nextTick(function () {
@@ -323,21 +328,23 @@ export default {
           })
         },
         methods: {
-            changeLang() {
-                    localStorage.setItem('lang', this.lang.name);
-                    location.reload();
-                },
-                setLang(curLang) {
-                    Vue.config.lang = curLang;
-                    Object.keys(locales).forEach(function(lang) {
-                        Vue.locale(lang, locales[lang])
-                    })
-                },
+          changeLang() {
+                  this.lang.name = this.lang.name === 'en_US' ? 'zh_CN' : 'en_US';
+                  localStorage.setItem('lang', this.lang.name);
+                  document.cookie = 'language=' + this.lang.name;
+                  location.reload();
+              },
+              setLang(curLang) {
+                  Vue.config.lang = curLang;
+                  Object.keys(locales).forEach(function(lang) {
+                      Vue.locale(lang, locales[lang])
+                  })
+              },
                 administratorMode(flag) {
                     this.toggle();
                     localStorage.setItem('isAdmin', flag);
-                    this.$dispatch('main:initMenu', this.isAdminFlag);
-                    this.$dispatch('main:initHomeView', this.isAdminFlag);
+                    this.$emit('main:initMenu', this.isAdminFlag);
+                    this.$emit('main:initHomeView', this.isAdminFlag);
                     this.flag = flag;
                     this.$root.$data.orgSettingTreeCache = null;
                     this.$root.$data.orgGroupTreeCache = null;
@@ -374,13 +381,13 @@ export default {
                     if (photoId)
                         return Vue.config.APIURL + `/system/attachment/downloadImg/${photoId}`;
                     else
-                        return `/static/images/public/user-header.png`;
+                        return `/assets/images/public/user-header.png`;
                 },
                 NAVPhotoUrl(photoId) {
                     if (photoId)
                         return Vue.config.APIURL + `/system/attachment/downloadImg/${photoId}`;
                     else
-                        return `/static/images/public/xwz.png`;
+                        return `/assets/images/public/xwz.png`;
                 },
                 expandedMenu() {
                     this.expanded = !this.expanded;

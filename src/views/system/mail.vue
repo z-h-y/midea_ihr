@@ -18,9 +18,9 @@
 
 <div class="content-wrap bg-w ihr-system-email">
     <div class="group">
-        <ui-button class="mr10 dis-tc btn-primary-bd" icon="fa-plus" color="primary" text="Add" @click="add" button-type="button"></ui-button>
-        <ui-button class="mr10 dis-tc btn-default-bd" icon="fa-pencil-square-o" type="flat" text="Edit" @click="edit" button-type="button"></ui-button>
-        <ui-button class="mr10 dis-tc btn-default-bd" icon="fa-remove" type="flat" text="Delete" @click="delete" button-type="button"></ui-button>
+        <ui-button class="mr10 dis-tc btn-primary-bd" icon="fa-plus" color="primary" :text="$t('button.add')" @click="add" button-type="button"></ui-button>
+        <ui-button class="mr10 dis-tc btn-default-bd" icon="fa-pencil-square-o" type="flat" :text="$t('button.edit')" @click="edit" button-type="button"></ui-button>
+        <ui-button class="mr10 dis-tc btn-default-bd" icon="fa-remove" type="flat" :text="$t('button.delete')" @click="deleteBtn" button-type="button"></ui-button>
     </div>
     <div class="vuetable-wrapper pl16 pr16 pb16">
         <vuetable :api-url="emailUrl" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="emailColumns" :sort-order="sortOrder" :item-actions="itemActions" per-page="10">
@@ -56,47 +56,47 @@ export default {
                     title: ''
                 }, {
                     name: 'companyCode',
-                    title: 'Enterprise number',
+                    title: this.$t('system.mail.companyCode'),
                     sortField: 'companyCode'
                 }, {
                     name: 'companyName',
-                    title: 'CompanyName',
+                    title: this.$t('system.mail.companyName'),
                     sortField: 'companyName',
                 }, {
                     name: 'ip',
-                    title: 'Server address',
+                    title: this.$t('system.mail.ip'),
                     sortField: 'ip'
                 }, {
                     name: 'port',
-                    title: 'Port',
+                    title: this.$t('system.mail.port'),
                     dataClass: 'tr',
                     sortField: 'port'
                 }, {
                     name: 'emailAccount',
-                    title: 'Mail Account',
+                    title: this.$t('system.mail.emailAccount'),
                     dataClass: 'tr',
                     sortField: 'emailAccount'
                 }, {
                     name: 'onceSendNum',
-                    title: 'onceSendNum',
+                    title: this.$t('system.mail.onceSendNum'),
                     dataClass: 'tr',
                     sortField: 'onceSendNum'
                 }, {
                     name: 'maxReceiverNum',
-                    title: 'maxReceiverNum',
+                    title: this.$t('system.mail.maxReceiverNum'),
                     dataClass: 'tr',
                     sortField: 'maxReceiverNum'
                 }, {
                     name: 'status',
-                    title: 'status',
+                    title: this.$t('system.mail.status'),
                     sortField: 'status'
                 }, {
                     name: 'encryptType',
-                    title: 'encryptType',
+                    title: this.$t('system.mail.encryptType'),
                     sortField: 'encryptType'
                 }, {
                     name: 'createDate',
-                    title: 'createDate',
+                    title: this.$t('system.mail.createDate'),
                     dataClass: 'tr',
                     titleClass: 'mw80',
                     sortField: 'createDate',
@@ -105,7 +105,7 @@ export default {
                     }
                 }, {
                     name: 'lastUpdateDate',
-                    title: 'lastUpdateDate',
+                    title: this.$t('system.mail.lastUpdateDate'),
                     dataClass: 'tr',
                     titleClass: 'mw80',
                     sortField: 'lastUpdateDate'
@@ -124,7 +124,7 @@ export default {
                         name: 'addMail'
                     });
                 },
-                delete() {
+                deleteBtn() {
                     let _self = this;
                     let rows = _self.selectedRow;
                     _self.$http.post('/system/emailConfig/deleteEmailConfig', {

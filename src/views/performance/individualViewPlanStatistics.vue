@@ -43,21 +43,21 @@
                 </v-form>
                 <!-- <ui-icon-button class="expend-btn" :class="{expended: expended}" :icon="expendIcon" @click="expendSearch"></ui-icon-button> -->
                 <div class="query-btn">
-                    <ui-button class="query-btn-search mr10" color="primary" @click="searchTable">Search</ui-button>
-                    <ui-button class="query-btn-reset btn-default-bd" type="flat" @click="resetTable">Reset</ui-button>
+                    <ui-button class="query-btn-search mr10" color="primary" @click="searchTable">{{$t('button.search')}}</ui-button>
+                    <ui-button class="query-btn-reset btn-default-bd" type="flat" @click="resetTable">{{$t('button.reset')}}</ui-button>
                 </div>
             </div>
             <div class="group">
-                <ui-button class="mr10 dis-tc btn-primary-bd" @click="goStart" color="primary" text="Start Evaluation" button-type="button"></ui-button>
+                <ui-button class="mr10 dis-tc btn-primary-bd" @click="goStart" color="primary" button-type="button">{{$t('performance.button.startEvaluation')}}</ui-button>
             </div>
             <div>
-                <vuetable :api-url="tableUrl" :selected-to="selectedRow" :append-params="queryParams" :fields="columns" pagination-path="" table-wrapper=".vuetable-wrapper" :sort-order="sortOrder" :item-actions="itemActions" per-page="10">
+                <vuetable ref="vuetable" @action="action" :api-url="tableUrl" :selected-to="selectedRow" :append-params="queryParams" :fields="columns" pagination-path="" table-wrapper=".vuetable-wrapper" :sort-order="sortOrder" :item-actions="itemActions" per-page="10">
                 </vuetable>
             </div>
         </div>
     </panel>
     <div class="btn-group">
-        <ui-button @click="goCancel" class="btn-default-bd">Back</ui-button>
+        <ui-button @click="goCancel" class="btn-default-bd">{{$t('button.back')}}</ui-button>
     </div>
 </div>
 
@@ -78,25 +78,27 @@ import {
 }
 from '../../components/basic/message';
 
-let planStateSchema = new Schema({
-    employeesName: {
-        label: ' Employee Name'
-    },
-    employeesCode: {
-        label: ' Employee ID'
-    },
-    status: {
-        label: ' Status',
-        mapping: function() {
-            return getDictMapping('SCHEME_PROCESS_STAGE_NAME');
-        }
-    }
-});
+
 
 export default {
     data() {
+      let self = this;
+      let planStateSchema = new Schema({
+          employeesName: {
+              label: self.$t('staff.employeeName')
+          },
+          employeesCode: {
+              label: self.$t('staff.employeeId')
+          },
+          status: {
+              label: self.$t('performance.status'),
+              mapping: function() {
+                  return getDictMapping('SCHEME_PROCESS_STAGE_NAME');
+              }
+          }
+      });
             return {
-                panelTitle: 'View Plan Statistics',
+                panelTitle: this.$t('performance.viewPlanStatistics'),
                 tableUrl: '/performance/schemeInfos/processList',
                 planStateSchema: planStateSchema,
                 planState: planStateSchema.newModel(),
@@ -106,23 +108,23 @@ export default {
                 status: '',
                 columns: [{
                     name: 'employeeName',
-                    title: 'Employee Name'
+                    title: this.$t('staff.employeeName')
                 }, {
                     name: 'employeeCode',
                     dataClass: 'tr',
-                    title: 'Employee ID'
+                    title: this.$t('staff.employeeId')
                 }, {
                     name: 'positionName',
-                    title: 'Position'
+                    title: this.$t('performance.position')
                 }, {
                     name: 'orgFullName',
-                    title: 'Organization'
+                    title: this.$t('staff.organization')
                 }, {
                     name: 'processStatusName',
-                    title: 'Status'
+                    title: this.$t('performance.status')
                 }, {
                     name: '__actions',
-                    title: 'Operate'
+                    title: this.$t('performance.operate')
                 }],
                 itemActions: [{
                     name: 'view-item',
@@ -153,8 +155,8 @@ export default {
                     return this.$route.params.id ? this.$route.params.id : 0;
                 }
         },
-        events: {
-            'vuetable:action': function(action, data) {
+        methods: {
+            action(action, data) {
                 this.operateRow = data;
                 if (action == 'view-item') {
                     let param = {
@@ -168,12 +170,9 @@ export default {
                     }
                     this.forwardUrl('performanceView', param);
                 }
-            }
-        },
-        ready() {},
-        methods: {
+            },
             searchTable() {
-                    this.$broadcast('vuetable:refresh');
+                    this.$refs.vuetable.reloadData();
                 },
                 goCancel() {
                     history.back();//返回上一页
@@ -189,23 +188,23 @@ export default {
                             type: 'success',
                             message: this.$t('performance.message.startSuccess')
                         });
-                        this.$broadcast('vuetable:refresh');
+                        this.$refs.vuetable.reloadData();
                     });
                 },
                 resetTable() {
                     this.planState.reset();
                     this.$nextTick(() => {
-                        this.$broadcast('vuetable:refresh');
+                        this.$refs.vuetable.reloadData();
                     })
                 },
                 expendSearch() {
                     this.expended = !this.expended;
                     this.expendIcon = this.expended ? 'fa-angle-double-up' : 'fa-angle-double-down';
-                    this.$broadcast('vuetable:refresh');
+                    this.$refs.vuetable.reloadData();
                 },
                 forwardUrl(pathName, params) {
                     params = params || {};
-                    this.$router.go({
+                    this.$router.push({
                         name: pathName,
                         params: params
                     });

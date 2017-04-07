@@ -12,7 +12,7 @@
 
 <div class="content-wrap ihr-system-userUpdate">
     <panel :title="panelTitle" class="panel-b" header="panel-header">
-        <v-form v-ref:userform :model="user" :schema="userSchema" label-width="160" label-suffix="" :cols="1" form-style="org-form">
+        <v-form ref="userform" :model="user" :schema="userSchema" label-width="160" label-suffix="" :cols="1" form-style="org-form">
             <text-field property="loginId" editor-width="400"></text-field>
             <text-field property="userName" editor-width="400"></text-field>
             <text-field property="pwd" editor-width="400"></text-field>
@@ -23,8 +23,8 @@
         </v-form>
     </panel>
     <div class="btn-group">
-        <ui-button @click="submit" color="primary mr10">Submit</ui-button>
-        <ui-button @click="cancel" class="btn-default-bd" type="flat">Cancel</ui-button>
+        <ui-button @click="submit" color="primary mr10">{{$t('button.submit')}}</ui-button>
+        <ui-button @click="cancel" class="btn-default-bd" type="flat">{{$t('button.cancel')}}</ui-button>
     </div>
 </div>
 
@@ -46,55 +46,56 @@ import {
     default as Message
 }
 from '../../components/basic/message';
-let userSchema = new Schema({
-    loginId: {
-        label: 'Login ID',
-        required: true,
-        whitespace: false
-    },
-    userName: {
-        label: 'User Name',
-        required: true,
-        whitespace: false
-    },
-    phone: {
-        label: 'Phone',
-        required: true,
-        whitespace: false
-    },
-    email: {
-        label: 'Email',
-        required: true,
-        whitespace: false
-    },
-    pwd: {
-        label: 'Password',
-        required: true,
-        whitespace: false
-    },
-    isEnabled: {
-        label: 'Enabled',
-        mapping: {
-            'Allow': 'Y',
-            'not allowed': 'N'
-        }
-    },
-    canLocalLogin: {
-        label: 'Can Local Login',
-        mapping: {
-            'Allow': 'Y',
-            'not allowed': 'N'
-        },
-        multiSelect: false
-    },
-    userId: {
 
-    }
-});
 
 export default {
-
     data() {
+            let userSchema = new Schema({
+                loginId: {
+                    label: this.$t('system.user.loginId'),
+                    required: true,
+                    whitespace: false
+                },
+                userName: {
+                    label: this.$t('system.user.userName'),
+                    required: true,
+                    whitespace: false
+                },
+                phone: {
+                    label: this.$t('system.user.phone'),
+                    required: true,
+                    whitespace: false
+                },
+                email: {
+                    label: this.$t('system.user.email'),
+                    required: true,
+                    whitespace: false
+                },
+                pwd: {
+                    label: this.$t('system.user.pwd'),
+                    required: true,
+                    whitespace: false
+                },
+                isEnabled: {
+                    label: this.$t('system.user.pwd'),
+                    mapping: {
+                        'Allow': 'Y',
+                        'not allowed': 'N'
+                    }
+                },
+                canLocalLogin: {
+                    label: this.$t('system.user.canLocalLogin'),
+                    mapping: {
+                        'Allow': 'Y',
+                        'not allowed': 'N'
+                    },
+                    multiSelect: false
+                },
+                userId: {
+
+                }
+            });
+
             return {
                 panelTitle: '',
                 userSchema: userSchema,
@@ -167,11 +168,11 @@ export default {
                 let _self = this;
                 _self.user.loginId = transition.to.params.loginId;
                 if (_self.$route.name === 'addUser') {
-                    _self.panelTitle = 'Add System User';
+                    _self.panelTitle = _self.$t('system.user.addTitle');
 
 
                 } else if (_self.$route.name === 'editUser') {
-                    _self.panelTitle = 'Edit System User';
+                    _self.panelTitle = _self.$t('system.user.editTitle');
 
                     _self.$http.post('/system/user/findUserByLoginId', {
                         loginId: _self.user.loginId
@@ -189,7 +190,7 @@ export default {
             }
         },
         components: {
-          Panel: require('../../components/basic/panel.vue')
+            Panel: require('../../components/basic/panel.vue')
         }
 }
 

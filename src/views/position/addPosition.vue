@@ -11,11 +11,12 @@
     .field-content {
         padding-right: 0;
     }
-
     .dottedList-label {
         float: left;
         margin-right: 8px;
         color: #545454;
+        width: 118px;
+        text-align: right;
     }
     .dottedList {
         width: 400px;
@@ -83,7 +84,7 @@
         top: 4px;
         right: 2px;
         cursor: pointer;
-        background: url("../../static/images/public/transparent.png") no-repeat center center;
+        background: url("../../assets/images/public/transparent.png") no-repeat center center;
     }
     .parentPositionName {
         width: 637px;
@@ -98,7 +99,7 @@
         //     display: none;
         // }
         .field-content {
-          margin-left: 0!important;
+            margin-left: 0!important;
         }
         .text-editor {
             display: none;
@@ -157,48 +158,48 @@
     .text-editor [readonly] {
         background: #f5f5f5;
     }
-    .download-btn{
-      width:88px;
-      height: 36px;
-      margin-left: 5px;
+    .download-btn {
+        width: 88px;
+        height: 36px;
+        margin-left: 5px;
     }
     .file-upload-content {
-      .file-upload {
-          display: inline-block;
-          height: 32px;
-          width: 80px;
-          background-color: #6ec3ff;
-      }
-      .file-upload span{
-          display: block;
-          font-size: 16px;
-          line-height: 32px;
-          color: #fff;
-          text-align: center;
-      }
-      span.file-name {
-        position: absolute;
-        max-width: 270px;
-        height: 32px;
-        line-height: 32px;
-        margin-left: 10px;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-      }
-      i {
-        position: absolute;
-        right: 0;
-        top: 9px;
-        font-size: 16px;
-        cursor: pointer;
-      }
-      .fa-remove{
-        right: 25px;
-      }
+        .file-upload {
+            display: inline-block;
+            height: 32px;
+            width: 80px;
+            background-color: #6ec3ff;
+        }
+        .file-upload span {
+            display: block;
+            font-size: 16px;
+            line-height: 32px;
+            color: #fff;
+            text-align: center;
+        }
+        span.file-name {
+            position: absolute;
+            max-width: 270px;
+            height: 32px;
+            line-height: 32px;
+            margin-left: 10px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+        i {
+            position: absolute;
+            right: 0;
+            top: 9px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .fa-remove {
+            right: 25px;
+        }
     }
-    .hideReadonlyFlag .text-editor [readonly]{
-      background: none;
+    .hideReadonlyFlag .text-editor [readonly] {
+        background: none;
     }
 }
 
@@ -208,16 +209,16 @@
 
 <div class="content-wrap ihr-position-addPosition">
     <panel :title="panelTitle" class="panel-b" header="panel-header">
-        <v-form v-ref:positionform :model="position" :schema="positionSchema" label-width="235" label-suffix="" :cols="1" form-style="org-form">
+        <v-form ref="positionform" :model="position" :schema="positionSchema" label-width="235" label-suffix="" :cols="1" form-style="org-form">
             <div class='field'>
-                <label style="width:235px;" class="positionName">MIB Position</label>
+                <label style="width:235px;" class="positionName">{{$t('position.label.mibPosition')}}</label>
                 <div class="field-content" style="margin-left:235px;">
                     <div class="field-row">
                         <div class="cell w202">
                             <text-field label-width="0" property="module" :hide-label="true" editor-width="195" :readonly="readonlyFlag"></text-field>
                         </div>
                         <div class="cell w202">
-                            <text-field class="standardJobName" :class="{'hideReadonlyFlag':!readonlyFlag}" label-width="0" property="standardJobName" type="selector" :show.sync="showTitle" :readonly="true" :hide-label="true" editor-width="195"></text-field>
+                            <text-field class="standardJobName" @open-selector="openSelector" :class="{'hideReadonlyFlag':!readonlyFlag}" label-width="0" property="standardJobName" type="selector" :readonly="true" :hide-label="true" editor-width="195"></text-field>
                         </div>
                     </div>
                 </div>
@@ -226,7 +227,7 @@
             <text-increment v-if="readonlyFlag" property='positionCode' editor-width="400" :readonly="readonlyFlag"></text-increment>
             <text-increment class="unintName" property='unintName' editor-width="400" :readonly="readonlyFlag"></text-increment>
             <div class='field'>
-                <label style="width:235px;" class="positionName">MIB Grade</label>
+                <label style="width:235px;" class="positionName">{{$t('position.label.mibGrade')}}</label>
                 <div class="field-content" style="margin-left:235px;">
                     <div class="field-row">
                         <div class="cell w202">
@@ -243,25 +244,25 @@
             <select-field property='positioCategory' editor-width="400" :mapping="dictList.positioCategory"></select-field>
 
             <!-- <text-field property="parentPositionName" type="selector" :readonly="readonlyFlag" editor-width="400" @click="show('parentPositionName')"></text-field> -->
-            <text-field class="rel parentPositionName" property="parentPositionName" type="selector" :show.sync="showPos" editor-width="400">
+            <text-field class="rel parentPositionName" property="parentPositionName" type="selector" editor-width="400">
                 <div class="posFaTh" @click="showPosition('parentPositionName')"></div>
             </text-field>
             <field class="dotted-report-line" property="dotted" editor-width="450" label-width="0">
                 <div class="field-row">
                     <div class="cell fix">
-                        <label class="dottedList-label">Dotted Report Line</label>
-                        <template v-for="item in dottedList">
+                        <label class="dottedList-label">{{$t('position.label.dottedReportLine')}}</label>
+                        <template v-for="(item,index) in dottedList">
                             <v-form class="dottedList" :model="item" :schema="dottedSchema" label-suffix="" :cols="1">
                                 <div class="field-row">
                                     <div class="cell roles-cell">
-                                        <text-field label-width="0" :show.sync="showDottedPos" :hide-label="true" property="dottedPositionName" editor-width="400" type="selector">
-                                          <div class="posFaTh" @click="showPositionDotted('dotted',$index)"></div>
+                                        <text-field label-width="0" :show="showDottedPos" :hide-label="true" property="dottedPositionName" editor-width="400" type="selector">
+                                            <div class="posFaTh" @click="showPositionDotted('dotted',index)"></div>
                                         </text-field>
                                     </div>
                                 </div>
-                                <i class="fa fa-close mr10" v-if="show.resetIco" @click="clearPosition($index)"></i>
+                                <i class="fa fa-close mr10" v-if="show.resetIco" @click="clearPosition(index)"></i>
                                 <span class="icon-area-plus poi mr10" @click="handleAdd()"><i class="fa fa-plus-circle"></i></span>
-                                <span v-show="dottedList.length > 1" class="icon-area-trash poi" @click="handleRemove($index)"> <i class="fa fa-trash-o del-bottom"></i></span>
+                                <span v-show="dottedList.length > 1" class="icon-area-trash poi" @click="handleRemove(index)"> <i class="fa fa-trash-o del-bottom"></i></span>
                             </v-form>
                         </template>
                     </div>
@@ -271,27 +272,15 @@
             <text-field property='beginDate' editor-width="400" v-if="!readonlyFlag"></text-field>
             <text-increment property='beginDate' editor-width="200" v-if="readonlyFlag"></text-increment>
 
-            <!-- <text-field property='endDate' editor-width="400"></text-field> -->
-
             <text-field property='businessUnderstanding' :class="['businessUnderstanding']" type="textarea" :editor-height="50" editor-width="400"></text-field>
             <div class="upload-div">
-                <!-- <text-increment property="messageAttachment" editor-width="" class="hide-text-editor upload">
-                    <button type="button" class="btn btn-default btn-file">
-                        <span class="d-icon-plus">+</span>Add
-                    </button>
-                    <input type="file" name="messageAttachment" value="" @change="changeFile($event, 'messageAttachment')" id="fileupload" class="fileupload">
-                </text-increment>
-                <span class="fileName">{{fileName}}</span>
-                <i class="fa fa-remove poi f14 ml5" v-if="fileName != null && fileName != '' " @click="delFile"></i>
-                <i class="fa fa-download poi f14 ml5" aria-hidden="true" v-if="attachmentId!=null&&attachmentId!=''" @click="downloadFile"></i> -->
-                <!-- <ui-button v-if="attachmentId!=null&&attachmentId!=''" class="download-btn" @click="downloadFile" color="primary">Download</ui-button> -->
                 <text-increment :hide-label="true" property="messageAttachment" editor-width="" class="hide-text-editor">
-                  <div class="file-upload-content">
-                    <file-upload v-ref:upload title="Add" class="file-upload" name="jobDescriptionFile" :post-action="files.url" :extensions="files.extensions" :accept="files.accept" :multiple="files.multiple" :size="files.size" :drop="files.drop"></file-upload>
-                    <span class="file-name" :title="fileName">{{fileName}}</span>
-                    <i class="fa fa-remove poi f14 ml5" v-if="fileName != null && fileName != '' " @click="delFile"></i>
-                    <i class="fa fa-download poi f14 ml5" aria-hidden="true" v-if="attachmentId!=null&&attachmentId!=''" @click="downloadFile"></i>
-                  </div>
+                    <div class="file-upload-content">
+                        <file-upload ref="upload" :title="$t('button.addFile')" class="file-upload" name="jobDescriptionFile" :post-action="files.url" :extensions="files.extensions" :accept="files.accept" :multiple="files.multiple" :size="files.size" :drop="files.drop"></file-upload>
+                        <span class="file-name" :title="fileName">{{fileName}}</span>
+                        <i class="fa fa-remove poi f14 ml5" v-if="fileName != null && fileName != '' " @click="delFile"></i>
+                        <i class="fa fa-download poi f14 ml5" aria-hidden="true" v-if="attachmentId!=null&&attachmentId!=''" @click="downloadFile"></i>
+                    </div>
                 </text-increment>
             </div>
 
@@ -302,15 +291,15 @@
         </v-form>
     </panel>
     <div class="btn-group">
-        <ui-button @click="submit" color="primary mr10">Submit</ui-button>
-        <ui-button @click="cancel" class="btn-default-bd" type="flat">Cancel</ui-button>
+        <ui-button @click="submit" color="primary mr10">{{ $t('button.submit') }}</ui-button>
+        <ui-button @click="cancel" class="btn-default-bd" type="flat">{{ $t('button.cancel') }}</ui-button>
     </div>
-    <ui-confirm :header="show.confirmedhd" @confirmed="confirmed" :show.sync="show.confirmed" close-on-confirm>
+    <ui-confirm :title="show.confirmedhd" @confirmed="confirmed" ref="showConfirmed" close-on-confirm>
         {{ show.confirmedText }}
     </ui-confirm>
-    <title-selector :show.sync="showTitle" v-if="!readonlyFlag"></title-selector>
-    <position-selector :show.sync="showPos"></position-selector>
-    <dottedposition-selector :show.sync="showDottedPos"></dottedposition-selector>
+    <title-selector ref="showtitle" :handle-comfirmed="titleSelector" v-if="!readonlyFlag"></title-selector>
+    <position-selector ref="showpos" :handle-comfirmed="selectedPosition"></position-selector>
+    <dottedposition-selector ref="dottedposition" :handle-comfirmed="dottedpositionSelector"></dottedposition-selector>
 </div>
 
 </template>
@@ -334,35 +323,36 @@ import {
 }
 from '../../util/assist.js';
 
-var dottedData = {
-    label: 'roleId',
-    dottedPositionId: {
 
-    },
-    dottedPositionName: {
-
-    },
-    dataComeFrom: {}
-};
 export default {
     data() {
+            var dottedData = {
+                label: this.$t('position.label.roleId'),
+                dottedPositionId: {
+
+                },
+                dottedPositionName: {
+
+                },
+                dataComeFrom: {}
+            };
             let positionSchema = new Schema({
                 positionId: {
 
                 },
                 positionName: {
-                    label: 'Position Name',
+                    label: this.$t('position.label.positionName'),
                     required: false,
                     whitespace: false,
                 },
                 module: {
-                    label: 'Position Name',
+                    label: this.$t('position.label.positionName'),
                     required: true,
                     whitespace: false,
                 },
 
                 positionCode: {
-                    label: 'Position ID',
+                    label: this.$t('position.label.positionID'),
                     default () {
                         return 'Automatically generated';
                     }
@@ -371,13 +361,13 @@ export default {
 
                 },
                 unintName: {
-                    label: 'Restrict to Organization',
+                    label: this.$t('position.label.restrictToOrganization'),
                     required: false,
                     whitespace: false,
                 },
 
                 mibGradeStart: {
-                    label: 'MIB Grade',
+                    label: this.$t('position.label.mibGradeStart'),
                     required: true,
                     rules: {
                         type: 'custom',
@@ -395,7 +385,7 @@ export default {
                     }
                 },
                 mibGradeEnd: {
-                    label: 'MIB Grade',
+                    label: this.$t('position.label.mibGradeEnd'),
                     required: true,
                     rules: {
                         type: 'custom',
@@ -413,23 +403,24 @@ export default {
                     }
                 },
                 mibGradeName: {
-                    label: 'MIB Grade',
+                    label: this.$t('position.label.mibGrade'),
                 },
                 localGrade: {
-                    label: 'Job Grade',
+                    label: this.$t('position.label.jobGrade'),
                 },
                 positioCategory: {
-                    label: 'Position Category',
+                    label: this.$t('position.label.positionCategory'),
                     required: true,
                     whitespace: false,
                     multiSelect: false
                 },
                 businessTitle: {
-                    label: 'Position',
+                    label: this.$t('position.label.position'),
                     required: false,
                     whitespace: false,
                 },
                 standardJobName: {
+                    label: this.$t('position.label.standardJobName'),
                     required: true,
                     whitespace: false,
                 },
@@ -440,12 +431,12 @@ export default {
 
                 },
                 parentPositionName: {
-                    label: 'Superior Position',
+                    label: this.$t('position.label.superiorPosition'),
                     required: true,
                     whitespace: false
                 },
                 beginDate: {
-                    label: 'Effective Date',
+                    label: this.$t('position.label.effectiveDate'),
                     required: true,
                     type: 'date',
                     default () {
@@ -454,36 +445,36 @@ export default {
                 },
 
                 orderNo: { //开始日期
-                    label: 'endDate Date',
+                    label: this.$t('position.label.endDate'),
                     required: true
                 },
                 DottedReportLine: { //汇报上级职位名称
-                    label: 'Dotted Report Line',
+                    label: this.$t('position.label.dottedReportLine'),
                     required: false,
                     whitespace: false
                 },
                 businessUnderstanding: { // 业务理解
-                    label: 'Job Description',
+                    label: this.$t('position.label.jobDescription'),
                     required: false,
                     whitespace: false,
                 },
                 generalRequirements: { //学历
-                    label: 'General Requirements',
+                    label: this.$t('position.label.generalRequirements'),
                     required: false,
                     whitespace: false,
                 },
                 expertiseRequirements: {
-                    label: 'Certification Requirement',
+                    label: this.$t('position.label.certificationRequirement'),
                     required: false,
                     whitespace: false,
                 },
                 academicRequirements: { //专业要求
-                    label: 'Academic Requirements',
+                    label: this.$t('position.label.academicRequirements'),
                     required: false,
                     whitespace: false,
                 },
                 experienceRequire: { //学术要求
-                    label: 'Work Experience',
+                    label: this.$t('position.label.workExperience'),
                     required: false,
                     whitespace: false,
                 },
@@ -494,37 +485,28 @@ export default {
             });
             let _self = this;
             return {
-                panelTitle: 'Add Position',
+                panelTitle: this.$t('position.addPosition'),
                 positionSchema: positionSchema,
                 position: positionSchema.newModel(),
-                showTitle: {
-                    modal: false
-                },
+
                 show: {
-                    modal: false,
                     resetIco: true,
-                    confirmedhd: 'Important Tip',
+                    confirmedhd: this.$t('position.importantTip'),
                     confirmedText: '',
                     confirmed: false
                 },
-                showPos: {
-                    modal: false
-                },
-                showDottedPos: {
-                    modal: false
-                },
                 files: {
-                  url: '',
-                  accept: 'image/*,application/msexcel,application/msword,application/pdf',
-                  size: 1024 * 1024 * 2,
-                  multiple: false,
-                  extensions: 'gif,jpg,jpeg,png,pdf,doc,docx,xlsx,xls',
-                  // extensions: ['gif','jpg','png'],
-                  // extensions: /\.(gif|png|jpg)$/i,
-                  files: [],
-                  upload: {},
-                  drop: true,
-                  auto: false
+                    url: '',
+                    accept: 'image/:,application/msexcel,application/msword,application/pdf',
+                    size: 1024 * 1024 * 2,
+                    multiple: false,
+                    extensions: 'gif,jpg,jpeg,png,pdf,doc,docx,xlsx,xls',
+                    // extensions: ['gif','jpg','png'],
+                    // extensions: /\.(gif|png|jpg)$/i,
+                    files: [],
+                    upload: {},
+                    drop: true,
+                    auto: false
                 },
                 readonlyFlag: false,
                 showPositionType: '',
@@ -549,21 +531,59 @@ export default {
                 dictCodes: dictionaryArr
             }, {
                 emulateJSON: true
-            }).then(
-                (response) => {
-                    let resData = response.data;
-                    resData.forEach(function(item) {
-                        let dictionary = item.dictName;
-                        if (dictionary === "POSITION_CATEGORY") {
-                            self.dictList.positioCategory = transformDict(item.dict);
-                        } else {
-                            self.MIB_RANK = transformDict(item.dict);
-                        }
-                    });
-                })
+            }).then((response) => {
+                let resData = response.data;
+                resData.forEach(function(item) {
+                    let dictionary = item.dictName;
+                    if (dictionary === "POSITION_CATEGORY") {
+                        self.dictList.positioCategory = transformDict(item.dict);
+                    } else {
+                        self.MIB_RANK = transformDict(item.dict);
+                    }
+                });
+            });
+            this.fetchData();
         },
         methods: {
-            downloadFile() {
+            titleSelector(data, jobGroup) {
+                    let _self = this;
+                    _self.position.standardJobName = data.standardJobName;
+                    _self.position.standardJobId = data.standardJobId;
+                    _self.position.module = jobGroup.jobFamilyName;
+                    _self.position.mibGradeStart = '';
+                    _self.position.mibGradeEnd = '';
+                    _self.$http.get(`/pos/positions/dicts/mibgrade/items/?standardJobId=${data.standardJobId}`).then((response) => {
+                        var obj = {};
+                        if (response.data) {
+                            response.data.forEach(function(item) {
+                                obj[item.NAME] = item.VALUE;
+                            })
+                            this.mibGradeDist = obj;
+                        }
+                    });
+                    return false
+                },
+                selectedPosition(data) {
+                    let _self = this
+                    _self.position.parentPositionName = data.positionName;
+                    _self.position.parentPositionId = data.positionId;
+                    return false
+                },
+                dottedpositionSelector(data) {
+                    if (this.showPositionType === 'dotted') {
+                        this.dottedList.forEach((item, i) => {
+                            if (i === this.selIndex) {
+                                item.dottedPositionId = data.positionId;
+                                item.dottedPositionName = data.positionName;
+                                item.dataComeFrom = data.dataComeFrom;
+                            }
+                        })
+                    }
+                },
+                openSelector() {
+                    this.$refs.showtitle.open();
+                },
+                downloadFile() {
                     let exportParam = {
                         attachmentId: this.attachmentId || ""
                     }
@@ -581,9 +601,8 @@ export default {
                     this.dottedList[resetIndex].dataComeFrom = '';
                 },
                 submit() {
-                    let _jobGroupModel = this.position,
-                        _self = this;
-                    let passed = this.position.$schema.isFormValidate(this.$refs.positionform);
+                    let _jobGroupModel = this.position;
+                    let passed = this.$refs.positionform.isFormValidate();
                     if (!passed) return;
 
                     this.$http.post('/pos/positions/checkSuperiorPosstion', {
@@ -592,86 +611,86 @@ export default {
                     }, {
                         emulateJSON: true
                     }).then(function(res) {
-                      if (!res.data) {
-                        Message({
-                            type: 'error',
-                            message: 'The position grade of report line must be higher than that of the current position'
-                        });
-                      } else {
-                        this.beginSubmit();
-                      }
+                        if (!res.data) {
+                            Message({
+                                type: 'error',
+                                message: this.$t('position.message.submitErr')
+                            });
+                        } else {
+                            this.beginSubmit();
+                        }
                     });
                 },
                 beginSubmit() {
-                  let _jobGroupModel = this.position,
-                      _self = this;
-                  let datas = [];
-                  for (var u of _self.dottedList) {
-                      let obj = {
-                          dottedPositionId: u.dottedPositionId,
-                          dottedPositionName: u.dottedPositionName,
-                          dataComeFrom: u.dataComeFrom
-                      }
-                      datas.push(obj);
-                  }
-                  let temp = {
-                      dottedDto: datas
-                  }
-                  let data = {};
-                  convert(temp, data, "", true);
+                    let _jobGroupModel = this.position,
+                        _self = this;
+                    let datas = [];
+                    for (var u of _self.dottedList) {
+                        let obj = {
+                            dottedPositionId: u.dottedPositionId,
+                            dottedPositionName: u.dottedPositionName,
+                            dataComeFrom: u.dataComeFrom
+                        }
+                        datas.push(obj);
+                    }
+                    let temp = {
+                        dottedDto: datas
+                    }
+                    let data = {};
+                    convert(temp, data, "", true);
 
-                  let posPositionDto = {
-                      // dottedDto: datas,
-                      positionName: _jobGroupModel.positionName,
-                      module: _jobGroupModel.module,
-                      standardJobName: _jobGroupModel.standardJobName,
-                      positionCode: _jobGroupModel.positionCode,
-                      unitId: _jobGroupModel.unitId,
-                      unintName: _jobGroupModel.unintName,
-                      // mibGrade: _jobGroupModel.mibGrade,
-                      mibGradeStart: _jobGroupModel.mibGradeStart,
-                      mibGradeEnd: _jobGroupModel.mibGradeEnd,
-                      localGrade: _jobGroupModel.localGrade,
-                      positioCategory: _jobGroupModel.positioCategory,
-                      businessTitle: _jobGroupModel.businessTitle,
-                      standardJobId: _jobGroupModel.standardJobId,
-                      parentPositionId: _jobGroupModel.parentPositionId,
-                      parentPositionName: _jobGroupModel.parentPositionName,
-                      beginDate: formatDate(new Date(_jobGroupModel.beginDate)),
-                      orderNo: _jobGroupModel.orderNo,
-                      businessUnderstanding: _jobGroupModel.businessUnderstanding,
-                      generalRequirements: _jobGroupModel.generalRequirements,
-                      expertiseRequirements: _jobGroupModel.expertiseRequirements,
-                      academicRequirements: _jobGroupModel.academicRequirements,
-                      experienceRequire: _jobGroupModel.experienceRequire,
-                      canDelete: _jobGroupModel.canDelete,
-                      posAttachmentId: this.attachmentId
-                  }
-                  var uploadData = {};
-                  for (var key in posPositionDto) {
-                      if (posPositionDto[key] !== undefined && posPositionDto[key] !== null) {
-                          // formData.append(key, posPositionDto[key]);
-                          uploadData[key] = posPositionDto[key];
-                      }
-                  }
+                    let posPositionDto = {
+                        // dottedDto: datas,
+                        positionName: _jobGroupModel.positionName,
+                        module: _jobGroupModel.module,
+                        standardJobName: _jobGroupModel.standardJobName,
+                        positionCode: _jobGroupModel.positionCode,
+                        unitId: _jobGroupModel.unitId,
+                        unintName: _jobGroupModel.unintName,
+                        // mibGrade: _jobGroupModel.mibGrade,
+                        mibGradeStart: _jobGroupModel.mibGradeStart,
+                        mibGradeEnd: _jobGroupModel.mibGradeEnd,
+                        localGrade: _jobGroupModel.localGrade,
+                        positioCategory: _jobGroupModel.positioCategory,
+                        businessTitle: _jobGroupModel.businessTitle,
+                        standardJobId: _jobGroupModel.standardJobId,
+                        parentPositionId: _jobGroupModel.parentPositionId,
+                        parentPositionName: _jobGroupModel.parentPositionName,
+                        beginDate: formatDate(new Date(_jobGroupModel.beginDate)),
+                        orderNo: _jobGroupModel.orderNo,
+                        businessUnderstanding: _jobGroupModel.businessUnderstanding,
+                        generalRequirements: _jobGroupModel.generalRequirements,
+                        expertiseRequirements: _jobGroupModel.expertiseRequirements,
+                        academicRequirements: _jobGroupModel.academicRequirements,
+                        experienceRequire: _jobGroupModel.experienceRequire,
+                        canDelete: _jobGroupModel.canDelete,
+                        posAttachmentId: this.attachmentId
+                    }
+                    var uploadData = {};
+                    for (var key in posPositionDto) {
+                        if (posPositionDto[key] !== undefined && posPositionDto[key] !== null) {
+                            // formData.append(key, posPositionDto[key]);
+                            uploadData[key] = posPositionDto[key];
+                        }
+                    }
 
-                  for (var key in data) {
-                      if (data[key] !== undefined && data[key] !== null) {
-                          // formData.append(key, data[key]);
-                          uploadData[key] = data[key];
-                      }
-                  }
+                    for (var key in data) {
+                        if (data[key] !== undefined && data[key] !== null) {
+                            // formData.append(key, data[key]);
+                            uploadData[key] = data[key];
+                        }
+                    }
 
-                  if (_self.$route.name === 'addPosition') {
-                      this.files.url = Vue.config.APIURL + '/pos/positions/';
-                  } else if (_self.$route.name === 'editPosition') {
-                      this.files.url = Vue.config.APIURL + '/pos/positions/' + _self.position.positionId;
-                  }
-                  var upload = this.$refs.upload;
-                  upload.request = {
-                    data: uploadData
-                  };
-                  this.$refs.upload.active = true;
+                    if (_self.$route.name === 'addPosition') {
+                        this.files.url = Vue.config.APIURL + '/pos/positions/';
+                    } else if (_self.$route.name === 'editPosition') {
+                        this.files.url = Vue.config.APIURL + '/pos/positions/' + _self.position.positionId;
+                    }
+                    var upload = this.$refs.upload;
+                    upload.request = {
+                        data: uploadData
+                    };
+                    this.$refs.upload.active = true;
                 },
                 parseFiles(rawFiles) {
                     return Array.prototype.slice.call(rawFiles, 0);
@@ -690,7 +709,7 @@ export default {
                     this.fileName = '';
                 },
                 cancel() {
-                    this.$router.go({
+                    this.$router.push({
                         name: 'positionSetting',
                         query: {
                             orgId: this.position.unitId
@@ -698,32 +717,30 @@ export default {
                     });
                 },
                 showPosition(type, index) {
+                    this.$refs.showpos.open();
                     this.selectType = 'position';
                     this.showPositionType = type;
                     this.selIndex = index;
                     if (this.readonlyFlag) {
-                      this.show.confirmedText = 'This position has already been occupied by staff, if you change its superior position, the staff will change his/her superior correspondly.Are you sure to change?'
-                      this.show.confirmed = true;
+                        this.show.confirmedText = this.$t('position.confirmedText');
+                        this.show.confirmed = true;
                     } else {
-                      this.confirmed();
+                        this.confirmed();
                     }
                 },
                 confirmed() {
-                  if (this.selectType === 'positionDotted') {
-                    this.showDottedPos.modal = true;
-                  } else {
-                    this.showPos.modal = true;
-                  }
+                    if (this.selectType === 'positionDotted') {} else {}
                 },
                 showPositionDotted(type, index) {
+                    this.$refs.dottedposition.open();
                     this.selectType = 'positionDotted';
                     this.showPositionType = type;
                     this.selIndex = index;
                     if (this.readonlyFlag) {
-                      this.show.confirmedText = 'This position has already been occupied by staff, if you change dotted report line, the staff will change his/her dotted report line correspondly.Are you sure to change?';
-                      this.show.confirmed = true;
+                        this.show.confirmedText = this.$t('position.confirmedText');
+                        this.show.confirmed = true;
                     } else {
-                      this.confirmed();
+                        this.confirmed();
                     }
                 },
 
@@ -736,121 +753,86 @@ export default {
                         }
                     }
                     return value;
-                }
-        },
-        route: {
-            data(transition) {
-                let _self = this;
-                _self.position.positionId = transition.to.params.positionId;
-                _self.position.unitId = transition.to.params.id;
-                let operationType = _self.$route.name;
-                if (_self.position.standardJobId) {
-                    let obj = {};
-                    this.mibGradeDist = obj;
-                }
-
-                if (operationType === 'addPosition') {
-                    _self.panelTitle = 'Add Position';
-                    _self.position.unintName = transition.to.params.orgShortName;
-                    _self.dottedList.push(_self.dottedSchema.newModel());
-
-                } else if (operationType === 'editPosition') {
-                    _self.panelTitle = 'Edit Position';
-
-                    _self.$http.get(`/pos/positions/${_self.position.positionId}/loadData`).then((response) => {
-                        let props = response.json();
-                        for (let prop in props) {
-                            if (props.hasOwnProperty(prop)) {
-                                _self.position[prop] = props[prop];
-                            }
-                        }
-                        this.dottedList = props.dottedDto;
-                        _self.position.beginDate = formatDate(new Date(props.beginDate));
-                        _self.position.unintName = props.unitShortName;
-                        // _self.unintName = props.unitShortName; //组织名称
-                        if (_self.position.dottedDto.length === 0) {
-                            _self.dottedList.push(_self.dottedSchema.newModel());
-                        }
-                        _self.readonlyFlag = !props.canDelete;
-                        // 获取职级id,显示标准职位的设置范围
-                        _self.$http.get(`/pos/positions/dicts/mibgrade/items/?standardJobId=${props.standardJobId}`).then((response) => {
-                            var obj = {};
-                            if (response.data) {
-                                response.data.forEach(function(item) {
-                                    obj[item.NAME] = item.VALUE;
-                                })
-                                this.mibGradeDist = obj;
-                            }
-                        });
-                        _self.position.mibGradeName = _self.fixDist(_self.position.mibGrade);
-                        _self.attachmentId = props.posAttachmentId;
-                        _self.fileName = props.posAttachmentName;
-
-                    });
-
-                }
-            }
-        },
-        events: {
-            'titleselector': function(data, jobGroup) {
-                let _self = this;
-                _self.position.standardJobName = data.standardJobName;
-                _self.position.standardJobId = data.standardJobId;
-                _self.position.module = jobGroup.jobFamilyName;
-                _self.position.mibGradeStart = '';
-                _self.position.mibGradeEnd = '';
-                _self.$http.get(`/pos/positions/dicts/mibgrade/items/?standardJobId=${data.standardJobId}`).then((response) => {
-                    var obj = {};
-                    if (response.data) {
-                        response.data.forEach(function(item) {
-                            obj[item.NAME] = item.VALUE;
-                        })
+                },
+                fetchData() {
+                    let _self = this;
+                    _self.position.positionId = _self.$route.params.positionId;
+                    _self.position.unitId = _self.$route.params.id;
+                    let operationType = _self.$route.name;
+                    if (_self.position.standardJobId) {
+                        let obj = {};
                         this.mibGradeDist = obj;
                     }
-                });
 
-                return false
-            },
-            'selected-position': function(data) {
-                let _self = this
-                _self.position.parentPositionName = data.positionName;
-                _self.position.parentPositionId = data.positionId;
+                    if (operationType === 'addPosition') {
+                        _self.panelTitle = _self.$t('position.addPosition');
+                        _self.position.unintName = _self.$route.params.orgShortName;
+                        _self.dottedList.push(_self.dottedSchema.newModel());
 
-                return false
-            },
-            'selected-positiondotted': function(data) {
-                if (this.showPositionType === 'dotted') {
-                    this.dottedList.forEach((item, i) => {
-                        if (i === this.selIndex) {
-                            item.dottedPositionId = data.positionId;
-                            item.dottedPositionName = data.positionName;
-                            item.dataComeFrom = data.dataComeFrom;
-                        }
-                    })
-                }
-            },
-            addFileUpload(file, component) {
-                this.fileName = file.name;
-                this.attachmentId = '';
-            },
-            afterFileUpload(file, component) {
-                if (!file.error) {
-                    this.$router.go({
-                        name: 'positionSetting',
-                        query: {
-                            orgId: this.position.unitId
-                        }
-                    });
-                    var message = this.$t('common.editedSuccess');
-                    if (this.$route.name === 'addPosition') {
-                      message = this.$t('common.addedSuccess');
+                    } else if (operationType === 'editPosition') {
+                        _self.panelTitle = _self.$t('position.editPosition');
+
+                        _self.$http.get(`/pos/positions/${_self.position.positionId}/loadData`).then((response) => {
+                            let props = response.json();
+                            for (let prop in props) {
+                                if (props.hasOwnProperty(prop)) {
+                                    _self.position[prop] = props[prop];
+                                }
+                            }
+                            this.dottedList = props.dottedDto;
+                            _self.position.beginDate = formatDate(new Date(props.beginDate));
+                            _self.position.unintName = props.unitShortName;
+                            // _self.unintName = props.unitShortName; //组织名称
+                            if (_self.position.dottedDto.length === 0) {
+                                _self.dottedList.push(_self.dottedSchema.newModel());
+                            }
+                            _self.readonlyFlag = !props.canDelete;
+                            // 获取职级id,显示标准职位的设置范围
+                            _self.$http.get(`/pos/positions/dicts/mibgrade/items/?standardJobId=${props.standardJobId}`).then((response) => {
+                                var obj = {};
+                                if (response.data) {
+                                    response.data.forEach(function(item) {
+                                        obj[item.NAME] = item.VALUE;
+                                    })
+                                    this.mibGradeDist = obj;
+                                }
+                            });
+                            _self.position.mibGradeName = _self.fixDist(_self.position.mibGrade);
+                            _self.attachmentId = props.posAttachmentId;
+                            _self.fileName = props.posAttachmentName;
+
+                        });
+
                     }
-                    Message({
-                        type: 'success',
-                        message: message
-                    });
                 }
-            }
+        },
+        watch: {
+            // 如果路由有变化，会再次执行该方法
+            '$route': 'fetchData'
+        },
+        events: {
+            addFileUpload(file, component) {
+                    this.fileName = file.name;
+                    this.attachmentId = '';
+                },
+                afterFileUpload(file, component) {
+                    if (!file.error) {
+                        this.$router.push({
+                            name: 'positionSetting',
+                            query: {
+                                orgId: this.position.unitId
+                            }
+                        });
+                        var message = this.$t('common.editedSuccess');
+                        if (this.$route.name === 'addPosition') {
+                            message = this.$t('common.addedSuccess');
+                        }
+                        Message({
+                            type: 'success',
+                            message: message
+                        });
+                    }
+                }
         },
         components: {
             Panel: require('../../components/basic/panel.vue'),

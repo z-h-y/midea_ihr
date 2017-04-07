@@ -231,7 +231,7 @@
       }
     },
 
-    ready() {
+    mounted() {
       this.initLabels('.hour-labels .timepicker-label', 110);
       this.initLabels('.hour-labels.inner .timepicker-label', 80);
       this.initLabels('.minute-labels .timepicker-label', 110);

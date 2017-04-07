@@ -12,7 +12,7 @@
 
 <div class="content-wrap ihr-system-jobUpdate">
     <panel :title="panelTitle" class="panel-b m16" header="panel-header">
-        <v-form v-ref:jobform :model="job" :schema="jobSchema" label-width="160" label-suffix="" :cols="1" form-style="org-form">
+        <v-form ref="jobform" :model="job" :schema="jobSchema" label-width="160" label-suffix="" :cols="1" form-style="org-form">
             <text-field property="name" editor-width="400"></text-field>
             <text-field property="beanId" editor-width="400"></text-field>
             <text-field property="executor" editor-width="400"></text-field>
@@ -20,8 +20,8 @@
         </v-form>
     </panel>
     <div class="btn-group">
-        <ui-button @click="submit" color="primary mr10">Submit</ui-button>
-        <ui-button @click="cancel" class="btn-default-bd" type="flat">Cancel</ui-button>
+        <ui-button @click="submit" color="primary mr10">{{$t('button.submit')}}</ui-button>
+        <ui-button @click="cancel" class="btn-default-bd" type="flat">{{$t('button.cancel')}}</ui-button>
     </div>
 </div>
 
@@ -43,35 +43,35 @@ import {
     default as Message
 }
 from '../../components/basic/message';
-let jobSchema = new Schema({
-    name: {
-        label: 'name',
-        required: true,
-        whitespace: false
-    },
-    beanId: {
-        label: 'RPC service address',
-        required: true,
-        whitespace: false
-    },
-    executor: {
-        label: 'RPC name',
-        required: true,
-        whitespace: false
-    },
-    description: {
-        label: 'description',
-        required: true,
-        whitespace: false
-    },
-    id: {
-
-    }
-});
 
 export default {
 
     data() {
+            let jobSchema = new Schema({
+                name: {
+                    label: this.$t('system.jobUpdate.name'),
+                    required: true,
+                    whitespace: false
+                },
+                beanId: {
+                    label: this.$t('system.jobUpdate.beanId'),
+                    required: true,
+                    whitespace: false
+                },
+                executor: {
+                    label: this.$t('system.jobUpdate.executor'),
+                    required: true,
+                    whitespace: false
+                },
+                description: {
+                    label: this.$t('system.jobUpdate.description'),
+                    required: true,
+                    whitespace: false
+                },
+                id: {
+
+                }
+            });
             return {
                 panelTitle: '',
                 jobSchema: jobSchema,
@@ -160,7 +160,7 @@ export default {
             }
         },
         components: {
-          Panel: require('../../components/basic/panel.vue')
+            Panel: require('../../components/basic/panel.vue')
         }
 }
 

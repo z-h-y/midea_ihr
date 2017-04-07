@@ -1,231 +1,237 @@
 <style lang="less">
-.upload {
-    border-color: #e5e5e5 #eee #eee;
-    width: 585px;
-    /*width: 565px;*/
-    padding-top: 0;
-}
+    .upload {
+        border-color: #e5e5e5 #eee #eee;
+        width: 585px;
+        /*width: 565px;*/
+        padding-top: 0;
+    }
 
-.upload h2 {
-    color: #333;
-    margin-bottom: 20px;
-}
+    .upload h2 {
+        color: #333;
+        margin-bottom: 20px;
+    }
 
-.upload li {
-    list-style: none;
-}
+    .upload li {
+        list-style: none;
+    }
 
-.upload .btn {
-    background-color: #6ec3ff;
-    color: #fff;
-    border-radius: 3px;
-}
+    .upload .btn {
+        background-color: #6ec3ff;
+        color: #fff;
+        border-radius: 3px;
+    }
 
-.upload .btn-default {
-    border: 1px solid #fff;
-}
+    .upload .btn-default {
+        border: 1px solid #fff;
+    }
 
-.upload .btn-primary {
-    border: 1px solid #fff;
-}
-.upload .btn:disabled {
-    background-color: rgba(0, 0, 0, 0.35);
-    color: #eee;
-    cursor: default;
-}
+    .upload .btn-primary {
+        border: 1px solid #fff;
+    }
+    .upload .btn:disabled {
+        background-color: rgba(0, 0, 0, 0.35);
+        color: #eee;
+        cursor: default;
+    }
 
-.upload .btn .d-icon-plus {
-    font-weight: bold;
-    font-size: 16px;
-    line-height: 1;
-    margin-right: 10px;
-}
+    .upload .btn .d-icon-plus {
+        font-weight: bold;
+        font-size: 16px;
+        line-height: 1;
+        margin-right: 10px;
+    }
 
-.upload-operate button {
-    margin-right: 5px;
-    width: 95px;
-}
+    .upload-operate button {
+        margin-right: 5px;
+        width: 95px;
+    }
 
-.upload-operate .btn-file {
-    display: inline-block;
-    vertical-align: middle;
-    text-align: center;
-    line-height: 36px;
-    width: 88px;
-    height: 36px;
-    position: relative;
-    overflow: hidden;
-}
-.upload-operate {
-  .file-upload {
-      display: inline-block;
-      height: 32px;
-      width: 80px;
-      background-color: #6ec3ff;
-      vertical-align: middle;
-  }
-  .file-upload span{
-      display: block;
-      font-size: 16px;
-      line-height: 32px;
-      color: #fff;
-      text-align: center;
-  }
-}
+    .upload-operate .btn-file {
+        display: inline-block;
+        vertical-align: middle;
+        text-align: center;
+        line-height: 36px;
+        width: 88px;
+        height: 36px;
+        position: relative;
+        overflow: hidden;
+    }
+    .upload-operate {
+      .file-upload {
+          display: inline-block;
+          height: 32px;
+          width: 80px;
+          background-color: #6ec3ff;
+          vertical-align: middle;
+      }
+      .file-upload span{
+          display: block;
+          font-size: 16px;
+          line-height: 32px;
+          color: #fff;
+          text-align: center;
+      }
+    }
 
-.upload-operate .btn-file input {
-    position: absolute;
-    cursor: pointer;
-    width: 182px;
-    height: 36px;
-    top: 0;
-    left: -95px;
-    opacity: 0;
-}
+    .upload-operate .btn-file input {
+        position: absolute;
+        cursor: pointer;
+        width: 182px;
+        height: 36px;
+        top: 0;
+        left: -95px;
+        opacity: 0;
+    }
 
-/* 上传文件列表 */
+    /* 上传文件列表 */
 
-.upload-files {
-    overflow: hidden;
-    margin-bottom: 20px;
-    border: 2px dashed #dee4e9;
-    padding: 20px 0 0 20px;
-}
+    .upload-files {
+        overflow: hidden;
+        margin-bottom: 20px;
+        border: 2px dashed #dee4e9;
+        padding: 20px 0 0 20px;
+    }
 
-.upload-files-tip {
-    font-size: 20px;
-    color: #a5acbe;
-    line-height: 120px;
-    text-indent: 50px;
-}
+    .upload-files-tip {
+        font-size: 20px;
+        color: #a5acbe;
+        line-height: 120px;
+        text-indent: 50px;
+    }
 
-.upload-file {
-    position: relative;
-    float: left;
-    margin: 0 20px 20px 0;
-    text-align: center;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    width: 110px;
-    height: 110px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.075);
-    padding: 4px 4px 28px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
+    .upload-file {
+        position: relative;
+        float: left;
+        margin: 0 20px 20px 0;
+        text-align: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: 110px;
+        height: 110px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.075);
+        padding: 4px 4px 28px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
 
-.upload-file .rm-btn {
-    position: absolute;
-    top: 4px;
-    right: 4px;
-    cursor: pointer;
-}
+    .upload-file .rm-btn {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        height: 15px;
+        padding: 1px;
+        width: 15px;
+        cursor: pointer;
+        color: white;
+        background: red;
+        border-radius: 50%;
+    }
 
-.upload-file-pic {
-    width: 100%;
-    height: 100%;
-    display: block;
-}
+    .upload-file-pic {
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
 
-.upload-file-name {
-    font-size: 13px;
-    width: 100%;
-}
+    .upload-file-name {
+        font-size: 13px;
+        width: 100%;
+    }
 
-/* 上传结果列表 */
+    /* 上传结果列表 */
 
-.upload-result {
-    margin-top: 40px;
-    color: rgb(101, 107, 121);
-    border-radius: 3px;
-}
+    .upload-result {
+        margin-top: 40px;
+        color: rgb(101, 107, 121);
+        border-radius: 3px;
+    }
 
-.upload-result-title {
-    text-align: left;
-    line-height: 1.5;
-    font-size: 18px;
-}
+    .upload-result-title {
+        text-align: left;
+        line-height: 1.5;
+        font-size: 18px;
+    }
 
-.upload-result-title span {
-    font-size: 12px;
-    color: #666;
-}
+    .upload-result-title span {
+        font-size: 12px;
+        color: #666;
+    }
 
-.upload-result-title span em {
-    color: #FF1C1C;
-    font-style: normal;
-}
+    .upload-result-title span em {
+        color: #FF1C1C;
+        font-style: normal;
+    }
 
-.upload-result table {
-    border-collapse: collapse;
-    table-layout: fixed;
-    width: 100%;
-}
+    .upload-result table {
+        border-collapse: collapse;
+        table-layout: fixed;
+        width: 100%;
+    }
 
-.upload-result td,
-.upload-result th {
-    text-align: center;
-    border-bottom: 1px solid rgba(216, 210, 210, 0.35);
-    padding: 8px;
-    line-height: 1.5;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
+    .upload-result td,
+    .upload-result th {
+        text-align: center;
+        border-bottom: 1px solid rgba(216, 210, 210, 0.35);
+        padding: 8px;
+        line-height: 1.5;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
 
-.upload-result thead th {
-    font-weight: 600;
-    text-transform: uppercase;
-}
-.upload-result tbody tr:nth-of-type(odd) {
-    background-color: #fff;
-}
+    .upload-result thead th {
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+    .upload-result tbody tr:nth-of-type(odd) {
+        background-color: #fff;
+    }
 
-.upload-result button + button {
-    margin-left: 5px;
-}
+    .upload-result button + button {
+        margin-left: 5px;
+    }
 
-.upload-result-pic {
-    width: 100%;
-}
+    .upload-result-pic {
+        width: 100%;
+    }
 
-.upload-result-link {
-    white-space: normal;
-    text-overflow: initial;
-}
+    .upload-result-link {
+        white-space: normal;
+        text-overflow: initial;
+    }
 
-.upload-result-link a {
-    color: #254563;
-}
-.upload-result-link a:hover {
-    color: #55aff0;
-    text-decoration: underline;
-}
+    .upload-result-link a {
+        color: #254563;
+    }
+    .upload-result-link a:hover {
+        color: #55aff0;
+        text-decoration: underline;
+    }
 
-.upload-result-clipboard {
-    opacity: 0;
-}
-.local-file {
-  width: 110px;
-  height: 110px;
-}
+    .upload-result-clipboard {
+        opacity: 0;
+    }
+    .local-file {
+      width: 110px;
+      height: 110px;
+    }
 </style>
 
 <template>
-<div class="upload {{uploadClass}}">
+<div :class="uploadClass" class="upload">
     <!-- 上传文件 -->
-    <ul class="upload-files" v-on:dragenter.stop.prevent v-on:dragover.stop.prevent v-on:drop.stop.prevent="onFileDrop">
+    <ul class="upload-files" @dragenter.stop.prevent @dragover.stop.prevent @drop.stop.prevent="onFileDrop">
         <li v-if="files.length === 0 && defaultFiles.length === 0" class="upload-files-tip">Drop Picture here</li>
-        <li class="upload-file" v-for="file in defaultFiles" title="{{file.attachmentName}}">
+        <li class="upload-file" v-for="(index,file) in defaultFiles" :title="file.attachmentName">
             <img class="upload-file-pic" v-bind:src="imgUrl + file.attachmentId" alt="">
             <span class="upload-file-name">{{file.attachmentName}}</span>
-            <i class="rm-btn fa fa-times" aria-hidden="true" @click="removeDefaultFile($index)"></i>
+            <i class="rm-btn fa fa-times" aria-hidden="true" @click="removeDefaultFile(index)"></i>
         </li>
-        <li class="upload-file" v-for="file in files" title="{{file.name}}">
-            <img class="local-file upload-file-pic" src="../../static/images/doc.png" v-bind:src="file.imgUrl" alt="" v-bind:style="file.filter">
+        <li class="upload-file" v-for="file in files" :title="file.name">
+            <img class="local-file upload-file-pic" src="assets/images/doc.png" v-bind:src="file.imgUrl" alt="" v-bind:style="file.filter">
             <span class="upload-file-name">{{file.name}}</span>
-            <i class="rm-btn fa fa-times" aria-hidden="true" @click="removeFile($index)"></i>
+            <i class="rm-btn fa fa-times" aria-hidden="true" @click="removeFile(file)"></i>
         </li>
     </ul>
     <form class="upload-operate" enctype="multipart/form-data">
@@ -233,8 +239,19 @@
             <input type="file" name="picture[]" @change="onChange($event)" v-bind:multiple="multiple" v-bind:accept="accept">
             <em class="d-icon-plus">+</em>Add
         </span> -->
-        <file-upload title="Add" class="file-upload" :name="filesOption.name" :post-action="filesOption.url" :extensions="filesOption.extensions" :accept="filesOption.accept" :multiple="filesOption.multiple" :size="filesOption.size" v-ref:upload :drop="filesOption.drop"></file-upload>
-        <span style="font-size:16px;color:red;">(only can be upload file type: <i style="font-style:nomal;color:blue;font-size:16px;">png/jpeg/jpg/doc/pdf</i>,Maximam: <i style="font-style:nomal;color:blue;font-size:16px;">2M</i>)</span>
+        <file-upload :title="$t('button.add')" class="file-upload" 
+        :name="filesOption.name" 
+        :post-action="filesOption.url" 
+        :extensions="filesOption.extensions" 
+        :accept="filesOption.accept" 
+        :multiple="filesOption.multiple" 
+        :size="filesOption.size" ref="upload" 
+        @after-upload="afterFileUpload"
+        @add-upload="addFileUpload"
+        @upload-fail="fileUploadFail"
+        :drop="filesOption.drop">
+        </file-upload>
+        <span style="font-size:16px;color:red;">(only can be uploaded file type: <i style="font-style:nomal;color:blue;font-size:16px;">png/jpeg/jpg/doc/pdf</i>,Maximam Size: <i style="font-style:nomal;color:blue;font-size:16px;">2M</i>)</span>
         <!-- <button type="button" class="btn btn-primary" @click="upload()" :disabled="uploading">{{uploading ? 'Uploading...' : 'Upload'}}</button> -->
     </form>
     <!-- 上传结果 -->
@@ -323,6 +340,22 @@ export default {
         };
     },
     methods: {
+        addFileUpload(file, component) {
+          if (file.name !== '' && !file.error) {
+            if (window.URL) {
+              file.imgUrl = URL.createObjectURL(this.$refs.upload._files[file.id].file);
+            } else {
+              file.imgUrl = '../../assets/images/public/transparent.png';
+            }
+            this.files.push(file);
+          }
+        },
+        afterFileUpload(file, component) {
+          this.uploadResult(file);
+        },
+        fileUploadFail(file, component) {
+         Message({type: 'error', message: this.$t('staff.message.fileUploadType')});
+        },
         upload() {
             if (this.minNum && this.files.length < this.minNum) {
                 this.errorMsg = 'The number of files is less than the specified range';
@@ -432,10 +465,10 @@ export default {
 
             // 检测文件类型是否为可以接受的类型
             var message = 'not available file type! Please Select file type of: jpg/jpeg/doc/pdf/png.';
-            var fileType = files[0].name.split('.')[1];
-            fileType = fileType.toLowerCase();
-            var allType = ['jpeg', 'jpg', 'png', 'pdf', 'doc', 'docx'];
-            var isAllow = allType.indexOf(fileType);
+            var fileType = files[0].name.split('.')[1].toLowerCase();
+            // fileType = fileType.toLowerCase();
+            var acceptableType = ['jpeg', 'jpg', 'png', 'pdf', 'doc', 'docx'];
+            var isAllow = acceptableType.indexOf(fileType);
             //检测文件类型是否为可以接受的类型
             if (isAllow < 0) {
                 this.promatMessage(message);
@@ -474,9 +507,13 @@ export default {
             }
             return isValidator;
         },
-        removeFile(index) {
-            this.files.splice(index, 1);
-            this.$refs.upload.files.splice(index, 1);
+        removeFile(file) {
+            var index = this.files.indexOf(file);
+            if (!(index < 0)) {
+                this.files.splice(index, 1);
+                this.$refs.upload.files.splice(index, 1);
+            }
+            
         },
         removeDefaultFile(index) {
             this.$parent.removeIds.push(this.defaultFiles[index].attachmentId);
@@ -495,22 +532,7 @@ export default {
         }
     },
     events: {
-      addFileUpload(file, component) {
-          if (file.name !== '' && !file.error) {
-            if (window.URL) {
-              file.imgUrl = URL.createObjectURL(this.$refs.upload._files[file.id].file);
-            } else {
-              file.imgUrl = '../../static/images/public/transparent.png';
-            }
-            this.files.push(file);
-          }
-      },
-      afterFileUpload(file, component) {
-          this.uploadResult(file);
-      },
-      fileUploadFail(file, component) {
-        Message({type: 'error', message: this.$t('staff.message.fileUploadType')});
-      }
+      
     },
     components: {
         FileUpload: require('../basic/FileUpload.vue')

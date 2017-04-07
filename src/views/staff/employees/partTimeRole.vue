@@ -7,16 +7,16 @@
 
 <div class="content-wrap bg-w ihr-staff-interns">
   <panel :title="$t('staff.interimPartTimeRole')" class="panel-b mb-suitable" header="panel-header">
-    <employee-common-info :employee-id="employeeId" :employee-info.sync="employeeInfo"></employee-common-info>
-    <v-form v-ref:parttimeform :model="partTimeEmp" :schema="partTimeEmpSchema" label-width="200" label-suffix="" :cols="1" form-style="int-join-com-form">
-        <text-field property="positionName" type="selector" :readonly="true" :show.sync="position" editor-width="400"></text-field>
+    <employee-common-info :employee-id="employeeId" :employee-info="employeeInfo"></employee-common-info>
+    <v-form ref="parttimeform" :model="partTimeEmp" :schema="partTimeEmpSchema" label-width="200" label-suffix="" :cols="1" form-style="int-join-com-form">
+        <text-field property="positionName" @open-selector="openSelector" type="selector" :readonly="true" :show="position" editor-width="400"></text-field>
         <text-field property="unitName" :readonly="true" :placeholder="$t('staff.selectPosition')" editor-width="400"></text-field>
         <text-field property="beginDate" :min-date="format(employeeInfo.hireDate)" :max-date="format(partTimeEmp.endDate)" editor-width="400"></text-field>
         <text-field property="endDate" :min-date="format(partTimeEmp.beginDate) || format(employeeInfo.hireDate)" editor-width="400"></text-field>
     </v-form>
   </panel>
-    <position-selector :show.sync="position" :handle-comfirmed="selectPer"></position-selector>
-    <employee-submit v-ref:employeesubmit :form-confirmed="confirmed" :form-cancel="cancel" :is-form-validate="isFormValidate"></employee-submit>
+    <position-selector ref="posselect" :show="position" :handle-comfirmed="selectPer"></position-selector>
+    <employee-submit ref="employeesubmit" :form-confirmed="confirmed" :form-cancel="cancel" :is-form-validate="isFormValidate"></employee-submit>
 </div>
 
 </template>
@@ -64,18 +64,20 @@ export default {
             };
         },
         computed: {},
-        ready() {
+        mounted() {
           this.partTimeEmp = this.partTimeEmpSchema.newModel();
         },
-        attached() {},
         methods: {
+          openSelector() {
+            this.$refs['posselect'].open();
+          },
           cancel() {
-              this.$route.router.go({
+              this.$router.push({
                   name: 'regularEmployees'
               });
           },
           isFormValidate() {
-              var passed = this.partTimeEmp.$schema.isFormValidate(this.$refs.parttimeform);
+              var passed = this.$refs.parttimeform.isFormValidate();
               if (!passed) {
                 return;
               }
@@ -95,7 +97,7 @@ export default {
                           type: 'success',
                           message: this.$t('staff.message.partTimeSuccess')
                       });
-                      this.$route.router.go({
+                      this.$router.push({
                           name: 'regularEmployees'
                       });
                   },function(response) {

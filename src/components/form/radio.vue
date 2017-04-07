@@ -62,7 +62,7 @@
 <template>
 
 <div class="radio-input-wrapper">
-    <input disabled="{{disabled}}" v-model="selected" class="radio-input" type="radio" v-el:editor :value.once="value" :id.once="id" :name.once="$parent.$radioName || name" @change="onChange($event, this)" /><span class="radio-border"></span><span class="radio-inner-dot"></span>
+    <input :disabled="disabled" v-model="selected" class="radio-input" type="radio" ref="editor" :value.once="value" :id.once="id" :name.once="$parent.$radioName || name" @change="onChange($event, this)" /><span class="radio-border"></span><span class="radio-inner-dot"></span>
     <label :for.once="id">
         <slot></slot>
     </label>

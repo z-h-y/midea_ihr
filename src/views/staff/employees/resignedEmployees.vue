@@ -34,11 +34,11 @@
 <div class="content-wrap bg-w ihr-staff-emp-res">
     <div class="mb20 pt20">
         <div class="search-area">
-            <organization-selector :show.sync="org"></organization-selector>
+            <organization-selector ref="orgselect" :show="org" :handel-select="selectOrg"></organization-selector>
             <v-form :class="{expended: expended}" :model="resigned" :schema="resignedSchema" label-width="170" label-suffix="" :cols="3" form-style="resigned-form">
                 <text-field property='fullName' editor-width="150"></text-field>
                 <text-field property="positionName" editor-width="150"></text-field>
-                <text-field type="selector" :readonly="true" :show.sync="org" property="orgUnitName" editor-width="150"></text-field>
+                <text-field type="selector" @open-selector="openSelector" :readonly="true" :show="org" property="orgUnitName" editor-width="150"></text-field>
                 <select-field v-show="expended" property="dimissionType" :mapping="dimissionType" editor-width="150"></select-field>
                 <select-field v-show="expended" property="resignationReason" :mapping="resignationReason" editor-width="150"></select-field>
                 <select-field v-show="expended" property="staffCategory" :mapping="staffCategory" editor-width="150"></select-field>
@@ -52,11 +52,11 @@
             </div>
         </div>
         <div class="group">
-            <ui-button class="mr10 dis-tc btn-primary-bd" @click="rehire" color="primary" icon="fa-user" :text="$t('button.rehire')"></ui-button>
-            <ui-button class="mr10 dis-tc btn-default-bd" @click="download" type="primary" icon="fa-cloud-download" :text="$t('button.download')"></ui-button>
+            <ui-button class="mr10 dis-tc btn-primary-bd" @click="rehire" color="primary" icon="fa-user">{{$t('button.rehire')}}</ui-button>
+            <ui-button class="mr10 dis-tc btn-default-bd" @click="download" type="primary" icon="fa-cloud-download">{{$t('button.download')}}</ui-button>
         </div>
         <div class="vuetable-wrapper">
-          <vuetable v-ref:vuetable api-url="/employee/resigned/employees" :append-params="moreParams" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="columns" per-page="10">
+          <vuetable ref="vuetable" api-url="/employee/resigned/employees" :append-params="moreParams" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="columns" per-page="10">
           </vuetable>
         </div>
 
@@ -81,7 +81,7 @@ export default {
                 label: this.$t('staff.employeeName')
             },
             positionName: {
-                label: this.$t('staff.position')
+                label: this.$t('staff.mibPostion')
             },
             orgUnitName:{
               label: this.$t('staff.organization')
@@ -133,7 +133,7 @@ export default {
                     },
                     {
                       name: 'positionName',
-                      title: this.$t('staff.position')
+                      title: this.$t('staff.mibPostion')
                     },
                     {
                       name: 'orgShortName',
@@ -219,14 +219,15 @@ export default {
             }
           })
         },
-        ready() {},
-        attached() {},
         methods: {
+          openSelector() {
+            this.$refs['orgselect'].open();
+          },
             rehire() {
               if (this.selectedRow.length === 1) {
                 this.$http.get('/employee/resigned/employees/rehire?employeeId=' + this.selectedRow[0]).then(function(res){
                   if(!res.data) {
-                    this.$route.router.go({ name: 'resignedEmployeeEdit', params: { employeeId: this.selectedRow[0] }});
+                    this.$router.push({ name: 'resignedEmployeeEdit', params: { employeeId: this.selectedRow[0] }});
                   } else {
                     Message({type:'error',message:this.$t('staff.message.cannotReHire')});
                   }
@@ -267,7 +268,7 @@ export default {
                 }
               }
               this.$nextTick(function() {
-                this.$broadcast('vuetable:refresh')
+                this.$refs.vuetable.reloadData();
               })
             },
             reset() {
@@ -320,15 +321,13 @@ export default {
             },
             fixEmployeeCategory(value) {
               return this.fixDist(value, 'employementCategory');
+            },
+          selectOrg(value) {
+            if (value) {
+              this.resigned.orgUnitName = value.orgShortName;
+              this.resigned.unitId = value.orgId;
             }
-        },
-        events: {
-            'organization-selector:selected': function(value) {
-                if (value) {
-                    this.resigned.orgUnitName = value.orgShortName;
-                    this.resigned.unitId = value.orgId;
-                }
-            }
+          }
         },
         components: {}
 };

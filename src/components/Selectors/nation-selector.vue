@@ -14,11 +14,11 @@
 
 <ui-modal :show.sync="show.modal" transition="ui-modal-fade" :header="headText">
 	  <div class="select-cnt">
-    <tree :data="trees" :level-config="levelConfig" :show-checkbox="showCheckbox" v-ref:tree :click-node="loadNodeDetail"></tree>
+    <tree :data="trees" :level-config="levelConfig" :show-checkbox="showCheckbox" ref="tree" :click-node="loadNodeDetail"></tree>
 	  </div>
 		<div slot="footer">
-        <ui-button color="primary" @click="handleSave">Confirm</ui-button>
-        <ui-button @click="show.modal = false">Cancel</ui-button>
+        <ui-button color="primary" @click="handleSave">{{$t('button.confirm')}}</ui-button>
+        <ui-button @click="close">{{$t('button.cancel')}}</ui-button>
     </div>
 </ui-modal>
 
@@ -81,7 +81,7 @@ export default {
             this.trees = Object.prototype.toString.call(response.data) === '[object Array]' ? response.data: [response.data];
         });
     },
-    ready() {
+    mounted() {
       this.$refs.tree.$hasLoad = true;
     },
     methods: {
@@ -99,7 +99,7 @@ export default {
 					*/
 				handleSave(){
 					this.handleComfirmed(this.selectedNode, this.selectedEl);
-					this.show.modal = false;
+					this.close();
 				}
 
     },

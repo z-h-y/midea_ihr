@@ -2,6 +2,7 @@
 
 #annul-org {
     .annul-org {
+        overflow: initial;
         padding: 0;
     }
     .d-panel-content {
@@ -45,36 +46,34 @@
         animation: all .2s ease;
     }
     .mr16 {
-      margin-right: 16px;
-
+        margin-right: 16px;
     }
     .ml16 {
-      margin-left:16px;
-
+        margin-left: 16px;
     }
     .mt16 {
-      margin-top:16px;
+        margin-top: 16px;
     }
     // @keyframes fade-in {
     //     0% {
-		// 			  margin-left: -100%;
-		// 			  color:#fff;
+    // 			  margin-left: -100%;
+    // 			  color:#fff;
     //         width:0px;
-		// 				height:0px;
+    // 				height:0px;
     //     }
     //     100% {
-		// 			  margin-left: 0px;
+    // 			  margin-left: 0px;
     //         width:100%;
     //     }
     // }
     // @keyframes fade-out {
-		// 			0% {
-		// 				  height: auto;
-	  //           width:0px;
-	  //       }
-	  //       100% {
-	  //           width:100%;
-	  //       }
+    // 			0% {
+    // 				  height: auto;
+    //           width:0px;
+    //       }
+    //       100% {
+    //           width:100%;
+    //       }
     // }
 }
 
@@ -82,53 +81,67 @@
 
 <template lang="html">
 
-<panel id="annul-org" :title="panelTitle" class=" panel-b annul-cnt mt16 ml16 mb-suitable mr16 " header="panel-header">
-    <div class="warp">
-        <div id="annul-org-help-desk" class="help-desk annul-org">
-            <div class="help-desk-header">
-                <h3 class="headline">{{orgNodeDetail.unitShortName}}</h3>
-                <span class="subhead">{{orgNodeDetail.abbreviation ? '(' + orgNodeDetail.abbreviation + ')' : ''}}</span>
+<div>
+    <panel id="annul-org" :title="panelTitle" class=" panel-b annul-cnt mt16 ml16 mb-suitable mr16 " header="panel-header">
+        <div class="warp">
+            <div id="annul-org-help-desk" class="help-desk annul-org">
+                <div class="help-desk-header">
+                    <h3 class="headline">{{orgNodeDetail.unitShortName}}</h3>
+                    <span class="subhead">{{orgNodeDetail.abbreviation ? '(' + orgNodeDetail.abbreviation + ')' : ''}}</span>
+                </div>
+                <div class="help-desk-cnt">
+                    <ul class="regular fix">
+                        <li>
+                            <span class="prop-name">{{$t('organization.orgInfo.effectDate')}}</span>
+                            <span class="prop-val">{{orgNodeDetail.beginDate}}</span>
+                        </li>
+                        <li>
+                            <span class="prop-name">{{$t('organization.orgInfo.orgId')}}</span>
+                            <span class="prop-val">{{orgNodeDetail.unitCode}}</span>
+                        </li>
+                        <li>
+                            <span class="prop-name">{{$t('organization.orgInfo.headOfOrg')}}</span>
+                            <span class="prop-val">{{orgNodeDetail.unitLeaderName}}</span>
+                        </li>
+                        <li>
+                            <span class="prop-name">{{$t('organization.orgInfo.superiorOrg')}}</span>
+                            <span class="prop-val">{{orgNodeDetail.parentUnitName}}</span>
+                        </li>
+                    </ul>
+                </div>
+                <v-form ref="orgform" :model="annulOrg" :schema="annulOrgSchema" label-width="122" label-suffix="" :cols="1" form-style="annul-org-form">
+                    <text-field property="effectiveDate" :min-date="effectMinDate" editor-width="400"></text-field>
+                </v-form>
             </div>
-            <div class="help-desk-cnt">
-                <ul class="regular fix">
-                    <li>
-                        <span class="prop-name">Effective Date</span>
-                        <span class="prop-val">{{orgNodeDetail.beginDate}}</span>
-                    </li>
-                    <li>
-                        <span class="prop-name">Organization ID</span>
-                        <span class="prop-val">{{orgNodeDetail.unitCode}}</span>
-                    </li>
-                    <li>
-                        <span class="prop-name">Head Of Organization</span>
-                        <span class="prop-val">{{orgNodeDetail.unitLeaderName}}</span>
-                    </li>
-                    <li>
-                        <span class="prop-name">Superior Organization</span>
-                        <span class="prop-val">{{orgNodeDetail.parentUnitName}}</span>
-                    </li>
-                </ul>
+        </div>
+        <div class="warp affiliation-area">
+            <div class="guidance" transition="fade">
+                <p class="transfer">{{$t('organization.mergeOrg.tipText1')}}
+                    <span v-for="item in employeesNumber">
+                    {{$t('organization.mergeOrg.tipText3')}}
+                    <b class="nums">{{item.count}}</b>
+                    {{item.name}} {{$t('organization.mergeOrg.tipText2')}}
+                    <em v-show="item.count > 0" class="a-link" @click="gotoEmployee(item.employementCategory)">
+                        GO
+                    </em>
+                    <br />
+                </span>
+                </p>
+                <p class="transfer-explain">
+                    {{$t('organization.mergeOrg.tipText6')}}
+                </p>
             </div>
-            <v-form v-ref:orgform :model="annulOrg" :schema="annulOrgSchema" label-width="122" label-suffix="" :cols="1" form-style="annul-org-form">
-                <text-field property="effectiveDate" :min-date="effectMinDate" editor-width="400"></text-field>
-            </v-form>
+            <vuetable ref="vuetable" :api-url="findEmployees" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="columns.employees" :sort-order="sortOrder" per-page="10">
+            </vuetable>
         </div>
+    </panel>
+    <ui-confirm header="Annul Organization" @confirmed="confirmSubmit" :show.sync="showConfirmed" close-on-confirm>
+        This organization has child position, are you sure to continue?
+    </ui-confirm>
+    <div class="btn-group">
+        <ui-button color="primary mr10" @click="handleSubmit" :loading="submitLoading">{{$t('button.submit')}}</ui-button>
+        <ui-button class="btn-default-bd" @click="handleCancel" type="flat">{{$t('button.cancel')}}</ui-button>
     </div>
-    <div class="warp affiliation-area">
-        <div class="guidance" transition="fade">
-            <p class="transfer">Befor annulling the organization, you need to<span v-for="item in employeesNumber"> transfer <b class="nums">{{item.count}}</b> {{item.name}} under this organization. <em v-show="item.count > 0" class="a-link" @click="gotoEmployee(item.employementCategory)">GO</em><br /></span></p>
-            <p class="transfer-explain">After annulling the organization, the {{positionsCount}} positions under this organization will be annulled also.</p>
-        </div>
-        <vuetable v-ref:vuetable :api-url="findEmployees" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="columns.employees" :sort-order="sortOrder" per-page="10">
-        </vuetable>
-    </div>
-</panel>
-<ui-confirm header="Annul Organization" @confirmed="confirmSubmit" :show.sync="showConfirmed" close-on-confirm>
-    This organization has child position, are you sure to continue?
-</ui-confirm>
-<div class="btn-group">
-    <ui-button color="primary mr10" @click="handleSubmit" :loading="submitLoading">Submit</ui-button>
-    <ui-button class="btn-default-bd" @click="handleCancel" type="flat">Cancel</ui-button>
 </div>
 
 </template>
@@ -144,29 +157,27 @@ import {
 }
 from '../../schema/index';
 
-let annulOrgSchema = new Schema({
 
-    effectiveDate: {
-        label: 'Effective Date',
-        type: 'date',
-        required: true,
-        default () {
-            let newDate = new Date();
-            let date = newDate.getFullYear() + '-' + (newDate.getMonth() + 1) + '-' + newDate.getDate();
-            return date;
-        }
-    }
-});
 
 import {
-    formatDate,getDictMapping
+    formatDate, getDictMapping
 }
 from '../../util/assist';
 
-
-
 export default {
     data() {
+            let annulOrgSchema = new Schema({
+                effectiveDate: {
+                    label: this.$t('organization.orgInfo.effectDate'),
+                    type: 'date',
+                    required: true,
+                    default () {
+                        let newDate = new Date();
+                        let date = newDate.getFullYear() + '-' + (newDate.getMonth() + 1) + '-' + newDate.getDate();
+                        return date;
+                    }
+                }
+            });
             var self = this;
             return {
                 annulOrgSchema: annulOrgSchema,
@@ -175,22 +186,22 @@ export default {
                 columns: {
                     employees: [{
                         name: 'employeeName',
-                        title: 'Name'
+                        title: this.$t('organization.mergeOrg.name')
                     }, {
                         name: 'employeeCode',
                         dataClass: 'tr',
-                        title: 'ID'
+                        title: this.$t('organization.mergeOrg.id')
                     }, {
                         name: 'positionName',
-                        title: 'Position'
+                        title: this.$t('organization.mergeOrg.position')
                     }, {
                         name: 'orgFullName',
-                        title: 'Organization'
+                        title: this.$t('organization.mergeOrg.org')
                     }, {
                         name: 'employeeType',
-                        title: 'employeesType',
+                        title: this.$t('organization.mergeOrg.employeesType'),
                         callback(value) {
-                          return self.fixIdEmployeesType(value)
+                            return self.fixIdEmployeesType(value)
                         }
                     }]
                 },
@@ -208,7 +219,7 @@ export default {
                     return this.$route.name;
                 },
                 panelTitle() {
-                    if (this.routeName === 'annul_organization') return 'Cancel Organization';
+                    if (this.routeName === 'annul_organization') return this.$t('organization.modifyOrg.cancelOrgTitle');
                 },
                 findEmployees() {
                     return `/org/orgs/${this.$route.params.oid}/employees`;
@@ -217,7 +228,7 @@ export default {
         created() {
             var self = this;
             getDictMapping('EMPLOYEE_CATEGORY').then(function(res) {
-              self.employeesType = res;
+                self.employeesType = res;
             })
             this.$http.post(`/org/orgs/${this.$route.params.oid}/getPositionsCount`).then((response) => {
                 this.positionsCount = response.data;
@@ -226,53 +237,64 @@ export default {
             this.$http.get(`/org/orgs/${this.$route.params.oid}/getEmployeeCategoryCount`).then((response) => {
                 this.employeesNumber = response.data;
                 this.employeesNumber.forEach(function(item) {
-                  if (item.employementCategory === '6') {
-                    item.name = 'outsourced';
-                  } else if (item.employementCategory === '7') {
-                    item.name = 'interns';
-                  } else if (item.employementCategory === '9') {
-                    item.name = 'employees';
-                  }
+                    if (item.employementCategory === '6') {
+                        item.name = self.$t('organization.annul.outsourced');
+                    } else if (item.employementCategory === '7') {
+                        item.name = self.$t('organization.annul.interns');
+                    } else if (item.employementCategory === '9') {
+                        item.name = self.$t('organization.annul.employees');
+                    }
                 })
                 if (this.employeesNumber.length < 1) {
-                  this.employeesNumber.push({
-                    name: 'employees',
-                    count: 0,
-                    employementCategory: '9'
-                  });
+                    this.employeesNumber.push({
+                        name: 'employees',
+                        count: 0,
+                        employementCategory: '9'
+                    });
                 }
             });
         },
         methods: {
             gotoEmployee(employementCategory) {
-              var routeName = '';
-              var orgId = this.$route.params.oid;
-              var dataModuleKey = '';
-              if (employementCategory === '6') {
-                routeName = 'outsource';
-                dataModuleKey = 'STAFF_OUTSOURCE';
-              } else if (employementCategory === '7') {
-                routeName = 'interns';
-                dataModuleKey = 'STAFF_INTERNS';
-              } else if (employementCategory === '9') {
-                routeName = 'regularEmployees';
-                dataModuleKey = 'STAFF_REGULAR_EMPLOYEES';
-              }
-              this.$http.get(`/org/orgs/${orgId}/checkOperationPermission?dataModuleKey=${dataModuleKey}&unitId=${orgId}`).then(function(res) {
-                if (res.data) {
-                  this.$http.get('/org/orgs/checkUserMenuToGo?type=' + employementCategory).then(function(response) {
-                    if(response.data) {
-                      this.$router.go({name: routeName, query: {orgId:this.$route.params.oid}})
-                    } else {
-                      Message({type: 'error', message: 'This account has not the corresponding menu permissions'})
+                    var routeName = '';
+                    var orgId = this.$route.params.oid;
+                    var dataModuleKey = '';
+                    if (employementCategory === '6') {
+                        routeName = 'outsource';
+                        dataModuleKey = 'STAFF_OUTSOURCE';
+                    } else if (employementCategory === '7') {
+                        routeName = 'interns';
+                        dataModuleKey = 'STAFF_INTERNS';
+                    } else if (employementCategory === '9') {
+                        routeName = 'regularEmployees';
+                        dataModuleKey = 'STAFF_REGULAR_EMPLOYEES';
                     }
-                  })
-                } else {
-                  Message({type: 'error', message: this.$t('organization.message.operationPermission')})
-                }
-              })
-            },
-            fetchData() {
+                    this.$http.get(`/org/orgs/${orgId}/checkOperationPermission?dataModuleKey=${dataModuleKey}&unitId=${orgId}`).then(function(res) {
+                        if (res.data) {
+                            this.$http.get('/org/orgs/checkUserMenuToGo?type=' + employementCategory).then(function(response) {
+                                if (response.data) {
+                                    this.$router.push({
+                                        name: routeName,
+                                        query: {
+                                            orgId: this.$route.params.oid
+                                        }
+                                    })
+                                } else {
+                                    Message({
+                                        type: 'error',
+                                        message: 'This account has not the corresponding menu permissions'
+                                    })
+                                }
+                            })
+                        } else {
+                            Message({
+                                type: 'error',
+                                message: this.$t('organization.message.operationPermission')
+                            })
+                        }
+                    })
+                },
+                fetchData() {
                     let data;
                     this.$http.get(`/org/orgs/${this.$route.params.oid}/orgdetails`).then((response) => {
                         data = response.data;
@@ -299,54 +321,56 @@ export default {
 
                     this.$http.post(`/org/orgs/${this.$route.params.oid}/checkIsExistPosition`).then((response) => {
                         if (response.data) {
-                          this.showConfirmed = true;
+                            this.showConfirmed = true;
                         } else {
-                          this.confirmSubmit();
+                            this.confirmSubmit();
                         }
                     });
 
 
                 },
                 confirmSubmit() {
-                  this.submitLoading = true;
-                  this.$http.post(`/org/orgs/org/units/${this.$route.params.oid}/annual`, {
-                      unitId: this.$route.params.oid,
-                      effectiveDate: formatDate(new Date(this.annulOrg.effectiveDate))
-                  }, {
-                      emulateJSON: true
-                  }).then((response) => {
-                      if (response.data) {
-                          Message({
-                              type: 'success',
-                              message: this.$t('organization.message.annulHandupSucceed')
-                          });
-                          var orgId = this.$route.params.oid;
-                          var treeData = this.$root.$data.orgSettingTreeCache;
-                          var walk = function(data) {
-                            if (data && data.length > 0) {
-                              data.forEach(function(child, key) {
-                                if (orgId === String(child['orgId'])) {
-                                    data.splice(key, 1);
-                                } else {
-                                  var children = child['children'];
-                                  walk(children);
+                    this.submitLoading = true;
+                    this.$http.post(`/org/orgs/org/units/${this.$route.params.oid}/annual`, {
+                        unitId: this.$route.params.oid,
+                        effectiveDate: formatDate(new Date(this.annulOrg.effectiveDate))
+                    }, {
+                        emulateJSON: true
+                    }).then((response) => {
+                        if (response.data) {
+                            Message({
+                                type: 'success',
+                                message: this.$t('organization.message.annulHandupSucceed')
+                            });
+                            var orgId = this.$route.params.oid;
+                            var treeData = this.$root.$data.orgSettingTreeCache;
+                            var walk = function(data) {
+                                if (data && data.length > 0) {
+                                    data.forEach(function(child, key) {
+                                        if (orgId === String(child['orgId'])) {
+                                            data.splice(key, 1);
+                                        } else {
+                                            var children = child['children'];
+                                            walk(children);
+                                        }
+                                    });
                                 }
-                              });
-                            }
-                          };
-                          walk(treeData);
-                          this.$route.router.go({
-                            name: 'organizationSetting'
-                          });
-                      }
-                  },(response) => {
-                      this.submitLoading = false;
-                  })
+                            };
+                            walk(treeData);
+                            this.$router.push({
+                                name: 'organizationSetting'
+                            });
+                        }
+                    }, (response) => {
+                        this.submitLoading = false;
+                    })
                 },
                 handleCancel() {
-                    this.$router.go({
+                    this.$router.push({
                         name: 'organizationSetting',
-                        query: {orgId: this.$route.params.oid}
+                        query: {
+                            orgId: this.$route.params.oid
+                        }
                     });
                 },
                 fixIdEmployeesType(value) {
@@ -364,7 +388,7 @@ export default {
             }
         },
         components: {
-          Panel: require('../../components/basic/panel.vue')
+            Panel: require('../../components/basic/panel.vue')
         }
 
 };

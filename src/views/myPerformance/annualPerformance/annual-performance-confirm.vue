@@ -73,16 +73,16 @@
             <thead>
                 <tr>
                     <th></th>
-                    <th class="w-per15">Excellent</th>
-                    <th class="w-per15">Very Good</th>
-                    <th class="w-per15">Good</th>
-                    <th class="w-per15">Needs Improvement</th>
-                    <th class="w-per15">Disqualified</th>
+                    <th class="w-per15">{{$t('myperformance.performanceconfirm.excellent')}}</th>
+                    <th class="w-per15">{{$t('myperformance.performanceconfirm.veryGood')}}</th>
+                    <th class="w-per15">{{$t('myperformance.performanceconfirm.good')}}</th>
+                    <th class="w-per15">{{$t('myperformance.performanceconfirm.needs')}}</th>
+                    <th class="w-per15">{{$t('myperformance.performanceconfirm.disqualified')}}</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>Default Sort Order</td>
+                    <td>{{$t('myperformance.performanceconfirm.default')}}</td>
                     <td>{{defaultRatio.excellentRatio}}%</td>
                     <td>{{defaultRatio.veryGoodRatio}}%</td>
                     <td>{{defaultRatio.goodRatio}}%</td>
@@ -95,16 +95,16 @@
             <thead>
                 <tr>
                     <th></th>
-                    <th class="w-per15">Excellent</th>
-                    <th class="w-per15">Very Good</th>
-                    <th class="w-per15">Good</th>
-                    <th class="w-per15">Needs Improvement</th>
-                    <th class="w-per15">Disqualified</th>
+                    <th class="w-per15">{{$t('myperformance.performanceconfirm.excellent')}}</th>
+                    <th class="w-per15">{{$t('myperformance.performanceconfirm.veryGood')}}</th>
+                    <th class="w-per15">{{$t('myperformance.performanceconfirm.good')}}</th>
+                    <th class="w-per15">{{$t('myperformance.performanceconfirm.needs')}}</th>
+                    <th class="w-per15">{{$t('myperformance.performanceconfirm.disqualified')}}</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>Actual Ratio</td>
+                    <td>{{$t('myperformance.performanceconfirm.actual')}}</td>
                     <td>{{ratio.excellentScale}}</td>
                     <td>{{ratio.veryGoodScale}}</td>
                     <td>{{ratio.goodScale}}</td>
@@ -115,32 +115,32 @@
         </table>
 
         <div class="group mt50 mb16">
-            <ui-button class="mr10 dis-tc btn-default-bd" v-if="show.showBtn" @click="goEdit" icon="fa-pencil-square-o" type="flat" text="Modify Grade"></ui-button>
+            <ui-button class="mr10 dis-tc btn-default-bd" v-if="show.showBtn" @click="goEdit" icon="fa-pencil-square-o" type="flat" :text="$t('performance.button.modifyGrade')"></ui-button>
         </div>
         <div class="vuetable-wrapper">
-            <vuetable :api-url="tableUrl" v-ref:annualtable :selected-to="selectedRow" :append-params="queryParams" :fields="columns" pagination-path="" table-wrapper=".vuetable-wrapper" :sort-order="sortOrder" :item-actions="itemActions" per-page="10">
+            <vuetable :api-url="tableUrl" ref="annualtable" :selected-to="selectedRow" :append-params="queryParams" :fields="columns" pagination-path="" table-wrapper=".vuetable-wrapper" :sort-order="sortOrder" :item-actions="itemActions" per-page="10">
             </vuetable>
 
         </div>
     </panel>
     <div class="btn-group">
-        <ui-button @click="submit" v-if="show.showBtn" icon="" color="primary mr10" text="Confirm All"></ui-button>
-        <ui-button @click="cancel" class="btn-default-bd" type="flat" text="Back"></ui-button>
+        <ui-button @click="submit" v-if="show.showBtn" icon="" color="primary mr10" :text="$t('button.confirm')"></ui-button>
+        <ui-button @click="cancel" class="btn-default-bd" type="flat" :text="$t('button.back')"></ui-button>
     </div>
 
     <!-- 弹框修改等级 -->
-    <ui-modal :show.sync="show.modal" header="Modify Grade" body="">
+    <ui-modal :show.sync="show.modal" :text="$t('performance.button.modifyGrade')" body="">
         <v-form class="mt10" :model="annual" :schema="annualSchema" label-width="130" label-suffix="" :cols="1">
             <select-field property='adjustGrade' editor-width="220"></select-field>
         </v-form>
         <div slot="footer">
-            <ui-button @click="confirmGrade" color="primary">Confirm</ui-button>
-            <ui-button @click="show.modal = false">Close</ui-button>
+            <ui-button @click="confirmGrade" color="primary">{{$t('button.confirm')}}</ui-button>
+            <ui-button @click="show.modal = false">{{$t('button.close')}}</ui-button>
         </div>
     </ui-modal>
     <!-- 确认审核绩效询问框 -->
-    <ui-confirm :class="confirm-all" header="Confirm All" @confirmed="confirmAll" :show.sync="show.confirmTips" close-on-confirm autofocus="confirm-button">
-        Once all the performance results have been confirmed, you couldn't change them anymore. Are you sure to confirm all ?
+    <ui-confirm :class="confirm-all" :header="$t('button.confirm')" @confirmed="confirmAll" :show.sync="show.confirmTips" close-on-confirm autofocus="confirm-button">
+        {{$t('performance.message.confirmAllperformance')}}
     </ui-confirm>
 </div>
 
@@ -200,25 +200,25 @@ export default {
                     titleClass: 'hideBorderT'
                 }, {
                     name: 'employeeName',
-                    title: 'Employee Name',
+                    title: this.$t('myperformance.performanceconfirm.employeeName') ,
                     titleClass: 'hideTitle'
 
                 }, {
                     name: 'employeeCode',
-                    title: 'Employee ID',
+                    title: this.$t('myperformance.performanceconfirm.employeeCode') ,
                     dataClass: 'tr',
                     titleClass: 'hideTitle'
                 }, {
                     name: 'positionName',
-                    title: 'Position',
+                    title: this.$t('myperformance.performanceconfirm.positionName') ,
                     titleClass: 'hideTitle'
                 }, {
                     name: 'businessUnitScore',
                     dataClass: 'tr',
-                    title: 'Score'
+                    title: this.$t('myperformance.performanceconfirm.businessUnitScore')
                 }, {
                     name: 'businessUnitWeight',
-                    title: 'Weight',
+                    title: this.$t('myperformance.performanceconfirm.businessUnitWeight') ,
                     dataClass: 'tr',
                     callback: function(value, data) {
                         return _self.businessUnitWeight(value, data);
@@ -226,10 +226,10 @@ export default {
                 }, {
                     name: 'unitScore',
                     dataClass: 'tr',
-                    title: 'Score'
+                    title: this.$t('myperformance.performanceconfirm.unitScore')
                 }, {
                     name: 'unitWeight',
-                    title: 'Weight',
+                    title: this.$t('myperformance.performanceconfirm.unitWeight') ,
                     dataClass: 'tr',
                     callback: function(value, data) {
                         return _self.unitWeight(value, data);
@@ -237,30 +237,30 @@ export default {
                 }, {
                     name: 'personalScore',
                     dataClass: 'tr',
-                    title: 'Score'
+                    title: this.$t('myperformance.performanceconfirm.personalScore')
                 }, {
                     name: 'personalWeight',
                     dataClass: 'tr',
-                    title: 'Weight',
+                    title: this.$t('myperformance.performanceconfirm.personalWeight') ,
                     callback: function(value, data) {
                         return _self.personalWeight(value, data);
                     }
                 }, {
                     name: 'finalScore',
                     dataClass: 'tr',
-                    title: 'Score'
+                    title: this.$t('myperformance.performanceconfirm.finalScore')
                 }, {
                     name: 'rank',
-                    title: 'Rank'
+                    title: this.$t('myperformance.performanceconfirm.rank')
                 }, {
                     name: 'grade',
-                    title: 'Grade',
+                    title: this.$t('myperformance.performanceconfirm.grade') ,
                     callback: function(value) {
                         return _self.fixAdjustGrade(value);
                     }
                 }, {
                     name: 'adjustGrade',
-                    title: 'Adjust Grade',
+                    title: this.$t('myperformance.performanceconfirm.adjustGrade') ,
                     callback: function(value) {
                         return _self.fixAdjustGrade(value);
                     }
@@ -280,14 +280,14 @@ export default {
             var html = this.$refs.annualtable.$el.getElementsByTagName('thead')[0].innerHTML;
             var tr = document.createElement('tr');
             tr.appendChild(this.creatThElement({class: 'hideBorderB'}));
-            tr.appendChild(this.creatThElement({rowspan: 2}, 'Employee Name'));
-            tr.appendChild(this.creatThElement({rowspan: 2}, 'Employee ID'));
-            tr.appendChild(this.creatThElement({rowspan: 2}, 'Position'));
-            tr.appendChild(this.creatThElement({colspan: 2}, 'Business Unit'));
-            tr.appendChild(this.creatThElement({colspan: 2}, 'Department'));
-            tr.appendChild(this.creatThElement({colspan: 2}, 'Individual'));
-            tr.appendChild(this.creatThElement({colspan: 4}, 'Final'));
-            tr.appendChild(this.creatThElement({rowspan: 4}, 'Status'));
+            tr.appendChild(this.creatThElement({rowspan: 2}, this.$t('myperformance.performanceconfirm.employeeName')));
+            tr.appendChild(this.creatThElement({rowspan: 2}, this.$t('myperformance.performanceconfirm.employeeCode')));
+            tr.appendChild(this.creatThElement({rowspan: 2}, this.$t('myperformance.performanceconfirm.positionName')));
+            tr.appendChild(this.creatThElement({colspan: 2}, this.$t('myperformance.performanceconfirm.businessUnit')));
+            tr.appendChild(this.creatThElement({colspan: 2}, this.$t('myperformance.performanceconfirm.department')));
+            tr.appendChild(this.creatThElement({colspan: 2}, this.$t('myperformance.performanceconfirm.individual')));
+            tr.appendChild(this.creatThElement({colspan: 4}, this.$t('myperformance.performanceconfirm.final')));
+            tr.appendChild(this.creatThElement({rowspan: 4}, this.$t('myperformance.performanceconfirm.status')));
             var thead = this.$refs.annualtable.$el.getElementsByTagName('thead')[0];
             thead.insertBefore(tr, thead.getElementsByTagName('tr')[0]);
             // this.$refs.annualtable.$el.getElementsByTagName('thead')[0].insertAdjacentHTML('afterBegin',
@@ -320,7 +320,6 @@ export default {
             isState() {
                     this.isView = this.$route.params.state;
                     if (this.isView === '1') {
-                        debugger;
                         this.show.showBtn = false;
                     }
                 },

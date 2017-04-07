@@ -14,14 +14,14 @@
 <template lang="html">
 
 <div class="content-wrap bg-w ihr-system-role">
-    <ui-confirm header="Delete this" @confirmed="delete" :show.sync="showdel" close-on-confirm autofocus="confirm-button">
+    <ui-confirm header="Delete this" @confirmed="deleteBtn" :show.sync="showdel" close-on-confirm autofocus="confirm-button">
         Do you want to delete this? May prevent the system from running!
     </ui-confirm>
     <div class="group mb16">
-        <ui-button class="mr10 dis-tc btn-primary-bd" icon="fa-plus" color="primary" text="Add" @click="add"></ui-button>
+        <ui-button class="mr10 dis-tc btn-primary-bd" icon="fa-plus" color="primary" :text="$t('button.add')" @click="add"></ui-button>
         <!-- <ui-button class="mr10 dis-tc btn-default-bd" icon="fa-pencil-square-o" type="flat" text="Edit" @click=""></ui-button> -->
-        <ui-button class="mr10 dis-tc btn-default-bd" icon="fa-remove" type="flat" text="Delete" @click="beforeDel"></ui-button>
-        <ui-button class="dis-tc-t btn-default-bd" icon="" type="flat" text="Functions Permission" @click="functionsPermission"></ui-button>
+        <ui-button class="mr10 dis-tc btn-default-bd" icon="fa-remove" type="flat" :text="$t('button.delete')"  @click="beforeDel"></ui-button>
+        <ui-button class="dis-tc-t btn-default-bd" icon="" type="flat" :text="$t('system.role.functionsPermission')"  @click="functionsPermission"></ui-button>
     </div>
     <div class="pl16 pr16 pb16">
         <vuetable :api-url="tableUrl" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="tableColumns" :sort-order="sortOrder" :item-actions="itemActions" per-page="10">
@@ -54,19 +54,19 @@ export default {
                     title: ''
                 }, {
                     name: 'roleName',
-                    title: 'System Role',
+                    title:  this.$t('system.role.roleName'),
                     sortField: 'roleName',
                     callback: 'goView'
                 }, {
                     name: 'roleType',
-                    title: 'Role Type',
+                    title: this.$t('system.role.roleType'),
                     sortField: 'roleType',
                     callback: function(value) {
                         return _self.fixRoleType(value);
                     }
                 }, {
                     name: 'description',
-                    title: 'Role Description',
+                    title: this.$t('system.role.description'),
                     sortField: 'description',
                 }],
                 dist: {
@@ -119,7 +119,7 @@ export default {
                         this.showdel = true;
                     }
                 },
-                delete() {
+                deleteBtn() {
                     let _self = this;
                     let rows = _self.selectedRow;
                     _self.$http.post('/system/role/deleteRoles', {

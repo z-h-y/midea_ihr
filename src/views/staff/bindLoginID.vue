@@ -98,7 +98,7 @@
         <div class="search-ctx">
             <div class="search-pos">
                 <span class="search-bg">
-           <input @keydown="goSearch($event)" class="search-input" placeholder="Search" type="text" v-model="searchTxt" />
+           <input @keydown="goSearch($event)" class="search-input" :placeholder="$t('system.bindLoginid.searchPlaceholder')" type="text" v-model="searchTxt" />
            <span @click="search" class="search-btn"><i class="fa fa-search"></i></span>
                 </span>
             </div>
@@ -107,19 +107,20 @@
 
     <div class="tree-panel fix">
         <div class="treelist p10" id="treePanel">
-            <tree :data="regions" :level-config="levelConfig" :show-checkbox="showCheckbox" v-ref:tree :click-node="clickNode"></tree>
+            <tree :data="regions" :level-config="levelConfig" :show-checkbox="showCheckbox" ref="tree" :click-node="clickNode"></tree>
         </div>
         <div class="help-desk treelist-detail" id="treelistDetail">
             <div class="vuetable-wrapper">
-                <vuetable v-ref:vuetable :api-url="selectedTableUrl" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="tableColumns" :item-actions="itemActions" per-page="10">
+                <vuetable ref="vuetable" @action="action" :api-url="selectedTableUrl" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="tableColumns" :item-actions="itemActions" per-page="10">
                 </vuetable>
             </div>
         </div>
     </div>
-</div>
+
+    <user-selector ref="userselect" :show="personshow" v-if="!readonlyFlag" :handel-select="handelSelect"></user-selector>
 </div>
 
-<user-selector :show.sync="personshow" v-if="!readonlyFlag"></user-selector>
+
 
 </template>
 
@@ -142,26 +143,26 @@ export default {
             let _self = this;
             let tableColumns = [{
                 name: 'employeeName',
-                title: 'Employee Name'
+                title: this.$t('system.bindLoginid.employeeName')
             }, {
                 name: 'positionName',
-                title: 'Position'
+                title: this.$t('system.bindLoginid.position')
             }, {
                 name: 'officePhone',
                 dataClass: 'tr',
-                title: 'Phone'
+                title: this.$t('system.bindLoginid.phone')
             }, {
                 name: 'email',
-                title: 'Email'
+                title: this.$t('system.bindLoginid.email')
             }, {
                 name: 'loginId',
-                title: 'Login ID'
+                title: this.$t('system.bindLoginid.loginId')
             }, {
                 name: 'userName',
-                title: 'User Name'
+                title: this.$t('system.bindLoginid.userName')
             }, {
                 name: '__actions',
-                title: 'operation',
+                title: this.$t('system.bindLoginid.operation'),
                 sortField: ''
             }];
             return {
@@ -179,7 +180,7 @@ export default {
                 itemActions: [
                     {
                         name: 'user-btn',
-                        label: 'bind Login ID',
+                        label: this.$t('system.bindLoginid.bindLoginID'),
                         icon: 'fa fa-plus mr5',
                         class: 'mr10 button-sty',
                         extra: {
@@ -189,7 +190,7 @@ export default {
                         }
                     }, {
                         name: 'unbind-btn',
-                        label: 'unbind',
+                        label: this.$t('system.bindLoginid.unbind'),
                         icon: 'fa fa-hand-o-up mr5',
                         class: 'button-sty',
                         extra: {
@@ -235,7 +236,7 @@ export default {
             }
         },
         computed: {},
-        ready() {
+        mounted() {
             var url = '/org/orgs/0/children';
             this.$http.get(url).then((response) => {
                 // this.orgGroup = response.data;
@@ -289,48 +290,46 @@ export default {
                         return;
                     }
                     this.selectedTableUrl = '/employee/bindloginid/' + this.orgGroup.orgId + '/members?employeeName=' + this.searchTxt;
+                },
+                handelSelect(selectedData) {
+                  let _self = this;
+                  _self.$http.post('/employee/bindloginid/set', {
+                      userId: selectedData.userId,
+                      employeeId: _self.employeeId
+                  }, {
+                      emulateJSON: true
+                  }).then((response) => {
+                     this.$refs.vuetable.reloadData();
+                     Message({
+                         type: 'success',
+                         message: this.$t('system.bindLoginid.successfullySaved')
+                     });
+                  });
+                },
+                action(action, data) {
+                    let _self = this;
+                    if (action == 'user-btn') {
+                        _self.$refs.userselect.open();
+                        _self.employeeId = data.employeeId;
+                    }
+                    if (action == 'unbind-btn') {
+                        _self.$http.post('/employee/bindloginid/unbind', {
+                            employeeId: data.employeeId
+                        }, {
+                            emulateJSON: true
+                        }).then((response) => {
+                            this.$refs.vuetable.reloadData();
+                            Message({
+                                type: 'success',
+                                message: this.$t('system.bindLoginid.successfullySaved')
+                            });
+
+                        });
+                    }
                 }
         },
         components: {
             Tree: require('../../components/tree/tree.vue')
-        },
-        events: {
-            'selected-user': function(selectedData) {
-                let _self = this;
-                _self.$http.post('/employee/bindloginid/set', {
-                    userId: selectedData.userId,
-                    employeeId: _self.employeeId
-                }, {
-                    emulateJSON: true
-                }).then((response) => {
-                   this.$broadcast('vuetable:refresh'); //刷新表格
-                   Message({
-                       type: 'success',
-                       message: 'Successfully saved'
-                   });
-                });
-            },
-            'vuetable:action': function(action, data) {
-                let _self = this;
-                if (action == 'user-btn') {
-                    _self.personshow.modal = true;
-                    _self.employeeId = data.employeeId;
-                }
-                if (action == 'unbind-btn') {
-                    _self.$http.post('/employee/bindloginid/unbind', {
-                        employeeId: data.employeeId
-                    }, {
-                        emulateJSON: true
-                    }).then((response) => {
-                        this.$broadcast('vuetable:refresh'); //刷新表格
-                        Message({
-                            type: 'success',
-                            message: 'Successfully saved'
-                        });
-
-                    });
-                }
-            }
         }
 }
 

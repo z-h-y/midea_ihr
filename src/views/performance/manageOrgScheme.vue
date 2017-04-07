@@ -152,8 +152,8 @@
 <template lang="html">
 <div class="ihr-performance-manageOrgScheme">
   <panel :title="panelTitle" class="panel-b mt20 ml20 mb20 mr20" header="panel-header">
-      <ui-tabs type="text" background-color="clear" text-color="gray" text-color-active="primary" :active-tab = "activeTab">
-          <ui-tab header="Basic Information" id = 'basic'>
+      <ui-tabs ref="uitabs" type="text" background-color="clear" text-color="gray" text-color-active="primary" @tab-change="activeTabChanged">
+          <ui-tab :title="$t('performance.basicInformation')" id='basic'>
             <v-form :model="basicModel" :schema="basicSchema" label-width="150" label-suffix="" :cols="1" form-style="org-form">
               <text-increment property='schemeName' editor-width="400"></text-increment>
               <text-increment property="schemeCategoryName" editor-width="400"></text-increment>
@@ -164,37 +164,38 @@
             </v-form>
             <div class="btn-group">
                 <!-- <ui-button @click="basicNext" color="primary mr10">Next</ui-button> -->
-                <ui-button @click="cancel" class="btn-default-bd" type="flat">Cancel</ui-button>
+                <ui-button @click="cancel" class="btn-default-bd" type="flat">{{$t('button.cancel')}}</ui-button>
             </div>
           </ui-tab>
 
-          <ui-tab header="Organization" id = 'employees'>
+          <ui-tab :title="$t('staff.organization')" id = 'employees'>
             <div class = "field emp-select-field">
-                <label class="prop-name">Organization(s)</label><ui-button @click = "empShow.modal = true" class="query-btn-reset btn-default-bd letter-space-cancel" type="flat">select</ui-button>
+                <label class="prop-name">{{$t('performance.Organizations')}}</label><ui-button @click = "empShow.modal = true; $refs.orgselector.open()" class="query-btn-reset btn-default-bd letter-space-cancel" type="flat">{{$t('button.select')}}</ui-button>
             </div>
             <div class="pb16">
-              <vuetable v-ref:aEmployeesTable :api-url="tableUrl" :selected-to="selectedRow" :append-params="empParams"  :fields="columns"  pagination-path = "" table-wrapper="pb16" :sort-order="sortOrder" :item-actions="itemActions" per-page="10">
+              <vuetable ref="aemployeestable" @emptable="empTable" :api-url="tableUrl" :selected-to="selectedRow" :append-params="empParams"  :fields="columns"  pagination-path = "" table-wrapper="pb16" :sort-order="sortOrder" :item-actions="itemActions" per-page="10">
               </vuetable>
             </div>
             <div class="btn-group">
                 <!-- <ui-button @click="toProcess" color="primary mr10">Next</ui-button>
                 <ui-button @click="tabChange('basic')" class="btn-default-bd" type="flat">Back</ui-button> -->
-                <ui-button @click="cancel" class="btn-default-bd" type="flat">Cancel</ui-button>
+                <ui-button @click="cancel" class="btn-default-bd" type="flat">{{$t('button.cancel')}}</ui-button>
             </div>
-            <person-selector :show.sync="show" :multi-selected="false"></person-selector>
-            <org-table-selector :show.sync="empShow"></org-table-selector>
-            <ind-model :show.sync="show.indSetView" :params = "indModalParam"></ind-model>
-            <indview-model :show.sync="show.indview" type = "organization"></indview-model>
+            <person-selector ref="perselector" :show="show" :multi-selected="false"></person-selector>
+            <org-table-selector ref="orgselector" :show="empShow"></org-table-selector>
+            <ind-model ref="indmodel" @modelsubmit="modelSubmit" :show="show.indSetView" :params = "indModalParam"></ind-model>
+            <indview-model ref="indviewmodel" :show="show.indview" type = "organization"></indview-model>
             <ui-confirm
-              @confirmed="deleteConfirmed" @denied="deleteDenied" :show.sync="show.delConfirm"
+              ref="delconfirm"
+              @confirm="deleteConfirmed" @denied="deleteDenied" :show="show.delConfirm"
               close-on-confirm>
-              Do you want to delete this?
+              {{$t('common.deleteConfirm')}}
             </ui-confirm>
           </ui-tab>
 
-          <ui-tab header="Process" id = 'process'>
+          <ui-tab :title="$t('performance.process')" id = 'process'>
             <div class="field-row">
-                <div class="cell field"><label>Process Name</label></div>
+                <div class="cell field"><label>{{$t('performance.processName')}}</label></div>
                 <div class="cell field"><label class="label-proccess">{{processData.processName}}</label></div>
               <!-- <template v-for="item in processData.nodeList">
                   <div class="cell-line field"><label>{{item.nodeName}}</label></div>
@@ -203,7 +204,7 @@
             </div>
             <div class="process-set-ctn">
                 <ul class="fix cell-g">
-                    <template v-for="(index,item) in processData.nodeList">
+                    <template v-for="(item, index) in processData.nodeList">
                         <li class="process-set-item cell-1-5">
                             <div class="img-wrap process-default">
                                 <div class="valign">
@@ -231,16 +232,16 @@
                 </ul>
             </div>
             <div class="vuetable-wrapper">
-              <vuetable v-ref:proTable :api-url="proTableUrl" :append-params="proParams"  :fields="proColumns"  pagination-path = "" table-wrapper=".vuetable-wrapper" :sort-order="sortOrder" :item-actions="proActItem" per-page="10">
+              <vuetable ref="protable" :api-url="proTableUrl" :append-params="proParams"  :fields="proColumns"  pagination-path = "" table-wrapper=".vuetable-wrapper" :sort-order="sortOrder" :item-actions="proActItem" per-page="10">
               </vuetable>
             </div>
             <div class="btn-group">
                 <!-- <ui-button @click="submit" color="primary mr10">Submit</ui-button>
                 <ui-button @click="tabChange('employees')" class="btn-default-bd" type="flat">Back</ui-button> -->
-                <ui-button @click="cancel" class="btn-default-bd" type="flat">Cancel</ui-button>
+                <ui-button @click="cancel" class="btn-default-bd" type="flat">{{$t('button.cancel')}}</ui-button>
             </div>
-            <ui-confirm @confirmed="submitConfirmed" :show.sync="show.submitConfirm" close-on-confirm>
-                Do you want to submit this?
+            <ui-confirm ref="submitconfirm" @confirm="submitConfirmed" :show="show.submitConfirm" close-on-confirm>
+                {{$t('common.submitConfirm')}}
             </ui-confirm>
           </ui-tab>
       </ui-tabs>
@@ -251,7 +252,7 @@
 <script type="text/ecmascript-6">
 
 import Vue from 'vue';
-import { getDictMapping,initFormData,convert,formatDate} from '../../util/assist';
+import { getDictMapping,initFormData,convert,formatDate,transformDict} from '../../util/assist';
 import {default as Schema} from '../../schema/index';
 import { default as Message } from '../../components/basic/message';
 import indicatorView from './indicatorViewModal.vue';
@@ -260,11 +261,11 @@ import indicatorSettings from './indicatorSettingsModal.vue';
 Vue.component('org-custom-action', {
   template: [
     '<div class="action-custom">',
-      '<button class="operate-custom" v-show="showInd==true && showActivate==false" @click="itemAction(\'view-item\', rowData)"><i>Indicator View</i></button>',
-      '<button class="operate-custom" v-show="showInd==true && showActivate==true" @click="itemAction(\'edit-item\', rowData)"><i>Indicator Setting</i></button>',
+      '<button class="operate-custom" v-show="showInd==true && showActivate==false" @click="itemAction(\'view-item\', rowData)"><i>{{$t(\'performance.indicatorView\')}}</i></button>',
+      '<button class="operate-custom" v-show="showInd==true && showActivate==true" @click="itemAction(\'edit-item\', rowData)"><i>{{$t(\'performance.indicatorSetting\')}}</i></button>',
       // '<button class="operate-custom" v-show="showActivate==true" @click="itemAction(\'res-item\', rowData)"><i>principal Setting</i></button>',
-      '<button class="operate-custom" v-show="showActivate"  @click="itemAction(\'activate-item\', rowData)"><i>Activate</i></button>',
-      '<button class="operate-custom" @click="itemAction(\'delete-item\', rowData)"><i>Delete</i></button>',
+      '<button class="operate-custom" v-show="showActivate"  @click="itemAction(\'activate-item\', rowData)"><i>{{$t(\'button.activate\')}}</i></button>',
+      '<button class="operate-custom" @click="itemAction(\'delete-item\', rowData)"><i>{{$t(\'button.delete\')}}</i></button>',
     '</div>'
   ].join(''),
   //
@@ -286,92 +287,94 @@ Vue.component('org-custom-action', {
   },
   methods: {
     itemAction: function(action, data) {
-        this.$dispatch('empTable:' + 'action', action, data)
+        this.$parent.$emit('emptable', action, data)
       // console.log('custom-action: ' + action, data.name)
     }
   }
 })
 
-let basicSchema = new Schema({
-    schemeName: {
-        label: 'Scheme Name',
-        required: true,
-        whitespace: false
-    },
-    schemeCategoryName: {
-        label: 'Scheme Category',
-    },
-    templateName: {
-        label: 'Select Template',
-    },
-    restrictYear: {
-        label: 'Restrict To Year',
-        required: true,
-        whitespace: false,
-        mapping: function() {
-          return getDictMapping('YEAR');
-        }
-    },
-    startDate: {
-        label: 'Start Date',
-        required: true,
-        type: 'datetime',
-        default () {
-            return new Date();
-        }
-    },
-    endDate: {
-        label: 'End Date',
-        required: true,
-        type: 'datetime',
-        default () {
-            return new Date();
-        }
-    }
-});
-let processSchema = new Schema({
-  processId: {
-      label: '',
-      required:false,
-      whitespace: false,
-      mapping: function() {
-        return Vue.http.get(`/performance/processTemplates/dropdownList`).then((response) => {
-
-          let data = response.data;
-          if(data) {
-            let result = {};
-            if(data && data instanceof Array) {
-              for(let i = 0;i < data.length;i++) {
-                result[data[i].processTemplateName] = data[i].processTemplateId
-              }
-            return result;
-            }
-          }
-        })
-      }
-  },
-  nodeWeight: {
-    mobile: true,
-    rules: {
-      type:'number'
-    },
-    whitespace: false
-  },
-  employeeName: {
-    whitespace: false
-  },
-  processTemplateName: {
-    label: '',
-    whitespace: false
-  }
-
-});
 
 
 export default {
     data() {
+      let self = this;
+      let basicSchema = new Schema({
+          schemeName: {
+              label: self.$t('performance.schemeName'),
+              required: true,
+              whitespace: false
+          },
+          schemeCategoryName: {
+              label: self.$t('performance.schemeCategory'),
+          },
+          templateName: {
+              label: self.$t('performance.selectTemplate'),
+          },
+          restrictYear: {
+              label: self.$t('performance.restrictToYear'),
+              required: true,
+              whitespace: false,
+              mapping: function() {
+                return getDictMapping('YEAR');
+              }
+          },
+          startDate: {
+              label: self.$t('staff.startDate'),
+              required: true,
+              type: 'datetime',
+              default () {
+                  return new Date();
+              }
+          },
+          endDate: {
+              label: self.$t('staff.endDate'),
+              required: true,
+              type: 'datetime',
+              default () {
+                  return new Date();
+              }
+          }
+      });
+      let processSchema = new Schema({
+        processId: {
+            label: '',
+            required:false,
+            whitespace: false,
+            mapping: function() {
+              return Vue.http.get(`/performance/processTemplates/dropdownList`).then((response) => {
+
+                let data = response.data;
+                if(data) {
+                  let result = {};
+                  if(data && data instanceof Array) {
+                    for(let i = 0;i < data.length;i++) {
+                      result[data[i].processTemplateName] = data[i].processTemplateId
+                    }
+                  return result;
+                  }
+                }
+              })
+            }
+        },
+        nodeWeight: {
+          mobile: true,
+          rules: {
+            type:'number'
+          },
+          whitespace: false
+        },
+        employeeName: {
+          whitespace: false
+        },
+        processTemplateName: {
+          label: '',
+          whitespace: false
+        }
+
+      });
+
             return {
-                panelTitle: 'Manage Org Scheme',
+                panelTitle: this.$t('performance.manageOrgScheme'),
                 tableUrl:'/performance/schemeInfos/department/relatedList',
                 empTableUrl:'person/employees',
                 proTableUrl:'/performance/schemeInfos/department/processList',
@@ -391,42 +394,42 @@ export default {
                 empShow: {
                   modal:false
                 },
-                activeTab:'basic',
                 basicSchema: basicSchema,
                 basicModel: basicSchema.newModel(),
                 processSchema: processSchema,
                 processModel: processSchema.newModel(),
+                schemeValidStatus: {},
                 itemActions: [
-                  { name: 'view-item', label: 'Indicator View', class: 'operate'},
-                  { name: 'delete-item', label: 'Delete', class: 'operate' }
+                  { name: 'view-item', label: this.$t('performance.indicatorView'), class: 'operate'},
+                  { name: 'delete-item', label: this.$t('button.delete'), class: 'operate' }
                 ],
                 columns: [
                   {
                     name: 'unitShortName',
-                    title: 'Organization Name'
+                    title: this.$t('performance.organizationName')
                   },
                   {
                     name: 'unitCode',
-                    title: 'Organization ID'
+                    title: this.$t('performance.organizationID')
                   },
                   {
                     name: 'employeeName',
-                    title: 'Principal'
+                    title: this.$t('performance.principal')
                   },
                   {
                     name: 'positionName',
-                    title: 'Position'
+                    title: this.$t('performance.position')
                   },
                   {
                     name: 'status',
-                    title: 'Status',
+                    title: this.$t('performance.status'),
                     callback: function(value) {
-                      return value == 0 ? 'inactivate' :  value == 1 ? 'Active' : 'Draft';
+                      return self.fixStatus(value);
                     }
                   },
                   {
                     name: '__component:org-custom-action',
-                    title: 'Actions'
+                    title: this.$t('performance.actions')
                   }
                 ],
                 proActItem: [
@@ -436,27 +439,27 @@ export default {
                 proColumns: [
                     {
                       name: 'unitName',
-                      title: 'Organization Name'
+                      title: this.$t('performance.organizationName')
                     },
                     {
                       name: 'unitCode',
-                      title: 'Organization ID'
+                      title: this.$t('performance.organizationID')
                     },
                     {
                       name: 'employeeName',
-                      title: 'Principal'
+                      title: this.$t('performance.principal')
                     },
                     {
                       name: 'approveStagesList',
-                      title: 'Approve Stages',
+                      title: this.$t('performance.approveStages'),
                       callback: function(value) {
                         let resStr = ""
                         if(!value instanceof Array) return;
                         value.forEach(function(item, index) {
-                          let approvePeople = item.approvePeople ? item.approvePeople.join(",") : "(no people)";
+                          let approvePeople = item.approvePeople ? item.approvePeople.join(",") : self.$t('performance.noPeople');
                           resStr += approvePeople;
                           if(index < (value.length-1)) {
-                            resStr += "<img class='wh-px40 br50 ml5 mr5' src='../../static/images/public/arrows.png' alt='' />";
+                            resStr += "<img class='wh-px40 br50 ml5 mr5' src='../../assets/images/public/arrows.png' alt='' />";
                           }
                         })
                         return resStr;
@@ -469,6 +472,26 @@ export default {
           'indview-model' : indicatorView,
           'ind-model' : indicatorSettings,
             Panel: require('../../components/basic/panel.vue')
+        },
+        created() {
+          var self = this;
+          let dictCodes = ['SCHEME_VALID_STATUS'];
+          this.$http.post('/public-access/dicts/items', {
+              dictCodes
+          }, {
+              emulateJSON: true
+          }).then((response) => {
+              for (var d of response.data) {
+                  if (d.dictName === 'SCHEME_VALID_STATUS') {
+                      self.schemeValidStatus = transformDict(d.dict);
+                  }
+              }
+          });
+        },
+        mounted() {
+          this.$nextTick(function() {
+            this.initRoute()
+          })
         },
         computed: {
           empParams() {
@@ -550,7 +573,7 @@ export default {
               this.$http.post('/performance/schemeInfos/department/createRelated',data, {
                   emulateJSON: true
               }).then((response) => {
-                  this.$broadcast('vuetable:refresh');
+                  this.$refs.aemployeestable.reloadData();
               });
             }
           },
@@ -562,54 +585,13 @@ export default {
                   employeeId:data.employeeId,
                   schemeEmployeeId : data.schemeEmployeeId
                 };
-                this.show.indview= true;
+                this.$refs.indviewmodel.open()
                 this.$nextTick(()=>{
-                  this.$broadcast('indModal:refresh',params);
+                  this.$refs.indviewmodel.initTable(params)
                 })
               } else if (action == 'delete-item') {
                 this.show.delConfirm = true;
               }
-          },
-          'empTable:action': function(action, data) {
-              this.empOperaterow = data;
-              if (action == 'view-item') {
-                let params = {
-                  schemeId:this.schemeId,
-                  employeeId:data.employeeId,
-                  schemeEmployeeId : data.schemeEmployeeId
-                };
-                this.show.indview= true;
-                this.$nextTick(()=>{
-                  this.$broadcast('indModal:refresh',params);
-                })
-              } else if (action == 'activate-item') {
-                this.setOrgActivate(data.schemeEmployeeId);
-              } else if (action == 'res-item') {
-                this.show.modal = true;
-              } else if (action == 'edit-item') {
-                this.indModalParam.schemeId = this.schemeId;
-                this.indModalParam.employeeId = data.employeeId;
-                this.indModalParam.schemeEmployeeId = data.schemeEmployeeId;
-                this.show.indSetView = true;
-                this.$nextTick(()=>{
-                  this.$broadcast('indModal:refresh');
-                })
-              } else if (action == 'delete-item') {
-                this.show.delConfirm = true;
-              }
-          },
-          'indModal:submit': function(params) {
-            let _self = this;
-            let data = {};
-            convert(params, data, "", true);
-            _self.$http.post('/performance/schemeInfos/updateIndicator',data,{
-              emulateJSON: true
-            }).then((response) => {
-              _self.openMessage('success',this.$t('common.saveSuccess'));
-              this.show.indSetView = false;
-            },(response) => {
-              //失败
-            });
           },
           'selected-person': function(selectData) {
               let data = {
@@ -622,10 +604,13 @@ export default {
                 emulateJSON: true
               }).then((response) => {
                 this.openMessage('success',this.$t('common.saveSuccess'));
-                this.$broadcast('vuetable:refresh');
+                this.$refs.aemployeestable.reloadData();
               });
-          },
-          'active-tab-changed' : function(id) {
+          }
+        },
+
+        methods: {
+          activeTabChanged(id) {
             if(id === 'basic') {
               this.tabChange("basic",this.schemeId);
             } else if (id === 'employees') {
@@ -633,10 +618,60 @@ export default {
             } else {
               this.tabChange("process",this.schemeId);
             }
-          }
-        },
-
-        methods: {
+          },
+          empTable(action, data) {
+              this.empOperaterow = data;
+              if (action == 'view-item') {
+                let params = {
+                  schemeId:this.schemeId,
+                  employeeId:data.employeeId,
+                  schemeEmployeeId : data.schemeEmployeeId
+                };
+                this.$refs.indviewmodel.open();
+                this.$nextTick(()=>{
+                  this.$refs.indviewmodel.initTable(params)
+                })
+              } else if (action == 'activate-item') {
+                this.setOrgActivate(data.schemeEmployeeId);
+              } else if (action == 'res-item') {
+                this.show.modal = true;
+                this.$refs.perselector.open()
+              } else if (action == 'edit-item') {
+                this.indModalParam.schemeId = this.schemeId;
+                this.indModalParam.employeeId = data.employeeId;
+                this.indModalParam.schemeEmployeeId = data.schemeEmployeeId;
+                this.$refs.indmodel.open()
+                this.$nextTick(()=>{
+                  this.$refs.indmodel.initTable()
+                })
+              } else if (action == 'delete-item') {
+                this.$refs.delconfirm.open()
+              }
+          },
+          modelSubmit(params) {
+            let _self = this;
+            let data = {};
+            convert(params, data, "", true);
+            _self.$http.post('/performance/schemeInfos/updateIndicator',data,{
+              emulateJSON: true
+            }).then((response) => {
+              _self.openMessage('success',this.$t('common.saveSuccess'));
+              this.show.indSetView = false;
+            },(response) => {
+              //失败
+            });
+          },
+          fixStatus(value) {
+            var dist = this.schemeValidStatus;
+            var result = '';
+            for (let key of Object.keys(dist)) {
+                if (dist[key] === value) {
+                    result = key;
+                    break;
+                }
+            }
+            return result;
+          },
           basicNext() {
             this.tabChange("employees",this.schemeId);
           },
@@ -646,7 +681,7 @@ export default {
                 id: aid || this.schemeId || '0'
               };
               let name = 'manageOrgScheme';
-              this.$router.go({ name: name, params: param});
+              this.$router.push({ name: name, params: param});
           },
           initEditModal(data){
             this.weightModel.employeeId = data.employeeId;
@@ -664,7 +699,7 @@ export default {
             })
           },
           submit() {
-            this.show.submitConfirm = true;
+            this.$refs.submitconfirm.open();
           },
           setOrgActivate(id) {
             let _self = this;
@@ -675,7 +710,7 @@ export default {
               emulateJSON: true
             }).then((response) => {
               _self.openMessage('success',this.$t('performance.message.activateSuccess'));
-              this.$broadcast('vuetable:refresh');
+              this.$refs.aemployeestable.reloadData();
             });
           },
           submitConfirmed() {
@@ -697,12 +732,12 @@ export default {
               }
             }).then((response) => {
               _self.openMessage('success',this.$t('common.deleteSuccess'));
-              this.$broadcast('vuetable:refresh');
-              this.show.delConfirm = false;
+              this.$refs.aemployeestable.reloadData();
+              this.$refs.delconfirm.close()
             })
           },
           cancel() {
-            this.$router.go({
+            this.$router.push({
                 name: 'orgScheme',
             });
           },
@@ -721,29 +756,27 @@ export default {
           },
           forwardUrl(pathName, params) {
               params = params || {};
-              this.$router.go({
+              this.$router.push({
                   name: pathName,
                   params: params
               });
-              this.$router.go({name:pathName,params:params});
-          }
-        },
-        route: {
-            data(transition) {
+              this.$router.push({name:pathName,params:params});
+          },
+          initRoute() {
                 let _self = this;
-                let step = transition.to.params.step;
-                _self.basicModel.id = transition.to.params.id;
+                let step = _self.$route.params.step;
+                _self.basicModel.id = _self.$route.params.id;
 
                 if (_self.$route.name === 'manageOrgScheme') {
                     if(!!step){
-                      _self.activeTab = step;
+                      _self.$refs.uitabs.setActiveTab(step)
                       if(step === 'basic') {
                         initFormData('/performance/schemeInfos/detail',_self.basicModel,{schemeId:this.schemeId}).then(()=>{
                           _self.basicModel.startDate = formatDate(new Date(_self.basicModel.startDate));
                           _self.basicModel.endDate = formatDate(new Date(_self.basicModel.endDate));
                         });
                       } else if (step === 'employees') {
-                        // this.$broadcast('vuetable:refresh');
+                        // this.$refs.aemployeestable.reloadData();
                       } else if (step === 'process') {
                         _self.processData.nodeList = [];
                         _self.$http.get('/performance/process/schemeProcessRatioList', {

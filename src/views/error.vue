@@ -1,7 +1,7 @@
 <style lang="less">
 
 .ihr-error {
-    background: #67ACE4 url("../static/images/error/error_bg.jpg") center center;
+    background: #67ACE4 url("../assets/images/error/error_bg.jpg") center center;
     .container {
         margin: 0 auto;
         padding-top: 50px;
@@ -33,7 +33,7 @@
         }
     }
     .cloud {
-        background: url("../static/images/error/error_cloud.png") repeat-x scroll 0 0 transparent;
+        background: url("../assets/images/error/error_cloud.png") repeat-x scroll 0 0 transparent;
         bottom: 0;
         height: 170px;
         position: absolute;
@@ -47,15 +47,12 @@
 
 <div class="ihr-error" v-bind:style="{height:height}">
     <div class="container">
-        <img class="png" src="../static/images/error/404.png" />
-        <!-- <div class="num">
-            倒数n秒,跳转首页
-        </div> -->
+        <img class="png" src="assets/images/error/404.png" />
         <p>
-            <img class="back-home" @click="backHome" src="../static/images/error/404_to_index.png" />
+            <img class="back-home" @click="backHome" src="assets/images/error/404_to_index.png" />
         </p>
     </div>
-    <div class="cloud" class="png"></div>
+    <div class="cloud"></div>
 </div>
 
 </template>

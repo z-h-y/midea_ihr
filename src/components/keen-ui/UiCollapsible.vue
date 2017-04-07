@@ -1,60 +1,76 @@
 <template>
-    <div class="ui-collapsible">
-        <button
-            class="ui-collapsible-header fix" :class="{ 'disabled': disabled }" :aria-controls="id"
-            :aria-expanded="open ? 'true' : 'false'" @click="toggleMenu" v-disabled="disabled"
-            v-el:button
+    <div class="ui-collapsible" :class="classes">
+        <div
+            class="ui-collapsible-header"
+            ref="header"
+
+            :aria-controls="id"
+            :aria-expanded="isOpen ? 'true' : 'false'"
+            :tabindex="disabled ? null : 0"
+
+            @click="toggleCollapsible"
+            @keydown.enter.prevent="toggleCollapsible"
+            @keydown.space.prevent="toggleCollapsible"
         >
-            <div class="ui-collapsible-header-content l">
-                <slot name="header">
-                    <div v-text="header"></div>
-                </slot>
+            <div class="ui-collapsible-header-content">
+                <slot name="header">{{ title }}</slot>
             </div>
 
-            <ui-icon class="ui-collapsible-header-icon r" :icon="icon" v-if="!hideIcon"></ui-icon>
+            <ui-icon class="ui-collapsible-header-icon" v-if="!removeIcon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                    <path d="M7.406 7.828L12 12.422l4.594-4.594L18 9.234l-6 6-6-6z"/>
+                </svg>
+            </ui-icon>
 
             <ui-ripple-ink
-                v-if="!hideRippleInk && !disabled && isReady" :trigger="$els.button"
+                trigger="header" v-if="!disableRipple && !disabled && isReady"
             ></ui-ripple-ink>
-        </button>
-
-        <div
-            class="ui-collapsible-body-wrapper" :transition="transition"
-            :style="{ 'height': calculatedHeight }" v-show="open"v-el:body
-        >
-            <div class="ui-collapsible-body" :id="id" :aria-hidden="open ? null : 'true'">
-                <slot></slot>
-            </div>
         </div>
+
+        <transition
+            name="ui-collapsible-transition-toggle"
+            @after-enter="onEnter"
+            @after-leave="onLeave"
+        >
+            <div
+                class="ui-collapsible-body-wrapper"
+                ref="body"
+
+                :style="{ 'height': calculatedHeight }"
+                v-show="isOpen"
+            >
+                <div class="ui-collapsible-body" :aria-hidden="isOpen ? null : 'true'" :id="id">
+                    <slot></slot>
+                </div>
+            </div>
+        </transition>
     </div>
 </template>
 
 <script>
 import UiIcon from './UiIcon.vue';
+import UiRippleInk from './UiRippleInk.vue';
 
+import config from './config';
+import RespondsToWindowResize from './mixins/RespondsToWindowResize.js';
 import UUID from './helpers/uuid';
-import disabled from './directives/disabled';
-
-import ShowsRippleInk from './mixins/ShowsRippleInk';
-import ReceivesTargetedEvent from './mixins/ReceivesTargetedEvent';
 
 export default {
     name: 'ui-collapsible',
 
     props: {
-        id: String,
         open: {
             type: Boolean,
             default: false
         },
-        header: String,
-        transition: {
-            type: String,
-            default: 'ui-collapsible-toggle'
-        },
-        hideIcon: {
+        title: String,
+        removeIcon: {
             type: Boolean,
             default: false
+        },
+        disableRipple: {
+            type: Boolean,
+            default: config.data.disableRipple
         },
         disabled: {
             type: Boolean,
@@ -65,177 +81,178 @@ export default {
     data() {
         return {
             height: 0,
-            isReady: false
+            isReady: false,
+            isOpen: this.open,
+            useInitialHeight: false,
+            id: UUID.short('ui-collapsible-')
         };
     },
 
     computed: {
-        icon() {
-            return this.open ? 'fa-angle-up' : 'fa-angle-down';
+        classes() {
+            return [
+                { 'is-open': this.isOpen },
+                { 'is-disabled': this.disabled }
+            ];
         },
 
         calculatedHeight() {
-            if (this.height === 0) {
-                return 'initial';
-            }
-
-            return this.height + 'px';
+            return (this.height === 0 || this.useInitialHeight) ? 'initial' : this.height + 'px';
         }
     },
 
-    created() {
-        // Set default ID
-        this.id = this.id || UUID.short('ui-collapsible-');
+    watch: {
+        open() {
+            if (this.isOpen !== this.open) {
+                this.isOpen = this.open;
+            }
+        }
     },
 
-    ready() {
+    mounted() {
         this.isReady = true;
-        this.setHeight();
-    },
+        this.refreshHeight();
 
-    events: {
-        'ui-collapsible::refresh-height': function(id) {
-            // Abort if refresh event isn't meant for this component
-            if (!this.eventTargetsComponent(id)) {
-                return;
-            }
-
-            this.$nextTick(this.setHeight);
-        }
+        this.$on('window-resize', () => {
+            this.refreshHeight();
+        });
     },
 
     methods: {
-        toggleMenu() {
+        onEnter() {
+            this.$emit('open');
+            this.refreshHeight();
+        },
+
+        onLeave() {
+            this.$emit('close');
+        },
+
+        toggleCollapsible() {
             if (this.disabled) {
                 return;
             }
 
-            this.open = !this.open;
+            this.isOpen = !this.isOpen;
         },
 
-        setHeight() {
-            var body = this.$els.body.getElementsByTagName('div')[0];
+        refreshHeight() {
+            const body = this.$refs.body;
 
+            this.useInitialHeight = true;
             body.style.display = 'block';
-            this.height = body.scrollHeight;
 
-            if (!this.open) {
-                body.style.display = 'none';
-            }
+            this.$nextTick(() => {
+                this.height = body.scrollHeight + 1;
+                this.useInitialHeight = false;
+
+                if (!this.isOpen) {
+                    body.style.display = 'none';
+                }
+            });
         }
     },
 
     components: {
-        UiIcon
-    },
-
-    directives: {
-        disabled
+        UiIcon,
+        UiRippleInk
     },
 
     mixins: [
-        ShowsRippleInk,
-        ReceivesTargetedEvent
-    ],
-
-    transitions: {
-        'ui-collapsible-toggle': {
-            afterEnter() {
-                this.$dispatch('opened');
-                this.setHeight();
-            },
-
-            afterLeave() {
-                this.$dispatch('closed');
-            }
-        }
-    }
+        RespondsToWindowResize
+    ]
 };
 </script>
 
-<style lang="stylus">
+<style lang="scss">
 @import './styles/imports';
+
+$ui-collapsible-header-background           : $md-grey-200 !default;
+$ui-collapsible-header-background-hover     : $md-grey-300 !default;
 
 .ui-collapsible {
     font-family: $font-stack;
+    margin-bottom: rem-calc(8px);
     width: 100%;
-    margin-bottom: 8px;
-}
 
-.ui-collapsible-header {
-    position: relative;
-
-    margin: 0;
-    width: 100%;
-    border: none;
-    line-height: 1;
-    text-align: left;
-    font-family: $font-stack;
-
-    display: flex;
-    height: 0; // IE
-    min-height: 40px;
-    padding: 8px 16px;
-    align-items: center;
-    touch-action: manipulation; // IE
-
-    cursor: pointer;
-    font-size: 16px;
-    background-color: #eef6fb;
-
-    &:hover:not(.disabled),
-    body[modality="keyboard"] &:focus {
-        background-color: #eef6fb;
-    }
-
-    &.disabled {
-        opacity: 0.6;
-        cursor: default;
-
-        .ui-icon {
-            cursor: default;
+    &:not(.is-disabled) {
+        .ui-collapsible-header {
+            &:hover,
+            body[modality="keyboard"] &:focus {
+                background-color: $ui-collapsible-header-background-hover;
+            }
         }
     }
 
-    .ui-icon {
-        cursor: pointer;
+    &.is-open {
+        .ui-collapsible-header-icon {
+            transform: rotate(-180deg);
+        }
     }
 
-    .ui-ripple-ink .ripple.held {
-        opacity: 0.01;
+    &.is-disabled {
+        .ui-collapsible-header {
+            cursor: default;
+            opacity: 0.6;
+        }
+
+        .ui-collapsible-header-icon {
+            cursor: default;
+        }
+    }
+}
+
+.ui-collapsible-header {
+    align-items: center;
+    background-color: $ui-collapsible-header-background;
+    cursor: pointer;
+    display: flex;
+    font-size: rem-calc(15px);
+    line-height: 1.5;
+    margin: 0;
+    min-height: rem-calc(48px);
+    padding: rem-calc(12px 16px);
+    position: relative;
+    touch-action: manipulation; // IE
+    width: 100%;
+
+    .ui-ripple-ink-ink {
+        opacity: 0.1;
     }
 }
 
 .ui-collapsible-header-content {
-    @extends $truncate-text;
-    line-height: 1.25em;
+    padding-right: rem-calc(8px);
 }
 
 .ui-collapsible-header-icon {
+    color: $secondary-text-color;
+    cursor: pointer;
     margin-left: auto;
-    margin-right: -4px;
-    color: $md-dark-secondary;
-    font-size:24px;
+    margin-right: rem-calc(-4px);
+    transition: transform 0.3s ease;
 }
 
 .ui-collapsible-body-wrapper {
     height: initial;
+    overflow: hidden;
 }
 
 .ui-collapsible-body {
-    width: 100%;
-    padding: 16px;
-    display: block;
-    border: 1px solid $md-grey-200;
     border-top: 0;
+    border: 1px solid $md-grey-200;
+    display: block;
+    padding: rem-calc(16px);
+    width: 100%;
 }
 
-.ui-collapsible-toggle-transition {
-    transition: height 0.2s ease;
+.ui-collapsible-transition-toggle-enter-active,
+.ui-collapsible-transition-toggle-leave-active {
+    transition: height 0.3s ease;
 }
 
-.ui-collapsible-toggle-enter,
-.ui-collapsible-toggle-leave {
+.ui-collapsible-transition-toggle-enter,
+.ui-collapsible-transition-toggle-leave-active {
     height: 0!important;
 }
 </style>

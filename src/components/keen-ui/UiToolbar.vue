@@ -1,23 +1,30 @@
 <template>
-    <div class="ui-toolbar" :class="styleClasses">
+    <div class="ui-toolbar" :class="classes">
         <div class="ui-toolbar-left">
-            <ui-icon-button
-                class="ui-toolbar-nav-icon" type="clear" :color="iconColor" :icon="navIcon"
-                @click="navIconClick" v-if="!hideNavIcon"
-            ></ui-icon-button>
+            <div class="ui-toolbar-nav-icon" v-if="!removeNavIcon">
+                <slot name="icon">
+                    <ui-icon-button
+                        size="large"
+                        type="secondary"
 
-            <div class="ui-toolbar-brand" v-if="showBrand">
+                        :color="textColor"
+                        :icon="navIcon"
+
+                        @click="navIconClick"
+                    ></ui-icon-button>
+                </slot>
+            </div>
+
+            <div class="ui-toolbar-brand" v-if="brand || $slots.brand">
                 <slot name="brand">
-                    <div class="ui-toolbar-brand-text" v-text="brand"></div>
+                    <div class="ui-toolbar-brand-text">{{ brand }}</div>
                 </slot>
             </div>
         </div>
 
-        <div class="ui-toolbar-center">
-            <div class="ui-toolbar-divider" v-if="brandDividerVisible"></div>
-
+        <div class="ui-toolbar-body" :class="{ 'has-brand-divider': hasBrandDivider }">
             <slot>
-                <div class="ui-toolbar-title" v-text="title"></div>
+                <div class="ui-toolbar-title" v-if="title">{{ title }}</div>
             </slot>
         </div>
 
@@ -26,15 +33,16 @@
         </div>
 
         <ui-progress-linear
-            :show="loading" class="ui-toolbar-preloader" :class="{ 'position-top' : preloaderTop }"
-            :color="preloaderColor"
+            class="ui-toolbar-progress"
+            :color="progressColor"
+            v-show="loading"
         ></ui-progress-linear>
     </div>
 </template>
 
 <script>
-import UiProgressLinear from './UiProgressLinear.vue';
 import UiIconButton from './UiIconButton.vue';
+import UiProgressLinear from './UiProgressLinear.vue';
 
 export default {
     name: 'ui-toolbar',
@@ -42,43 +50,33 @@ export default {
     props: {
         type: {
             type: String,
-            default: 'default', // 'default' or 'colored' - colored is brand primary color
-            coerce(type) {
-                return 'ui-toolbar-' + type;
-            }
+            default: 'default' // 'default', 'colored' or 'clear' - colored is brand primary color
         },
         textColor: {
             type: String,
-            default: 'black', // 'black' or 'white'
-            coerce(color) {
-                return 'text-color-' + color;
-            }
+            default: 'black' // 'black' or 'white'
         },
         title: String,
         brand: String,
-        showBrand: {
+        removeBrandDivider: {
             type: Boolean,
             default: false
-        },
-        showBrandDivider: {
-            type: Boolean,
-            default: null
         },
         navIcon: {
             type: String,
             default: 'menu'
         },
-        hideNavIcon: {
+        removeNavIcon: {
             type: Boolean,
             default: false
         },
-        flat: {
+        raised: {
             type: Boolean,
-            default: false
+            default: true
         },
-        preloaderTop: {
-            type: Boolean,
-            default: false
+        progressPosition: {
+            type: String,
+            default: 'bottom' // 'top' or 'bottom'
         },
         loading: {
             type: Boolean,
@@ -87,166 +85,155 @@ export default {
     },
 
     computed: {
-        styleClasses() {
-            var classes = [this.type, this.textColor];
-
-            if (!this.flat) {
-                classes.push('ui-toolbar-raised');
-            }
-
-            return classes;
+        classes() {
+            return [
+                `ui-toolbar-type-${this.type}`,
+                `ui-toolbar-text-color-${this.textColor}`,
+                `ui-toolbar-progress-position-${this.progressPosition}`,
+                { 'is-raised': this.raised }
+            ];
         },
 
-        iconColor() {
-            if (this.textColor === 'text-color-black') {
-                return 'black';
-            }
-
-            return 'white';
+        progressColor() {
+            return (this.textColor === 'black') ? 'primary' : 'white';
         },
 
-        preloaderColor() {
-            if (this.textColor === 'text-color-black') {
-                return 'primary';
-            }
-
-            return 'white';
-        },
-
-        brandDividerVisible() {
-            if (this.showBrandDivider !== null) {
-                return this.showBrandDivider;
-            }
-
-            if (!this.showBrand) {
-                return false;
-            }
-
-            return true;
+        hasBrandDivider() {
+            return this.removeBrandDivider ? false : (this.brand || this.$slots.brand);
         }
     },
 
     methods: {
         navIconClick() {
-            this.$dispatch('nav-icon-clicked');
+            this.$emit('nav-icon-click');
         }
     },
 
     components: {
-        UiProgressLinear,
-        UiIconButton
+        UiIconButton,
+        UiProgressLinear
     }
 };
 </script>
 
-<style lang="stylus">
+<style lang="scss">
 @import './styles/imports';
 
+$ui-toolbar-font-size   : rem-calc(18px) !default;
+$ui-toolbar-height      : rem-calc(56px) !default;
+
 .ui-toolbar {
-    font-family: $font-stack;
-    display: flex;
-    height: 56px;
     align-items: center;
-    font-size: 18px;
+    display: flex;
+    font-family: $font-stack;
+    font-size: $ui-toolbar-font-size;
+    height: $ui-toolbar-height;
+    padding-left: rem-calc(16px);
     position: relative;
 
-    &:not(.ui-toolbar-raised):not(.ui-toolbar-colored) {
-        border-bottom: 1px solid $md-dark-divider;
+    &.is-raised {
+        box-shadow: 0 0 2px rgba(black, 0.12), 0 2px 2px rgba(black, 0.2);
     }
 
-    &.text-color-black {
-        color: $md-dark-text;
-
-        .ui-toolbar-divider {
-            border-left-color: alpha(black, 0.15);
-        }
-    }
-
-    &.text-color-white {
-        color: white;
-
-        .ui-toolbar-divider {
-            border-color: alpha(white, 0.4);
-        }
+    &:not(.is-raised).ui-toolbar-type-default {
+        border-bottom: rem-calc(1px) solid $divider-color;
     }
 
     .ui-icon-button {
-        width: 48px;
-        height: 48px;
+        height: rem-calc(48px);
+        width: rem-calc(48px);
     }
-
-    .ui-toolbar-preloader {
-        position: absolute;
-        height: 3px;
-        right: 0;
-        left: 0;
-        bottom: 0;
-
-        &.position-top {
-            top: 0;
-        }
-    }
-}
-
-.ui-toolbar-raised {
-    box-shadow: 0 0 2px alpha(black, 0.12), 0 2px 2px alpha(black, 0.2);
-}
-
-.ui-toolbar-clear {
-    background-color: transparent;
-    box-shadow: none;
-    border: none;
-}
-
-.ui-toolbar-default {
-    background-color: white;
-}
-
-.ui-toolbar-colored {
-    background-color: $md-brand-primary;
 }
 
 .ui-toolbar-left {
-    display: flex;
     align-items: center;
+    display: flex;
     flex-shrink: 0;
 }
 
 .ui-toolbar-nav-icon {
-    margin-right: 8px;
-}
-
-.ui-toolbar-brand-text {
-    padding-right: 8px;
+    margin-left: rem-calc(-16px);
+    margin-right: rem-calc(8px);
 }
 
 .ui-toolbar-brand {
-    min-width: 160px;
+    min-width: rem-calc(160px);
 }
 
 .ui-toolbar-brand-text {
     flex-grow: 1;
+    padding-right: rem-calc(8px);
 }
 
-.ui-toolbar-center {
+.ui-toolbar-body {
     display: flex;
     flex-grow: 1;
-}
 
-.ui-toolbar-divider {
-    border-left-width: 1px;
-    border-left-style: solid;
-
-    height: 24px;
-    margin-right: 24px;
+    &.has-brand-divider {
+        border-left-style: solid;
+        border-left-width: rem-calc(1px);
+        padding-left: rem-calc(24px);
+    }
 }
 
 .ui-toolbar-right {
     flex-shrink: 0;
     margin-left: auto;
+}
 
-    [slot="actions"] {
-        display: flex;
+.ui-toolbar-progress {
+    bottom: 0;
+    height: rem-calc(3px);
+    left: 0;
+    position: absolute;
+    right: 0;
+}
+
+// ================================================
+// Types
+// ================================================
+
+.ui-toolbar-type-default {
+    background-color: white;
+}
+
+.ui-toolbar-type-colored {
+    background-color: $brand-primary-color;
+}
+
+.ui-toolbar-type-clear {
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+// ================================================
+// Text colors
+// ================================================
+
+.ui-toolbar-text-color-black {
+    color: $primary-text-color;
+
+    .ui-toolbar-body {
+        border-left-color: rgba(black, 0.15);
+    }
+}
+
+.ui-toolbar-text-color-white {
+    color: white;
+
+    .ui-toolbar-body {
+        border-color: rgba(white, 0.4);
+    }
+}
+
+// ================================================
+// Progress positions
+// ================================================
+
+.ui-toolbar-progress-position-top {
+    .ui-toolbar-progress {
+        top: 0;
     }
 }
 </style>

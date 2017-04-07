@@ -206,19 +206,19 @@
 
 .ui-checkbox.checked .ui-checkbox-checkmark:before {
     background: #2196f3;
+    // background:red;
     border-color: #2196f3;
-}
 
-.ui-checkbox.checked .ui-checkbox-checkmark:after {
-    border-right: 2px solid #fff;
-    border-bottom: 2px solid #fff;
-    opacity: 1;
 }
 
 .ui-checkbox.checked .ui-checkbox-focus-ring {
     background-color: rgba(33, 150, 243, 0.12);
 }
-
+.ui-checkbox .ui-checkbox-focus-ring:after {
+    border-right: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    opacity: 1;
+}
 .ui-checkbox.label-left .ui-checkbox-label-text {
     margin-left: 0;
     margin-right: auto;
@@ -583,13 +583,13 @@ export default {
         paginationInfoTemplate: {
             type: String,
             default: function() {
-                return "Displaying {from} to {to} of {total} items"
+                return this.$t('vuetable.paginationInfoTemplate', { from: '{from}',  to: '{to}', total: '{total}'});
             }
         },
         paginationInfoNoDataTemplate: {
             type: String,
             default: function() {
-                return 'No relevant data'
+                return this.$t('vuetable.paginationInfoNoDataTemplate');
             }
         },
         paginationClass: {
@@ -699,15 +699,16 @@ export default {
             tableLineNum: ['5', '10', '50', '100', '200', '500', '1000']
         }
     },
-    directives: {
-        'attr': {
-            update: function(value) {
-                for (var i in value) {
-                    this.el.setAttribute(i, value[i])
-                }
-            }
-        },
-    },
+    // unknow 暂时不知道作用先注释掉
+    // directives: {
+    //     'attr': {
+    //         update: function(value) {
+    //             for (var i in value) {
+    //                 this.el.setAttribute(i, value[i])
+    //             }
+    //         }
+    //     },
+    // },
     computed: {
         paginationInfo: function() {
             if (this.tablePagination == null || this.tablePagination.total == 0) {
@@ -815,7 +816,9 @@ export default {
                     self.dispatchEvent('load-success', response)
                     self.broadcastEvent('load-success', self.tablePagination)
                     self.loadSuccessCallback(response.data);
-                    this.$refs.pagination.loadSuccess(self.tablePagination);
+                    if (this.showPagination) {
+                      this.$refs.pagination.loadSuccess(self.tablePagination);
+                    }
                     if (self.selectedTo.length === self.tableData.length && self.tableData.length > 0) {
                         self.checkAll = true
                     } else {
@@ -1071,6 +1074,7 @@ export default {
             return obj
         },
         callAction: function(action, data) {
+          this.$emit('action', action, data)
             // this.$dispatch(this.eventPrefix + 'action', action, data)
         },
         addParam: function(param) {

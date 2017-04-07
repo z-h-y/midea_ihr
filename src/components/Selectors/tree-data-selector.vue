@@ -12,13 +12,13 @@
 
 <template lang="html">
 
-<ui-modal :show.sync="show.modal" transition="ui-modal-fade" :header="headText">
+<ui-modal ref="selector" :show.sync="show.modal" transition="ui-modal-fade" :title="headText">
 	  <div class="select-cnt">
-    <tree :data="trees" :level-config="levelConfig" :show-checkbox="showCheckbox" v-ref:tree :click-node="loadNodeDetail" :dblclick-node="dblclickNode"></tree>
+    <tree :data="trees" :level-config="levelConfig" :show-checkbox="showCheckbox" ref="tree" :click-node="loadNodeDetail" :dblclick-node="dblclickNode"></tree>
 	  </div>
 		<div slot="footer">
-        <ui-button color="primary" @click="handleSave">Confirm</ui-button>
-        <ui-button @click="show.modal = false">Cancel</ui-button>
+        <ui-button color="primary" @click="handleSave">{{$t('button.confirm')}}</ui-button>
+        <ui-button @click="close">{{$t('button.cancel')}}</ui-button>
     </div>
 </ui-modal>
 
@@ -90,6 +90,12 @@ export default {
 		},
     created() {},
     methods: {
+      open() {
+        this.$refs['selector'].open();
+      },
+      close() {
+        this.$refs['selector'].close()
+      },
       getTreeData() {
         const currentNode = this.currentNode;
 				var url = this.url.split('${}');
@@ -117,7 +123,8 @@ export default {
 					*/
 				handleSave(){
 					this.handleComfirmed(this.selectedNode, this.selectedEl);
-					this.show.modal = false;
+          this.close();
+					this.close();
 				},
         dblclickNode() {
             this.handleSave();

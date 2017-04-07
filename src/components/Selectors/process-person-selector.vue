@@ -97,35 +97,35 @@
 
 <template lang="html">
 
-<ui-modal class="person-select" :show.sync="show.modal" type="large" header="Select Person" body="" :backdrop-dismissible="false">
+<ui-modal ref="modal" class="person-select" :show.sync="show.modal" type="large" :title="$t('selectors.selectPerson')" body="" :backdrop-dismissible="false">
     <div class="leftRight-panel bg-f5f5f5 fix">
         <div class="left-panel p10">
-            <tree :data="regions" :level-config="levelConfig" :show-checkbox="showCheckbox" v-ref:tree :click-node="clickNode"></tree>
+            <tree :data="regions" :level-config="levelConfig" :show-checkbox="showCheckbox" ref="tree" :click-node="clickNode"></tree>
         </div>
         <div class="right-panel">
             <div class="search-ctx">
                 <div class="search-pos">
                     <span class="search-bg">
-                 <input @keydown="goSearch($event)" class="search-input" placeholder="Search" type="text" v-model="searchTxt" />
+                 <input @keydown="goSearch($event)" class="search-input" :placeholder="$t('button.search')" type="text" v-model="searchTxt" />
                  <span @click="search" class="search-btn"><i class="fa fa-search"></i></span>
                     </span>
                 </div>
             </div>
             <div class="vuetable-wrapper">
-                <vuetable v-ref:vuetable :api-url="selectedTableUrl" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="tableColumns" per-page="10" :load-success-callback="loadSuccessCallback">
+                <vuetable ref="vuetable" :api-url="selectedTableUrl" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="tableColumns" per-page="10" :load-success-callback="loadSuccessCallback">
                 </vuetable>
             </div>
         </div>
     </div>
     <div class="bottom-panel">
-        <span class="all-selected-person" v-for="item in allSelectedPer" track-by="$index">
+        <span class="all-selected-person" v-for="(item, index) in allSelectedPer" track-by="index">
         {{item.employeeName}}
-        <i class="rm-btn fa fa-times" aria-hidden="true" @click="delPer($index)"></i>
+        <i class="rm-btn fa fa-times" aria-hidden="true" @click="delPer(index)"></i>
       </span>
     </div>
     <div slot="footer">
-        <ui-button @click="yes" color="primary">Confirm</ui-button>
-        <ui-button @click="show.modal = false">Cancel</ui-button>
+        <ui-button @click="yes" color="primary">{{$t('button.confirm')}}</ui-button>
+        <ui-button @click="close">{{$t('button.cancel')}}</ui-button>
     </div>
 </ui-modal>
 
@@ -162,17 +162,17 @@ export default {
             title: ''
         }, {
             name: 'employeeName',
-            title: 'Employee Name'
+            title: this.$t('staff.employeeName')
         }, {
             name: 'positionName',
-            title: 'Position'
+            title: this.$t('performance.position')
         }, {
             name: 'officePhone',
             dataClass: 'tr',
-            title: 'Phone'
+            title: this.$t('selectors.phone')
         }, {
             name: 'email',
-            title: 'Email'
+            title: this.$t('selectors.email')
         }];
         if (this.multiSelected) {
             tableColumns[0].name = '__checkbox:';
@@ -229,7 +229,7 @@ export default {
         }
     },
     computed: {},
-    ready() {
+    mounted() {
         var url = '/org/orgs/0/children';
         this.$http.get(url).then((response) => {
             // this.orgGroup = response.data;
@@ -247,21 +247,26 @@ export default {
         });
     },
     methods: {
+      open() {
+          this.$refs['modal'].open();
+        },
+        close() {
+          this.$refs['modal'].close()
+        },
         initSelectedRow() {
                 // this.selectedRow.splice(0, this.selectedRow.length);
                 if (this.selectedRow.length > 0) {
-                    this.$broadcast('vuetable:refresh');
+                    this.$refs.vuetable.reloadData();
                 } //刷新表格
             },
             yes() {
                 if (this.allSelectedPer.length > 0) {
-                    this.show.modal = false;
+                    this.close();
                     this.handleComfirmed(this.allSelectedPer, this.orgGroup);
-                    this.$dispatch('selected-person', this.allSelectedPer);
                 } else {
                     Message({
                         type: 'error',
-                        message: 'Please select a valid node.'
+                        message: this.$t("performance.message.reportManage")
                     })
                 }
             },
@@ -283,7 +288,7 @@ export default {
                 if (this.allSelectedPer.length === 1) {
                     Message({
                         type: 'error',
-                        message: 'Keep at least one user'
+                        message: this.$t('selectors.atleastOneUser')
                     });
                     return;
                 }

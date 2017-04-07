@@ -12,12 +12,12 @@
   <div class="ihr-staff-interns content-wrap">
 
     <panel :title="$t('staff.transfer')" class="panel-b mb-suitable" header="panel-header">
-      <v-form v-ref:myForm :model="transfer" :schema="transferSchema" label-width="250" label-suffix="" :cols="1" form-style="org-form">
+      <v-form ref="myform" :model="transfer" :schema="transferSchema" label-width="250" label-suffix="" :cols="1" form-style="org-form">
           <text-increment property="employeeName" editor-width="400"></text-increment>
           <text-increment property="parttimePosition" editor-width="400"></text-increment>
           <text-increment property="parttimeOrganization" editor-width="400"></text-increment>
           <select-field property="transferReason" editor-width="400"></select-field>
-          <text-field type="selector" :readonly="true" :show.sync="position" property="positionName" editor-width="400"></text-field>
+          <text-field @open-selector="openSelector" type="selector" :readonly="true" :show="position" property="positionName" editor-width="400"></text-field>
           <select-field :mapping="mibGradeMapping" property="mibGrade" editor-width="400"></select-field>
           <text-increment property="unitName" editor-width="400"></text-increment>
           <text-increment :title="transfer.reportLine" property="reportLine" editor-width="400"></text-increment>
@@ -26,8 +26,8 @@
           <text-field :min-date="transfer.effectiveDate" property="expectedEndDate" editor-width="400"></text-field>
       </v-form>
     </panel>
-    <position-selector :show.sync="position" :handle-comfirmed="selectPosition"></position-selector>
-    <employee-submit v-ref:employeesubmit :form-confirmed="confirmed" :form-cancel="cancel" :is-form-validate="isFormValidate"></employee-submit>
+    <position-selector ref="posselect" :show="position" :handle-comfirmed="selectPosition"></position-selector>
+    <employee-submit ref="employeesubmit" :form-confirmed="confirmed" :form-cancel="cancel" :is-form-validate="isFormValidate"></employee-submit>
   </div>
 </template>
 
@@ -112,10 +112,13 @@ export default {
           this.transfer.dottedReportLine = res.data.dottedReportLine;
         })
     },
-    attached() {},
+    
     methods: {
+        openSelector() {
+          this.$refs['posselect'].open();
+        },
         isFormValidate() {
-          var passed = this.transfer.$schema.isFormValidate(this.$refs.myform);
+          var passed = this.$refs.myform.isFormValidate();
           return passed;
         },
         confirmed() {
@@ -144,7 +147,7 @@ export default {
                     type: 'success',
                     message: this.$t('staff.message.success')
                 });
-                  this.$route.router.go({
+                  this.$router.push({
                       name: 'staffPartTimeRole'
                   });
               },(response) => {
@@ -172,7 +175,7 @@ export default {
           })
         },
         cancel() {
-            this.$route.router.go({
+            this.$router.push({
                 name: 'staffPartTimeRole'
             });
         }

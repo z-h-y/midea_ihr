@@ -162,37 +162,37 @@
             <div class="basicinfo-section-cnt">
                 <div class="employees-with-list">
                     <div class="wrap">
-                        <label class="prop-name">Employee Name</label>
+                        <label class="prop-name">{{ $t('myperformance.viewprocess.employeeName') }}</label>
                         <span>{{basicInfo.employeeName}}</span>
                     </div>
                 </div>
                 <div v-if="basicInfo.pfmType==='1'" class="employees-with-list">
                     <div class="wrap">
-                        <label class="prop-name">Unit Name</label>
+                        <label class="prop-name">{{ $t('myperformance.viewprocess.unitName') }}</label>
                         <span>{{basicInfo.unitName}}</span>
                     </div>
                 </div>
                 <div class="employees-with-list">
                     <div class="wrap">
-                        <label class="prop-name">Position</label>
+                        <label class="prop-name">{{ $t('myperformance.viewprocess.position') }}</label>
                         <span>{{basicInfo.positionName}}</span>
                     </div>
                 </div>
                 <div class="employees-with-list">
                     <div class="wrap">
-                        <label class="prop-name">Restrict To Year</label>
+                        <label class="prop-name">{{ $t('myperformance.viewprocess.restricttoYear') }}</label>
                         <span>{{basicInfo.restrictYear}}</span>
                     </div>
                 </div>
                 <div class="employees-with-list">
                     <div class="wrap">
-                        <label class="prop-name">Evaluation Location</label>
+                        <label class="prop-name">{{ $t('myperformance.viewprocess.evaluationLocation') }}</label>
                         <span>{{basicInfo.startDate | formatDate }} To {{basicInfo.endDate | formatDate}}</span>
                     </div>
                 </div>
                 <div id="score-area">
                     <div class="avatar-wrap fix">
-                        <label>Score</label>
+                        <label>{{ $t('myperformance.tabText.score') }}</label>
                         <div class="wrap">
                             <span class="number">{{basicInfo.finalScore}}</span>
                         </div>
@@ -202,7 +202,7 @@
         </section>
         <div id="total-indicators" class="total-indicators-head">
             <div class="bte bg">
-                <h3 class="head-title"> Indicators（Weight 100%）</h3>
+                <h3 class="head-title"> {{$t('myperformance.indicatorsWeight')}}</h3>
             </div>
         </div>
         <div id="indicators-ctn-wrap" class="indicators-ctn-wrap">
@@ -216,24 +216,24 @@
                     </div>
                     <div class="indicators-body">
                         <div class="cell-1-1">
-                            <label class="prop-name">Weight</label>
+                            <label class="prop-name">{{$t('myperformance.viewprocess.weight')}}</label>
                             <div class="field-content"><span class="text-editor">{{item.weight}} %</span></div>
                         </div>
                         <div class="cell-1-1">
-                            <label class="prop-name">Targets</label>
+                            <label class="prop-name">{{$t('myperformance.viewprocess.targets')}}</label>
                             <div class="field-content"><span class="text-editor">{{item.target}}</span></div>
                         </div>
                         <div class="cell-1-1">
-                            <label class="prop-name">Criteria/Formula</label>
+                            <label class="prop-name">{{$t('myperformance.viewprocess.criteria')}}</label>
                             <div class="field-content"><span class="text-editor">{{item.criteria}}</span></div>
                         </div>
                         <div class="cell-1-1">
-                            <label class="prop-name">Data Source Dept</label>
+                            <label class="prop-name">{{$t('myperformance.viewprocess.dataSourceDept')}}</label>
                             <div class="field-content"><span class="text-editor">{{item.dataSources}}</span></div>
                         </div>
                         <div class="score" v-if="item.selfScoreDetails || item.scoreDetails.length > 0">
                             <div class="cell-g" v-if="item.selfScoreDetails !== null">
-                                <div class="cell-1-1 score-type"><span>Self Evaluation</span></div>
+                                <div class="cell-1-1 score-type"><span>{{$t('myperformance.evaluate.selfEvaluation')}}</span></div>
                                 <div class="cell-1-1 score-ctn">
                                     <div class="avater">
                                         <div class="img-wrap">
@@ -250,7 +250,7 @@
                             </div>
                             <div class="cell-g" v-show="item.scoreDetails && item.scoreDetails.length > 0">
 
-                                <div class="cell-1-1 score-type"><span>Mutual Evaluation</span></div>
+                                <div class="cell-1-1 score-type"><span>{{$t('myperformance.evaluate.mutualEvaluation')}}</span></div>
 
                                 <template v-for="(index,scoreItem) of item.scoreDetails">
                                     <div class="cell-1-1 score-ctn">
@@ -281,7 +281,7 @@
                 <span>No Data</span>
             </div>
         </div> -->
-        <ui-collapsible :open="true" id="coll-process-history" header="Process History">
+        <ui-collapsible :open="true" id="coll-process-history" :header="$t('myperformance.viewprocess.processHistory')">
             <div id="process-history" class="process-history">
                 <div class="process-history-ctn">
                     <ul class="fix cell-g ">
@@ -291,7 +291,7 @@
                                     <div class="valign">
                                         <div v-bind:class="{'valign-ctn active':item.nowNode,'valign-ctn': !item.nowNode}">
                                             <img v-if="item.nodeUserDetailList.length > 0" class="valign-inner" :src='photoUrl(item.nodeUserDetailList[0].photoId)' />
-                                            <img v-if="item.nodeUserDetailList.length == 0" class="valign-inner" src='/static/images/public/xwz.png' />
+                                            <img v-if="item.nodeUserDetailList.length == 0" class="valign-inner" src='/assets/images/public/xwz.png' />
                                         </div>
                                     </div>
                                     <div class="person-ico" v-if="item.templateRoleId && item.nodeUserDetailList.length > 1">
@@ -319,19 +319,19 @@
                 </div>
             </div>
         </ui-collapsible>
-        <ui-collapsible class="mt16" :open="true" id="coll-memo" header="Process Record">
+        <ui-collapsible class="mt16" :open="true" id="coll-memo" :header="$t('myperformance.viewprocess.processRecord')" >
             <div id="process-history-list">
                 <div class="process-history-ctn">
                     <table class="vuetable ui blue striped selectable celled stackable attached table">
                         <thead>
                             <tr>
-                                <th>Stage</th>
-                                <th>Role</th>
-                                <th>Recipient</th>
-                                <th>Operation</th>
-                                <th>Suggestion</th>
-                                <!-- <th></th> -->
-                                <th>Date</th>
+                              <th>{{$t('myperformance.stage')}}</th>
+                              <th>{{$t('myperformance.role')}}</th>
+                              <th>{{$t('myperformance.recipient')}}</th>
+                              <th>{{$t('myperformance.operation')}}</th>
+                              <th>{{$t('myperformance.suggestion')}}</th>
+                              <!-- <th></th> -->
+                              <th>{{$t('myperformance.date')}}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -363,7 +363,7 @@
         </ui-collapsible>
     </panel>
     <div class="btn-group">
-        <ui-button class="btn-default-bd" @click="handleCancel" type="flat">Close</ui-button>
+        <ui-button class="btn-default-bd" @click="handleCancel" type="flat"> {{$t('myperformance.viewprocess.close')}} </ui-button>
     </div>
 </div>
 
@@ -416,7 +416,7 @@ export default {
                     if (photoId)
                         return Vue.config.APIURL + `/system/attachment/downloadImg/${photoId}`;
                     else
-                        return `/static/images/public/xwz.png`;
+                        return `/assets/images/public/xwz.png`;
                 },
                 handleFormatDate(value) {
                     return formatDate(new Date(value));

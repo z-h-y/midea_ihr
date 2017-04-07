@@ -146,9 +146,9 @@
 <template lang="html">
 
 <div class="content-wrap ihr-myRecord">
-    <panel title="My Record" class="panel-b" header="panel-header" v-bind:style="{ height: panelHeight + 'px' }">
+    <panel :title="$t('home.myRecord')" class="panel-b" header="panel-header" v-bind:style="{ height: panelHeight + 'px' }">
         <div class="record-head">
-            <h3 class="text">Big Events of Employees</h3>
+            <h3 class="text">{{$t('myRecord.bigEvents')}}</h3>
         </div>
         <div class="timezone" v-bind:style="{ height: timeHeight + 'px' }">
             <div class="time hide-before" style="top: 0px;"></div>

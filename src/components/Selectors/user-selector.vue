@@ -38,7 +38,7 @@
 
 <template lang="html">
 
-<ui-modal class="title-select" :show.sync="show.modal" type="large" header="Select User" body="" :backdrop-dismissible="false">
+<ui-modal ref="selector" class="title-select" :show.sync="show.modal" type="large" :title="$t('selectors.selectUser')" body="" :backdrop-dismissible="false">
     <div class="bg-w ihr-staff-user">
         <div class="">
             <div class="search fix">
@@ -46,19 +46,19 @@
                     <text-field property='loginId' editor-width="150"></text-field>
                 </v-form>
                 <div class="query-btn l fix">
-                    <ui-button class="query-btn-search mr20" color="primary" @click="searchTable">Search</ui-button>
-                    <ui-button class="query-btn-reset btn-default-bd" type="flat" @click="resetTable">Reset</ui-button>
+                    <ui-button class="query-btn-search mr20" color="primary" @click="searchTable">{{$t('button.search')}}</ui-button>
+                    <ui-button class="query-btn-reset btn-default-bd" type="flat" @click="resetTable">{{$t('button.reset')}}</ui-button>
                 </div>
             </div>
             <div class="vuetable-wrapper">
-                <vuetable :api-url="selectedTableUrl" :selected-to="selectedRow" :append-params="queryParams" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="usersColumns" per-page="5">
+                <vuetable ref="vuetable" :api-url="selectedTableUrl" :selected-to="selectedRow" :append-params="queryParams" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="usersColumns" per-page="5">
                 </vuetable>
             </div>
         </div>
     </div>
     <div slot="footer">
-        <ui-button @click="yes" color="primary">Confirm</ui-button>
-        <ui-button @click="show.modal = false">Cancel</ui-button>
+        <ui-button @click="yes" color="primary">{{$t('button.confirm')}}</ui-button>
+        <ui-button @click="close">{{$t('button.cancel')}}</ui-button>
     </div>
 </ui-modal>
 
@@ -76,48 +76,54 @@ import {
 }
 from '../../schema/index';
 
-let userSchema = new Schema({
-    loginId: {
-        label: 'Login ID'
-    }
-});
+
 
 export default {
     props: {
-        show: {}
+        show: {},
+        handelSelect: {
+            type: Function,
+            default() {
+              return function() {}
+            }
+        }
     },
     data() {
         let _self = this;
+        let userSchema = new Schema({
+            loginId: {
+                label: _self.$t('system.user.loginId')
+            }
+        });
         return {
             selectedTableUrl: '/system/user/findUserList',
             userSchema: userSchema,
             user: userSchema.newModel(),
             selData: {},
-            tableData: [],
             selectedRow: [],
             usersColumns: [{
                 name: '__radio:',
                 title: ''
             }, {
                 name: 'userName',
-                title: 'User Name',
+                title: this.$t('system.user.userName'),
                 sortField: 'userName'
             }, {
                 name: 'loginId',
-                title: 'LoginId ID',
+                title: this.$t('system.user.loginId'),
                 sortField: 'loginId'
             }, {
                 name: 'email',
-                title: 'Email',
+                title: this.$t('system.user.email'),
                 sortField: 'email'
             }, {
                 name: 'phone',
-                title: 'Phone',
+                title: this.$t('system.user.phone'),
                 dataClass: 'tr',
                 sortField: 'phone'
             }, {
                 name: 'isEnabled',
-                title: 'Account Status',
+                title: this.$t('system.user.isEnabled'),
                 sortField: 'isEnabled'
             }]
         }
@@ -128,44 +134,45 @@ export default {
             return [
                 `loginId=${loginId}`
             ]
+        },
+        tableData() {
+          return this.refs.vuetable.tableData
         }
     },
-    ready() {
-
-    },
     methods: {
+      open() {
+        this.$refs['selector'].open();
+      },
+      close() {
+        this.$refs['selector'].close()
+      },
         searchTable() {
-                this.$broadcast('vuetable:refresh');
+                this.$refs.vuetable.reloadData();
             },
             resetTable() {
                 this.user.loginId = '';
                 this.$nextTick(() => {
-                    this.$broadcast('vuetable:refresh');
+                    this.$refs.vuetable.reloadData();
                 })
             },
             yes() {
                 let _self = this;
                 let rows = _self.selectedRow;
                 if (rows.length === 1) {
-                    _self.show.modal = false;
+                    _self.close();
                     _self.tableData.forEach((item, i) => {
                         if (i === rows[0]) {
                             _self.selData = item;
-                            _self.$dispatch('selected-user', _self.selData)
+                            _self.handelSelect(_self.selData);
                         }
                     })
                 } else {
                     Message({
                         type: 'error',
-                        message: 'Please select a valid node.'
+                        message: this.$t("performance.message.reportManage")
                     })
                 }
             }
-    },
-    events: {
-        'vuetable:load-success': function(response) {
-            this.tableData = response.data.data;
-        }
     }
 }
 

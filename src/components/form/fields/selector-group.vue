@@ -137,7 +137,7 @@ export default {
 
     created: common.onCreated,
 
-    compiled: common.onCompiled,
+    mounted: common.onMounted,
 
     destroyed: common.onDestroyed,
     computed: common.computed,

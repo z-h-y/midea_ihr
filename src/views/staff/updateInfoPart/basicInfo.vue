@@ -1,4 +1,5 @@
 <template lang="html">
+<div>
   <v-form :model="data" :schema="internsPerSchema" label-width="250" label-suffix="" :cols="3" form-style="update-interns-per update-interns-form">
       <text-field property='givenName' editor-width="250"></text-field>
       <text-field property='middleName' editor-width="250"></text-field>
@@ -8,10 +9,8 @@
       <select-field property="bloodType" :mapping="dist.bloodType" editor-width="250"></select-field>
       <select-field property="areaCitizenship" :mapping="dist.area" editor-width="250"></select-field>
       <text-field property="birthDate" editor-width="250" :max-date="curDate"></text-field>
-      <text-field property="placeBirthName" type="selector" :readonly="true" :show.sync="placeBirth" editor-width="250"></text-field>
-      <!-- <text-field property="nationalityName" type="selector" :readonly="true" :show.sync="nation" editor-width="250"></text-field> -->
+      <text-field property="placeBirthName" type="selector" @open-selector="openSelector" :readonly="true" :show="placeBirth" editor-width="250"></text-field>
       <select-field property="maritalStatus" :mapping="dist.maritalStatus" editor-width="250"></select-field>
-      <!-- <select-field property="religion" editor-width="250"></select-field> -->
       <text-field property="idRegisteredAddress" editor-width="250" v-if="!isOutsource"></text-field>
       <select-field property="englishLevel" :mapping="dist.englishLevel" editor-width="250" v-if="!isOutsource"></select-field>
       <select-field property="employeeSource" :mapping="dist.employeeSource" editor-width="250" v-if="isEmployee"></select-field>
@@ -20,8 +19,9 @@
       <text-field property='emergencyContactPhone' type="number" editor-width="250" v-if="!isOutsource"></text-field>
       <text-field property='startWorkDate' editor-width="250"></text-field>
   </v-form>
-  <!-- <nation-selector :handle-comfirmed="selectnation" :show.sync="nation"></nation-selector> -->
-  <tree-data-selector url="/org/area/${}/child" head-text="Place Selector" label-id="areaId" label-name="areaName" :handle-comfirmed="selectPlaceBirth" :show.sync="placeBirth"></tree-data-selector>
+  <!-- <nation-selector :handle-comfirmed="selectnation" :show="nation"></nation-selector> -->
+  <tree-data-selector ref="placeselect" url="/org/area/${}/child" :head-text="$t('selectors.selectPlace')" label-id="areaId" label-name="areaName" :handle-comfirmed="selectPlaceBirth" :show="placeBirth"></tree-data-selector>
+</div>
 </template>
 
 <script>
@@ -33,58 +33,52 @@ import {
     getDictMapping,formatDate
 } from '../../../util/assist';
 export default {
-  props: [
-    {
-      name: 'data'
-    },
-    {
-      name: 'dist',
-      type: Object
-    }
-  ],
+  props: {
+    dist: {}
+  },
   data() {
-    var isEmployee = this.$route.extra === '/ihr/staff/employees/regularEmployees';
-    var isInterns = this.$route.extra === '/ihr/staff/interns';
-    var isOutsource = this.$route.extra === '/ihr/staff/outsource';
+    var isEmployee = this.$route.meta.extra === '/ihr/staff/employees/regularEmployees';
+    var isInterns = this.$route.meta.extra === '/ihr/staff/interns';
+    var isOutsource = this.$route.meta.extra === '/ihr/staff/outsource';
     var internsPerData = {
         givenName: {
-            label: 'Given Name',
+            label: this.$t('staff.givenName'),
             required: true
         },
         middleName: {
-            label: 'Middle Name'
+            label: this.$t('staff.middleName')
         },
         familyName: {
-            label: 'Family Name',
+            label: this.$t('staff.familyName'),
             required: true
         },
         preferredName: {
-            label: 'Preferred Name'
+            label: this.$t('staff.preferredName')
         },
         gender: {
-            label: 'Gender',
+            label: this.$t('staff.gender'),
             required: true
         },
         bloodType: {
-            label: 'Blood Type'
+            label: this.$t('staff.bloodType')
         },
         areaCitizenship: {
-            label: 'Citizenship',
+            label: this.$t('staff.citizenship'),
 			      required: true
         },
         birthDate: {
-            label: 'Date of Birth',
+            label: this.$t('staff.dateofBirth'),
             required: true,
             type: 'date'
         },
         placeBirthName: {
-            label: 'Place of Birth'
+            label: this.$t('staff.placeofBirth')
         },
         nationalityName: {
             label: 'Nation'
         },
         maritalStatus: {
-            label: 'Marital Status',
+            label: this.$t('staff.maritalStatus'),
             required: true
         },
         // religion: {
@@ -94,27 +88,27 @@ export default {
         //     }
         // },
         idRegisteredAddress: {
-            label: 'ID Registered Address'
+            label: this.$t('staff.IDRegisteredAddress')
         },
         englishLevel: {
-            label: 'English Level',
+            label: this.$t('staff.englishLevel'),
             required: true
         },
         employeeSource: {
-            label: 'Recruited From'
+            label: this.$t('staff.recruitedFrom')
         },
         isOvertimeValid: {
-            label: 'Overtime Classification'
+            label: this.$t('staff.overtimeClassification')
         },
         emergencyContact: {
-            label: 'Emergency Contact Name'
+            label: this.$t('staff.emergencyContactName')
         },
         emergencyContactPhone: {
-            label: 'Emergency Contact Phone',
+            label: this.$t('staff.emergencyContactPhone'),
             required: true
         },
         startWorkDate: {
-            label: 'Date of Starting work',
+            label: this.$t('staff.dateofStartingwork'),
             type: 'date'
         }
     };
@@ -129,6 +123,7 @@ export default {
       delete internsPerData.secondaryPhone;
     }
     return {
+      data: {},
       isEmployee: isEmployee,
       isInterns: isInterns,
       isOutsource: isOutsource,
@@ -148,11 +143,14 @@ export default {
       return formatDate(new Date());
     }
   },
-  ready() {
+  mounted() {
     this.data = this.internsPerSchema.newModel();
   },
-  attached() {},
+
   methods: {
+    openSelector() {
+      this.$refs['placeselect'].open();
+    },
     selectnation(node, el) {
       if (node.nationalityName) {
         this.data.nation = node.nationalityId;

@@ -30,7 +30,7 @@
         padding-left: 4px;
     }
     .panel-b .d-radio-group {
-      width: 140px;
+        width: 140px;
     }
 }
 
@@ -40,15 +40,15 @@
 
 <div class="content-wrap ihr-setting-templateUpdate">
     <panel :title="panelTitle" class="panel-b" header="panel-header">
-        <v-form v-ref:templateform :model="areaTemplate" :schema="areaTemplateSchema" label-width="145" label-suffix="" :cols="1" form-style="org-form">
+        <v-form ref="templateform" :model="areaTemplate" :schema="areaTemplateSchema" label-width="145" label-suffix="" :cols="1" form-style="org-form">
             <select-field property='employementCategory' editor-width="250"></select-field>
             <text-field property="areaTemplateName" editor-width="250"></text-field>
             <select-field property="areaId" editor-width="250"></select-field>
         </v-form>
-        <template-item v-ref:detailsform :data.sync="templateDetailsList"></template-item>
+        <template-item ref="detailsform" :data.sync="templateDetailsList"></template-item>
         <div class="btn-group">
-            <ui-button @click="submit" color="primary mr10">Submit</ui-button>
-            <ui-button @click="cancel" class="btn-default-bd" type="flat">Cancel</ui-button>
+            <ui-button @click="submit" color="primary mr10">{{$t('button.submit')}}</ui-button>
+            <ui-button @click="cancel" class="btn-default-bd" type="flat">{{$t('button.cancel')}}</ui-button>
         </div>
     </panel>
 </div>
@@ -71,57 +71,58 @@ import {
     formatDate
 }
 from '../../../util/assist.js';
-let areaTemplateSchema = new Schema({
-    areaTemplateName: {
-        label: 'Template Name',
-        required: true,
-        whitespace: false,
-    },
-    areaName: {
-        label: 'Restrict to Country',
-        required: true,
-        whitespace: false,
-    },
-    areaId: {
-        label: 'Restrict to Country',
-        whitespace: false,
-        required: true,
-        mapping: function() {
-            return Vue.http.get('/org/area/0/child').then((response) => {
-                if (response.data) {
-                    let result = {},
-                        datas = response.data;
-                    for (var i = 0, l = datas.length; i < l; i++) {
-                        result[datas[i].areaName] = datas[i].areaId;
-                    }
-                    return result;
-                }
-            });
-        },
-        multiSelect: false
-    },
-    employementCategory: {
-        label: 'Category',
-        whitespace: false,
-        required: true,
-        mapping: function() {
-            return getDictMapping('EMPLOYEE_CATEGORY');
-        },
-        multiSelect: false
-    },
-    details: {
 
-    },
-    status: {
-
-    }
-});
 
 export default {
     data() {
+            let areaTemplateSchema = new Schema({
+                areaTemplateName: {
+                    label: this.$t('system.template.labelTemplateName'),
+                    required: true,
+                    whitespace: false,
+                },
+                areaName: {
+                    label: this.$t('system.template.labelRestrictToCountry'),
+                    required: true,
+                    whitespace: false,
+                },
+                areaId: {
+                    label: this.$t('system.template.labelRestrictToCountry'),
+                    whitespace: false,
+                    required: true,
+                    mapping: function() {
+                        return Vue.http.get('/org/area/0/child').then((response) => {
+                            if (response.data) {
+                                let result = {},
+                                    datas = response.data;
+                                for (var i = 0, l = datas.length; i < l; i++) {
+                                    result[datas[i].areaName] = datas[i].areaId;
+                                }
+                                return result;
+                            }
+                        });
+                    },
+                    multiSelect: false
+                },
+                employementCategory: {
+                    label: this.$t('system.template.employementCategory'),
+                    whitespace: false,
+                    required: true,
+                    mapping: function() {
+                        return getDictMapping('EMPLOYEE_CATEGORY');
+                    },
+                    multiSelect: false
+                },
+                details: {
+
+                },
+                status: {
+
+                }
+            });
             let _self = this;
             return {
-                panelTitle: 'Add Country Template',
+                panelTitle: this.$t('system.template.addCountryTemplate'),
                 areaTemplateSchema: areaTemplateSchema,
                 areaTemplate: areaTemplateSchema.newModel(),
                 templateDetailsList: [], //最多20个
@@ -230,11 +231,11 @@ export default {
                 let _self = this;
                 _self.areaTemplate.areaTemplateId = transition.to.params.areaTemplateId;
                 if (_self.$route.name === 'addAreaTemplate') {
-                    _self.panelTitle = 'Add Country Template';
+                    _self.panelTitle = this.$t('system.template.addCountryTemplate');
 
 
                 } else if (_self.$route.name === 'editAreaTemplate') {
-                    _self.panelTitle = 'Edit Country Templatet';
+                    _self.panelTitle = this.$t('system.template.EditCountryTemplatet');
 
                     _self.$http.post('/area/template/getAreaTemplateById', {
                         areaTemplateId: _self.areaTemplate.areaTemplateId

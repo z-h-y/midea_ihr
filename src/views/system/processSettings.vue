@@ -4,8 +4,8 @@
     * {
         box-sizing: border-box;
     }
-    .group{
-      border: none;
+    .group {
+        border: none;
     }
 }
 
@@ -13,19 +13,22 @@
 
 <template lang="html">
 
-<ui-confirm header="Delete" @confirmed="delete" :show.sync="showdel" close-on-confirm autofocus="confirm-button">
-    Do you want to delete this Template? May prevent the system from running!
-</ui-confirm>
-<div class="content-wrap bg-w ihr-system-processSettings">
-    <div class="group">
-        <ui-button class="mr10 dis-tc btn-primary-bd" icon="fa-plus" color="primary" text="Add" @click="add" button-type="button"></ui-button>
-        <ui-button class="mr10 dis-tc btn-default-bd" icon="fa-pencil-square-o" type="flat" text="Edit" @click="edit" button-type="button"></ui-button>
-        <ui-button class="mr10 dis-tc btn-default-bd" icon="fa-remove" type="flat" text="Delete" @click="beforeDel" button-type="button"></ui-button>
-        <ui-button class="dis-tc-t btn-default-bd" type="flat" show-menu-icons has-dropdown-menu :menu-options="shareMenuOptions" button-type="button" icon="fa-caret-down" :icon-right="true" open-dropdown-on="click" @menu-option-selected="menuOptionSelected" text="More"></ui-button>
-    </div>
-    <div class="pl16 pr16 pb16">
-        <vuetable :api-url="tableUrl" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="tableColumns" :sort-order="sortOrder" :item-actions="itemActions" per-page="10">
-        </vuetable>
+<div>
+    <ui-confirm header="Delete" @confirmed="deleteBtn" :show.sync="showdel" close-on-confirm autofocus="confirm-button">
+        Do you want to delete this Template? May prevent the system from running!
+    </ui-confirm>
+    <div class="content-wrap bg-w ihr-system-processSettings">
+        <div class="group">
+            <ui-button class="mr10 dis-tc btn-primary-bd" icon="fa-plus" color="primary" :text="$t('button.add')" @click="add" button-type="button"></ui-button>
+            <ui-button class="mr10 dis-tc btn-default-bd" icon="fa-pencil-square-o" type="flat" :text="$t('button.edit')" @click="edit" button-type="button"></ui-button>
+            <ui-button class="mr10 dis-tc btn-default-bd" icon="fa-remove" type="flat" :text="$t('button.delete')" @click="beforeDel" button-type="button"></ui-button>
+            <ui-button class="dis-tc-t btn-default-bd" type="flat" show-menu-icons has-dropdown-menu :menu-options="shareMenuOptions" button-type="button" icon="fa-caret-down" :icon-right="true" open-dropdown-on="click" @menu-option-selected="menuOptionSelected"
+            :text="$t('button.more')"></ui-button>
+        </div>
+        <div class="pl16 pr16 pb16">
+            <vuetable :api-url="tableUrl" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="tableColumns" :sort-order="sortOrder" :item-actions="itemActions" per-page="10">
+            </vuetable>
+        </div>
     </div>
 </div>
 
@@ -42,55 +45,54 @@ import {
     formatDate
 }
 from '../../util/assist';
-let dropdownOptions = [{
-    id: 'copy',
-    text: 'Copy',
-    icon: 'edit',
-}, {
-    id: 'activate',
-    text: 'Active',
-    icon: 'activate',
-}, {
-    id: 'inactive',
-    text: 'Inactive',
-    icon: 'inactive',
-}];
+
 export default {
     data() {
+            let dropdownOptions = [{
+                id: 'copy',
+                text: this.$t('system.processSettings.copy'),
+                icon: 'edit',
+            }, {
+                id: 'activate',
+                text: this.$t('system.processSettings.activate'),
+                icon: 'activate',
+            }, {
+                id: 'inactive',
+                text: this.$t('system.processSettings.inactive'),
+                icon: 'inactive',
+            }];
             let _self = this;
             return {
                 tableUrl: '/process/template/list',
                 showdel: false,
                 selectedRow: [],
                 tableColumns: [{
-                        name: '__checkbox:processTemplateId',
-                        title: ''
-                    }, {
-                        name: 'processTemplateName',
-                        title: 'Template Name',
-                        sortField: 'processTemplateName',
-                        callback: function(name, value) {
-                            return `<a href="${location.href}/view/${value.processTemplateId}">${name}</a>`;
-                        }
-                    },
-                    {
-                        name: 'createDate',
-                        title: 'Create Date',
-                        dataClass: 'tr',
-                        titleClass: 'mw80',
-                        sortField: 'createDate',
-                        callback: function(value) {
-                            return _self.handleFormatDate(value);
-                        }
-                    }, {
-                        name: 'activeStatus',
-                        title: 'Status',
-                        sortField: 'activeStatus',
-                        callback: function(value) {
-                            return _self.fixActiveStatus(value);
-                        }
+                    name: '__checkbox:processTemplateId',
+                    title: ''
+                }, {
+                    name: 'processTemplateName',
+                    title: this.$t('system.processSettings.processTemplateName'),
+                    sortField: 'processTemplateName',
+                    callback: function(name, value) {
+                        return `<a href="${location.href}/view/${value.processTemplateId}">${name}</a>`;
                     }
-                ],
+                }, {
+                    name: 'createDate',
+                    title: this.$t('system.processSettings.createDate'),
+                    dataClass: 'tr',
+                    titleClass: 'mw80',
+                    sortField: 'createDate',
+                    callback: function(value) {
+                        return _self.handleFormatDate(value);
+                    }
+                }, {
+                    name: 'activeStatus',
+                    title: this.$t('system.processSettings.activeStatus'),
+                    sortField: 'activeStatus',
+                    callback: function(value) {
+                        return _self.fixActiveStatus(value);
+                    }
+                }],
                 shareMenuOptions: dropdownOptions,
                 dist: {
                     ACTIVESTATUS: {}
@@ -163,14 +165,14 @@ export default {
                     } else {
                         Message({
                             type: 'error',
-                            message: 'Please select a valid node.'
+                            message: _self.$t('system.message.selectNode')
                         })
                     }
                 },
                 beforeDel: function() {
                     this.showdel = true;
                 },
-                delete() {
+                deleteBtn() {
                     let _self = this;
                     let rows = _self.selectedRow;
                     _self.$http.post(`/process/template/delete`, {
@@ -233,7 +235,7 @@ export default {
                     } else {
                         Message({
                             type: 'error',
-                            message: 'Please select a valid node.'
+                            message: _self.$t('system.message.selectNode')
                         })
                     }
 

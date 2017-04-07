@@ -37,24 +37,24 @@
 
 <div class="content-wrap ihr-setting-templateUpdate">
     <panel :title="panelTitle" class="panel-b" header="panel-header">
-        <v-form v-ref:dictform :model="dict" :schema="dictSchema" label-width="145" label-suffix="" :cols="1" form-style="org-form">
+        <v-form ref="dictform" :model="dict" :schema="dictSchema" label-width="145" label-suffix="" :cols="1" form-style="org-form">
             <text-field property='dictCode' editor-width="250"></text-field>
             <text-field property="dictName" editor-width="250"></text-field>
+            <select-field property='language' editor-width="220" ></select-field>
             <text-field property="description" editor-width="250"></text-field>
-
             <field class="label-hide" property="dicts">
                 <div class="field-row">
                     <div class="cell tl w160 pl4">
-                        <label>Order No</label>
+                        <label>{{ $t('system.dictUpdate.order') }}</label>
                     </div>
                     <div class="cell tl w160">
-                        <label>Dict Name</label>
+                        <label>{{ $t('system.dictUpdate.dictName') }}</label>
                     </div>
                     <div class="cell tl w160">
-                        <label>Dict Value</label>
+                        <label>{{ $t('system.dictUpdate.dictCode') }}</label>
                     </div>
                     <div class="cell tl w160">
-                        <label>remark</label>
+                        <label>{{ $t('system.dictUpdate.remark') }} </label>
                     </div>
                     <span class="icon-area cell" @click="handleAdd()">
                         <i class="fa fa-plus-circle poi"></i>
@@ -64,16 +64,16 @@
                     <v-form class="mt5" :model="item" :schema="dictItemDataSchema" label-width="0" label-suffix="" :cols="1">
                         <div class="field-row">
                             <div class="cell w160 tl">
-                                <text-field label-width="0" :hide-label="true" property='orderNo' :hide-label="true" editor-width="140"></text-field>
+                                <text-field label-width="0" :hide-label="true" property='orderNo' editor-width="140"></text-field>
                             </div>
                             <div class="cell w160 tl">
-                                <text-field label-width="0" :hide-label="true" property='dictItemName' :hide-label="true" editor-width="140"></text-field>
+                                <text-field label-width="0" :hide-label="true" property='dictItemName' editor-width="140"></text-field>
                             </div>
                             <div class="cell w160">
-                                <text-field label-width="0" :hide-label="true" property='dictItemValue' :hide-label="true" editor-width="140"></text-field>
+                                <text-field label-width="0" :hide-label="true" property='dictItemValue' editor-width="140"></text-field>
                             </div>
                             <div class="cell w160">
-                                <text-field label-width="0" :hide-label="true" property='remark' :hide-label="true" editor-width="140"></text-field>
+                                <text-field label-width="0" :hide-label="true" property='remark' editor-width="140"></text-field>
                             </div>
                             <span class="icon-area pl2" @click="handleRemove($index)"> <i class="fa fa-trash-o del-bottom"></i></span>
                         </div>
@@ -82,8 +82,8 @@
             </field>
         </v-form>
         <div class="btn-group">
-            <ui-button @click="submit" color="primary mr10">Submit</ui-button>
-            <ui-button @click="cancel" class="btn-default-bd" type="flat">Cancel</ui-button>
+            <ui-button @click="submit" color="primary mr10">{{$t('button.submit')}}</ui-button>
+            <ui-button @click="cancel" class="btn-default-bd" type="flat">{{$t('button.cancel')}}</ui-button>
         </div>
     </panel>
 </div>
@@ -106,46 +106,60 @@ import {
     formatDate
 }
 from '../../util/assist.js';
-let dictSchema = new Schema({
-    dictCode: {
-        label: 'Dict Code',
-        required: true,
-        whitespace: false,
-    },
-    dictName: {
-        label: 'Dict Name',
-        required: true,
-        whitespace: false,
-    },
-    description: {
-        label: 'description',
-        required: true,
-        whitespace: false,
-    },
-    dictId: {
 
-    }
-});
-var dictItemData = {
-    orderNo: {
-        required: true,
-        whitespace: false,
-    },
-    dictItemName: {
-        required: true,
-        whitespace: false,
-    },
-    dictItemValue: {
-        required: true,
-        whitespace: false,
-    },
-    remark: {
-        required: true,
-        whitespace: false,
-    }
-};
 export default {
     data() {
+            let dictSchema = new Schema({
+                dictCode: {
+                    label: this.$t('system.dict.dictCode'),
+                    required: true,
+                    whitespace: false,
+                },
+                dictName: {
+                    label: this.$t('system.dict.dictName'),
+                    required: true,
+                    whitespace: false,
+                },
+                language: {
+                    label: 'Language',
+                    required: true,
+                    whitespace: false,
+                    mapping: {
+                        'en_US': 'en_US',
+                        'zh_CN': 'zh_CN',
+                        'ja': 'ja',
+                        'id': 'id',
+                        'vi': 'vi'
+                    },
+                    default: 'en_US'
+                },
+                description: {
+                    label: this.$t('system.dict.description'),
+                    required: true,
+                    whitespace: false,
+                },
+                dictId: {
+
+                }
+            });
+            var dictItemData = {
+                orderNo: {
+                    required: true,
+                    whitespace: false,
+                },
+                dictItemName: {
+                    required: true,
+                    whitespace: false,
+                },
+                dictItemValue: {
+                    required: true,
+                    whitespace: false,
+                },
+                remark: {
+                    required: true,
+                    whitespace: false,
+                }
+            };
             let _self = this;
             return {
                 panelTitle: 'Add Dict',
@@ -178,7 +192,7 @@ export default {
                             orderNo: t.orderNo,
                             dictItemName: t.dictItemName,
                             dictItemValue: t.dictItemValue,
-                            remark:t.remark
+                            remark: t.remark
                         }
                         dicts.push(obj);
                     }
@@ -186,6 +200,7 @@ export default {
                         dictItemList: dicts,
                         dictCode: _dictModel.dictCode,
                         dictName: _dictModel.dictName,
+                        language: _dictModel.language,
                         description: _dictModel.description,
                         dictId: _dictModel.dictId
                     }
@@ -258,7 +273,7 @@ export default {
 
         },
         components: {
-          Panel: require('../../components/basic/panel.vue')
+            Panel: require('../../components/basic/panel.vue')
         }
 }
 

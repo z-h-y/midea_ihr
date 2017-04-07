@@ -10,18 +10,18 @@
 
 <template lang="html">
 
-<ui-modal class="job-selector" :show.sync="show.modal" type="large" header="Trigger Selector" body="" :backdrop-dismissible="false">
+<ui-modal ref="modal" class="job-selector" :show.sync="show.modal" type="large" :title="$t('selectors.triggerSelector')" body="" :backdrop-dismissible="false">
     <div class="leftRight-panel bg-f5f5f5 mt20 fix">
         <div class="right-panel pb20 ml0">
             <div class="vuetable-wrapper">
-                <vuetable :api-url="schedulerUrl" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="schedulerColumns" :sort-order="sortOrder" :item-actions="itemActions" per-page="10">
+                <vuetable ref="vuetable" :api-url="schedulerUrl" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="schedulerColumns" :sort-order="sortOrder" :item-actions="itemActions" per-page="10">
                 </vuetable>
             </div>
         </div>
     </div>
     <div slot="footer">
-        <ui-button @click="yes" color="primary">Confirm</ui-button>
-        <ui-button @click="show.modal = false">Cancel</ui-button>
+        <ui-button @click="yes" color="primary">{{$t('button.confirm')}}</ui-button>
+        <ui-button @click="close">{{$t('button.cancel')}}</ui-button>
     </div>
 </ui-modal>
 
@@ -39,7 +39,13 @@ import {
 from '../../util/assist.js';
 export default {
     props: {
-        show: {}
+        show: {},
+        handleComfirmed: {
+            type: Function,
+            default () {
+                return function() {};
+            }
+        }
     },
     data() {
         let _self = this;
@@ -51,15 +57,15 @@ export default {
                 title: ''
             }, {
                 name: 'name',
-                title: 'scheduler name',
+                title: this.$t('selectors.schedulerName'),
                 sortField: 'name'
             }, {
                 name: 'type',
-                title: 'type',
+                title: this.$t('system.jobTrigger.type'),
                 sortField: 'type'
             }, {
                 name: 'startTime',
-                title: 'startTime',
+                title: this.$t('system.jobTrigger.startTime'),
                 dataClass: 'tr',
                 titleClass: 'mw80',
                 sortField: 'startTime',
@@ -68,14 +74,24 @@ export default {
                 }
             }, {
                 name: 'description',
-                title: 'description',
+                title: this.$t('system.jobTrigger.description'),
                 sortField: 'description'
             }]
         }
     },
-    computed: {},
+    computed: {
+      tableData() {
+        return this.$refs.vuetable.tableData
+      }
+    },
     mounted() {},
     methods: {
+      open() {
+        this.$refs['modal'].open();
+      },
+      close() {
+        this.$refs['modal'].close()
+      },
         handleFormatDate(value) {
                 return formatDate(new Date(value));
             },
@@ -83,27 +99,22 @@ export default {
                 let _self = this;
                 let rows = _self.selectedRow;
                 if (rows.length === 1) {
-                    _self.show.modal = false;
+                    _self.close();
                     _self.tableData.forEach((item, i) => {
                         if (i === rows[0]) {
                             _self.selData = item;
-                            _self.$dispatch('triggerselector', _self.selData)
+                            _self.handleComfirmed(_self.selData)
                         }
                     })
                 } else {
                     Message({
                         type: 'error',
-                        message: 'Please select a valid node.'
+                        message: this.$t("performance.message.reportManage")
                     })
                 }
             }
     },
-    components: {},
-    events: {
-        'vuetable:load-success': function(response) {
-            this.tableData = response.data.data;
-        }
-    }
+    components: {}
 }
 
 </script>

@@ -1,114 +1,34 @@
 <style lang="less">
 
-.position-select {
-    * {
-        box-sizing: border-box;
-    }
-    .vuetable th{
-        padding: 6px 10px;
-    }
-    .ui-modal-footer {
-        position: absolute;
-        bottom: 0;
-        width: 100%;
-    }
-    .tree-panel {
-        height: 383px;
-    }
-    .treelist {
-        height: 380px;
-    }
-    .ui-modal-wrapper .ui-modal-container{
-        height: 505px;
-    }
-    .vuetable-pagination {
-        margin-top: 32px;
-        padding-right: 0px;
-    }
-    .vuetable-wrapper {
-        width: auto;
-        height: 329px;
-        overflow: auto;
-    }
-    .help-desk{
-      height:auto;
-    }
-    .treelist {
-        overflow-x: auto;
-    }
-    .search-ctx {
-        position: relative;
-        height: 48px;
-    }
-    .search-pos {
-        position: absolute;
-        right: 16px;
-        top: 8px;
-    }
-    .search-pos .search-bg {
-        display: inline-block;
-        border: 1px solid #e8e8e8;
-        height: 100%;
-        background: #fff;
-        padding: 2px 16px 2px 10px;
-        border-radius: 16px;
-    }
-    .search-pos .search-input {
-        border: none;
-        background: transparent;
-        width: 202px;
-        height: 26px;
-        line-height: 26px;
-    }
-    .search-pos .search-input::placeholder {
-        color: #a5acbe;
-        font-size: 12px;
-    }
-    .search-pos .search-input:focus {
-        outline: none;
-        border: none;
-    }
-    .search-btn {
-        cursor: pointer;
-    }
-    .treelist-detail {
-        padding-top: 0px;
-        padding-right: 0px;
-        padding-bottom: 0px;
-    }
-    .vuetable-area {
-        margin-bottom: 0px;
-        padding-bottom: 0px;
-    }
-}
+@import "style/select-common.less";
 
 </style>
 
 <template lang="html">
 
-<ui-modal class="position-select" :show.sync="show.modal" type="large" header="Select Position" body="" :backdrop-dismissible="false">
+<ui-modal ref="posselect" class="position-select select-common" type="large" :title="$t('selectors.selectPosition')" body="" :backdrop-dismissible="false">
     <div class="tree-panel fix">
         <div class="treelist">
-            <tree :data="regions" :level-config="levelConfig" :show-checkbox="showCheckbox" v-ref:tree :click-node="clickNode"></tree>
+            <tree :data="regions" :level-config="levelConfig" :show-checkbox="showCheckbox" ref="tree" :click-node="clickNode"></tree>
         </div>
         <div class="help-desk treelist-detail">
             <div class="search-ctx">
                 <div class="search-pos">
                     <span class="search-bg">
-               <input @keydown="goSearch($event)" class="search-input" placeholder="Search" type="text" v-model="searchTxt" />
+               <input @keydown="goSearch($event)" class="search-input" :placeholder="$t('button.search')" type="text" v-model="searchTxt" />
                <span @click="search" class="search-btn"><i class="fa fa-search"></i></span>
                     </span>
                 </div>
             </div>
             <div class="vuetable-wrapper">
-                <vuetable :api-url="tableUrl" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="tableColumns" per-page="10">
+                <vuetable ref="vuetable" :api-url="tableUrl" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="tableColumns" per-page="10">
                 </vuetable>
             </div>
         </div>
     </div>
     <div slot="footer">
-        <ui-button @click="yes" color="primary">Confirm</ui-button>
-        <ui-button @click="show.modal = false">Cancel</ui-button>
+        <ui-button @click="confirmSelect" color="primary">{{$t('button.confirm')}}</ui-button>
+        <ui-button @click="close">{{$t('button.cancel')}}</ui-button>
     </div>
 </ui-modal>
 
@@ -139,7 +59,6 @@ export default {
         return {
             searchTxt: '',
             selData: {},
-            tableData: [],
             selectedRow: [],
             tableUrl: '',
             dist: {
@@ -150,16 +69,16 @@ export default {
                 title: ''
             }, {
                 name: 'positionName',
-                title: 'Position Name',
+                title: this.$t('position.label.positionName'),
                 sortField: 'positionName'
                     // callback: 'posName'
             }, {
                 name: 'standardJobName',
-                title: 'Restrict To Title',
+                title: this.$t('position.columns.pSetRestrictToTitle'),
                 sortField: 'standardJobName'
             }, {
                 name: 'mibGrade',
-                title: 'MIB Grade',
+                title: this.$t('position.columns.groupMIBGrade'),
                 sortField: 'mibGrade',
                 callback: function(value) {
                     return _self.fixMIBType(value);
@@ -201,37 +120,45 @@ export default {
         }
     },
     watch: {
-      'show.modal': function(newVal) {
-        if (newVal === true && this.regions.length < 1) {
-          this.getTreeData();
+        'show.modal': function(newVal) {
+            if (newVal === true && this.regions.length < 1) {
+                this.getTreeData();
+            }
         }
-      }
     },
     computed: {
-
-    },
-    ready() {
-    },
-    created() {
-    },
-    methods: {
-      getTreeData() {
-        var self = this;
-        if (Object.keys(this.dist.MIB_RANK).length < 1) {
-          getDictMapping('MIB_RANK').then(function(res) {
-              self.dist.MIB_RANK = res;
-          });
+        tableData() {
+            return this.$refs.vuetable.tableData
         }
-        this.$http.get('/org/orgs/parent').then((response) => {
-            this.regions = response.data;
-        }, (response) => {
-            Message({
-                type: 'error',
-                message: response.statusText
-            });
-        });
-      },
-        fixDist(value, option) {
+    },
+
+    methods: {
+        open() {
+                this.$refs['posselect'].open();
+                if (this.regions.length < 1) {
+                    this.getTreeData();
+                }
+            },
+            close() {
+                this.$refs['posselect'].close()
+            },
+            getTreeData() {
+                var self = this;
+                if (Object.keys(this.dist.MIB_RANK).length < 1) {
+                    getDictMapping('MIB_RANK').then(function(res) {
+                        self.dist.MIB_RANK = res;
+                    });
+                }
+                this.$http.get('/org/orgs/parent').then((response) => {
+                    this.regions = response.data;
+                }, (response) => {
+                    Message({
+                        type: 'error',
+                        message: response.statusText
+                    });
+                });
+            },
+            fixDist(value, option) {
                 var dist = {};
                 switch (option) {
                     case 'MIB_RANK':
@@ -249,24 +176,26 @@ export default {
             fixMIBType(value) {
                 return this.fixDist(value, 'MIB_RANK');
             },
-            yes() {
+            confirmSelect() {
                 let _self = this;
                 let rows = _self.selectedRow;
+                if (rows < 1) {
+                    Message({
+                        type: 'error',
+                        message: this.$t('selectors.selectEmployee')
+                    });
+                    return false;
+                }
                 if (rows.length === 1) {
-                    _self.show.modal = false;
+                    _self.close();
                     _self.tableData.forEach((item, i) => {
                         if (i === rows[0]) {
                             _self.selData = item;
-                            _self.handleComfirmed(_self.selData, _self.orgGroup);
-                            _self.$dispatch('selected-position', _self.selData)
+                            _self.$emit('selected-position',_self.selData, _self.orgGroup);
+                            _self.$refs['posselect'].close()
                         }
                     })
-                } else {
-                    Message({
-                        type: 'error',
-                        message: 'Please select a valid node.'
-                    })
-                }
+                } 
             },
             search() {
                 if (this.orgGroup.orgId === undefined || this.orgGroup.orgId === null) {
@@ -283,13 +212,8 @@ export default {
                 }
             }
     },
-    events: {
-        'vuetable:load-success': function(response) {
-            this.tableData = response.data.data;
-        }
-    },
     components: {
-      Tree: require('../tree/tree.vue')
+        Tree: require('../tree/tree.vue')
     }
 }
 

@@ -47,7 +47,7 @@
         text-align: center;
         color: #3aa2eb;
         font-size: 28px;
-        background: url("../../static/images/public/roundness.png") no-repeat center center;
+        background: url("../../assets/images/public/roundness.png") no-repeat center center;
     }
     .panel-content-txt {
         font-size: 14px;
@@ -98,13 +98,13 @@
         width: 14px;
         height: 20px;
         float: left;
-        background: url("../../static/images/public/user.png") no-repeat 0 2px;
+        background: url("../../assets/images/public/user.png") no-repeat 0 2px;
     }
     .cf-position {
         width: 14px;
         height: 20px;
         float: left;
-        background: url("../../static/images/public/position.png") no-repeat 2px 0;
+        background: url("../../assets/images/public/position.png") no-repeat 2px 0;
     }
     .contact {
         background: #81cbff;
@@ -222,11 +222,11 @@
     }
     .phone {
         .ico-baseSty();
-        background: url("../../static/images/public/staff-interns-phone-1.png") no-repeat;
+        background: url("../../assets/images/public/staff-interns-phone-1.png") no-repeat;
     }
     .email {
         .ico-baseSty();
-        background: url("../../static/images/public/staff-interns-mail-1.png") no-repeat;
+        background: url("../../assets/images/public/staff-interns-mail-1.png") no-repeat;
     }
     .vam {
         vertical-align: middle;
@@ -260,7 +260,7 @@
         <div class="tab-cell w-per40">
             <div class="panel left-panel">
                 <div class="panel-tit">
-                    <span>TO DO</span>
+                    <span>{{ $t('home.toDo') }}</span>
                     <!-- <a class="panel-more" href="javascript:void(0)">More</a> -->
                 </div>
                 <div class="panel-content fix">
@@ -270,7 +270,7 @@
                                 {{todoCounts.schemeCount}}
                             </div>
                             <div class="panel-content-txt">
-                                Performance
+                                {{ $t('home.performance') }}
                             </div>
                         </div>
                         <div class="panel-content-task poi l" @click="goToDoAnnualPerformance">
@@ -278,7 +278,7 @@
                                 {{todoCounts.annualSchemeCount}}
                             </div>
                             <div class="panel-content-txt">
-                                Annual Performance
+                                {{ $t('home.annualPerformance') }}
                             </div>
                         </div>
                     </div>
@@ -300,8 +300,8 @@
         <div class="tab-cell pl16">
             <div class="panel left-panel">
                 <div class="panel-tit">
-                    <span>NOTIFICATION</span>
-                    <a class="panel-more" v-link="{name: 'notification'}">More</a>
+                    <span>{{ $t('home.notification') }}</span>
+                    <a class="panel-more" v-link="{name: 'notification'}">{{ $t('home.more') }}</a>
                 </div>
                 <div class="panel-content pt16">
                     <table class="bf-left-table f16">
@@ -327,8 +327,8 @@
         <div class="tab-cell w-per40">
             <div class="panel left-panel rel w590">
                 <div class="panel-tit">
-                    <span>MY PROFILE</span>
-                    <a class="panel-more" v-link="{name: 'myProfile'}">More</a>
+                    <span>{{ $t('home.myProfile') }}</span>
+                    <a class="panel-more" v-link="{name: 'myProfile'}">{{ $t('home.more') }}</a>
                 </div>
                 <div class="panel-content">
                     <table class="w-per100 f14 mt20 ml20">
@@ -358,7 +358,7 @@
                             <div>
                                 <i class="fa fa-phone c-d1ecff f22" aria-hidden="true"></i>
                             </div>
-                            <div class="contact-num f14 mt10 bk" title="{{profile.officePhone}}">
+                            <div class="contact-num f14 mt10 bk" :title="profile.officePhone">
                                 {{profile.officePhone}}
                             </div>
                         </li>
@@ -366,7 +366,7 @@
                             <div>
                                 <i class="fa fa-envelope c-d1ecff f22" aria-hidden="true"></i>
                             </div>
-                            <div class="contact-num f14 mt10 bk" title="{{profile.email}}">
+                            <div class="contact-num f14 mt10 bk" :title="profile.email">
                                 {{profile.email}}
                             </div>
                         </li>
@@ -374,7 +374,7 @@
                             <div>
                                 <i class="fa fa-map-marker c-d1ecff f22 " aria-hidden="true"></i>
                             </div>
-                            <div class="contact-num f14 mt10 bk" title="{{profile.homeAddress}}">
+                            <div class="contact-num f14 mt10 bk" :title="profile.homeAddress">
                                 {{profile.homeAddress}}
                             </div>
                         </li>
@@ -385,15 +385,15 @@
         <div class="pl16 tab-cell">
             <div class="panel right-panel">
                 <div class="panel-tit">
-                    <span>MY RECORD</span>
-                    <a class="panel-more" v-link="{name: 'myRecord'}">More</a>
+                    <span>{{ $t('home.myRecord') }}</span>
+                    <a class="panel-more" v-link="{name: 'myRecord'}">{{ $t('home.more') }}</a>
                 </div>
                 <div class="panel-content f14">
                     <ul class="mt20 ml20 fix rel panel-content-ul">
                         <li class="l w-per100 mb23" v-for="record in records" v-if="$index < 5">
-                            <img class="panel-content-img" src="../../static/images/public/home-point.png" alt="" />
+                            <img class="panel-content-img" src="assets/images/public/home-point.png" alt="" />
                             <span class="pl20 c-a5acbe l mr10" style="width:100px;height:19px;line-height:19px;">{{record.recordTime}}</span>
-                            <span class="pl20 c-6a707d memo" title="{{record.memo}}">{{record.memo}}</span>
+                            <span class="pl20 c-6a707d memo" :title="record.memo">{{record.memo}}</span>
                         </li>
                         <div class="panel-content-line"></div>
                     </ul>
@@ -407,8 +407,8 @@
         <div class="tab-cell">
             <div class="panel right-panel">
                 <div class="panel-tit">
-                    <span>MY TEAM</span>
-                    <a class="panel-more poi" @click="goTeam">More</a>
+                    <span>{{ $t('home.myTeam') }}</span>
+                    <a class="panel-more poi" @click="goTeam">{{ $t('home.more') }}</a>
                 </div>
                 <div class="panel-content fix">
                     <div class="bf-right-area bbe8 l" v-for="team in teams" v-if="$index < 6">
@@ -418,16 +418,16 @@
                                     <div class="header tc">
                                         <a><img class="wh-px40 br50" :src='photoUrl(team.photoId)' alt="" /></a>
                                     </div>
-                                    <div class="name mt5 tc" title="{{team.fullName}}">
+                                    <div class="name mt5 tc" :title="team.fullName">
                                         {{team.fullName}}
                                     </div>
                                 </td>
                                 <td class="w-per100 f16 c-6a707d vam pt10">
-                                    <div class="bg fix" title="{{team.officePhone}}">
+                                    <div class="bg fix" :title="team.officePhone">
                                         <span class="phone"></span>
                                         {{team.officePhone}}
                                     </div>
-                                    <div class="bg fix" title="{{team.email}}">
+                                    <div class="bg fix" :title="team.email">
                                         <span class="email"></span>
                                         {{team.email}}
                                     </div>
@@ -466,27 +466,27 @@ export default {
                 //绩效统计表格字段
                 columns: [{
                     name: 'schemeName',
-                    title: 'Scheme',
+                    title: this.$t('home.columns.staffScheme'),
                     sortField: 'schemeName'
                 }, {
                     name: 'stage1',
-                    title: 'Impending',
+                    title: this.$t('home.columns.staffImpending'),
                     sortField: 'stage1'
                 }, {
                     name: 'stage2',
-                    title: 'Submitted',
+                    title: this.$t('home.columns.staffSubmitted'),
                     sortField: 'stage2'
                 }, {
                     name: 'stage3',
-                    title: 'Awaiting Evaluation',
+                    title: this.$t('home.columns.staffAwaitingEvaluation'),
                     sortField: 'stage3'
                 }, {
                     name: 'stage4',
-                    title: 'Under Evaluation',
+                    title: this.$t('home.columns.staffUnderEvaluation'),
                     sortField: 'stage4'
                 }, {
                     name: 'stage5',
-                    title: 'Completed',
+                    title: this.$t('home.columns.staffCompleted'),
                     sortField: 'stage5'
                 }],
                 /*************end***************/
@@ -566,7 +566,7 @@ export default {
                     if (photoId)
                         return Vue.config.APIURL + `/system/attachment/downloadImg/${photoId}`;
                     else
-                        return `../../static/images/public/xwz.png`;
+                        return `../../assets/images/public/xwz.png`;
                 },
                 // InitEchart() {
                 //     this.polar.xAxis.data = this.handleGrade(this.performances, 'restrictYear');

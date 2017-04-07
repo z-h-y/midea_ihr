@@ -1,40 +1,41 @@
 <template lang="html">
-  <ui-confirm header="Delete this" @confirmed="delList" :show.sync="showdel" close-on-confirm autofocus="confirm-button">
-      Do you want to delete this?
+<div>
+  <ui-confirm ref="showdel" :title="$t('button.delete')" @confirm="delList" :show="showdel" close-on-confirm autofocus="confirm-button">
+      {{$t('common.deleteConfirm')}}
   </ui-confirm>
   <div class="edit-tab">
     <div class="tab-header">
-      <span>ID Information</span>
+      <span>{{$t('staff.IDInformation')}}</span>
       <i v-show="!isEdit" class="fa fa-plus-square-o" aria-hidden="true" @click="add"></i>
     </div>
     <div class="id-tab">
       <div class="id-head fix">
-        <span class="require">ID Type</span>
-        <span class="require">ID Number</span>
-        <span>Issue Date Of ID</span>
-        <span>Expiry Date Of ID</span>
-        <span>ID Attachment</span>
-        <span class="require">Primary ID</span>
+        <span class="require">{{$t('staff.idType')}}</span>
+        <span class="require">{{$t('staff.IDNumber')}}</span>
+        <span>{{$t('staff.issueDateOfID')}}</span>
+        <span>{{$t('staff.expiryDateOfID')}}</span>
+        <span>{{$t('staff.IDAttachment')}}</span>
+        <span class="require">{{$t('staff.primaryID')}}</span>
       </div>
-      <div class="id-list fix" v-for="item in data">
+      <div class="id-list fix" v-for="(item, index) in data">
         <span>{{fixDist(item.idType, 'idType')}}</span>
         <span>{{item.idNumber}}</span>
         <span>{{item.idIssueDate}}</span>
         <span>{{item.idExpiredDate}}</span>
-        <span><em v-if="item.attachmentId" @click="downFile($index)"><i class="fa fa-cloud-download id-file-download" aria-hidden="true"></i>{{item.attachmentName}}</em></span>
+        <span><em v-if="item.attachmentId" @click="downFile(index)"><i class="fa fa-cloud-download id-file-download" aria-hidden="true"></i>{{item.attachmentName}}</em></span>
         <span>{{fixDist(item.mainDocuments, mainDocumentsDist)}}</span>
-        <span class="list-operate"><i class="fa fa-pencil-square-o" aria-hidden="true" @click="edit($index)"></i><i v-show="item.mainDocuments !== '1'" class="fa fa-trash-o" aria-hidden="true" @click="beforeDel($index)"></i></span>
+        <span class="list-operate"><i class="fa fa-pencil-square-o" aria-hidden="true" @click="edit(index)"></i><i v-show="item.mainDocuments !== '1'" class="fa fa-trash-o" aria-hidden="true" @click="beforeDel(index)"></i></span>
       </div>
       <div class="edit-form edit-bg" v-show="isEdit">
-        <v-form v-ref:idform :model="idInfo" :schema="idSchema" label-width="140" label-suffix="" :cols="6" form-style="update-interns-form">
+        <v-form ref="idform" :model="idInfo" :schema="idSchema" label-width="140" label-suffix="" :cols="6" form-style="update-interns-form">
           <select-field :hide-label="true" :readonly="idInfo.mainDocuments === '1' && isEdited" property='idType' :mapping="dist.idType" :disable-value="getDisableValue(index)" editor-width="140"></select-field>
           <text-field :hide-label="true" :readonly="idInfo.mainDocuments === '1' && isEdited" property='idNumber' editor-width="140"></text-field>
           <text-field :hide-label="true" property='idIssueDate' editor-width="140" :max-date="idInfo.idExpiredDate || curDate"></text-field>
           <text-field :hide-label="true" property='idExpiredDate' editor-width="140" :min-date="idInfo.idIssueDate"></text-field>
           <div class="field id-type-radiogroupfield field-hashint cell-1-6">
-            <label style="width: 170px;display: none;">ID Attachment</label>
+            <label style="width: 170px;display: none;">{{$t('staff.IDAttachment')}}</label>
             <div class="id-file-upload">
-              <file-upload title="upload" class="file-upload" name="file" :post-action="files.url" :extensions="files.extensions" :accept="files.accept" :multiple="files.multiple" :size="files.size" v-ref:upload :drop="files.drop"></file-upload>
+              <file-upload @addFileUpload="addFileUpload" @afterFileUpload="afterFileUpload" :title="$t('button.upload')" class="file-upload" name="file" :post-action="files.url" :extensions="files.extensions" :accept="files.accept" :multiple="files.multiple" :size="files.size" ref="upload" :drop="files.drop"></file-upload>
               <span class="file-name" :title="idFileName">{{idFileName}}</span>
               <i v-show="idFileName || idFileName === '0'" class="fa fa-trash-o" aria-hidden="true" @click="delFile"></i>
             </div>
@@ -43,12 +44,13 @@
           <select-field :hide-label="true" v-show="!isEdited" property='mainDocuments' :mapping="mainDocumentsDist" editor-width="140"></select-field>
         </v-form>
         <div class="save-info-group">
-            <ui-button color="primary mr10" @click="submitForm">Save</ui-button>
-            <ui-button class="btn-default-bd" @click="cancel" type="flat">Cancel</ui-button>
+            <ui-button color="primary mr10" @click="submitForm">{{$t('button.save')}}</ui-button>
+            <ui-button class="btn-default-bd" @click="cancel" type="flat">{{$t('button.cancel')}}</ui-button>
         </div>
       </div>
     </div>
   </div>
+</div>
 </template>
 
 <script>
@@ -61,30 +63,20 @@ import {
 } from '../../../util/assist';
 import {default as Message} from '../../../components/basic/message';
 export default {
-  props: [
-    {
-      name: 'selectedNum'
-    },
-    {
-      name: 'data',
-      type: Array
-    },
-    {
-      name: 'parentId'
-    },
-    {
-      name: 'dist'
-    }
-  ],
+  props: {
+    dist: {},
+    parentId: {},
+    selectedNum: {}
+  },
   data() {
     var self = this;
     var idData = {
         idType: {
-            label: 'ID Type',
+            label: this.$t('staff.idType'),
             required: true
         },
         idNumber: {
-            label: 'ID Number',
+            label: this.$t('staff.IDNumber'),
             required: true,
             rules: {
               type: 'custom',
@@ -96,22 +88,23 @@ export default {
         },
         idIssueDate: {
             type: 'date',
-            label: 'Issue Date Of ID'
+            label: this.$t('staff.issueDateOfID')
         },
         idExpiredDate: {
             type: 'date',
-            label: 'Expiry Date Of ID'
+            label: this.$t('staff.expiryDateOfID')
         },
         attachmentId: {
-            label: 'ID Attachment'
+            label: this.$t('staff.IDAttachment')
         },
         mainDocuments: {
-          label: 'Primary ID',
+          label: this.$t('staff.primaryID'),
           default: '0'
         },
         attachmentName: {}
     };
     return {
+      data: [],
       idFileName: '',
       isEdited: !!this.$route.params.employeeId,
       idSchema: new Schema(idData),
@@ -123,7 +116,7 @@ export default {
       idNumberValiate: true,
       files: {
         url: Vue.config.APIURL + '/system/attachment/uploadFile',
-        accept: 'image/*,application/msexcel,application/msword,application/pdf',
+        accept: 'image/:,application+/msexcel,application/msword,application/pdf',
         size: 1024 * 1024 * 2,
         multiple: false,
         extensions: 'gif,jpg,jpeg,png,pdf,doc,docx,xlsx,xls',
@@ -159,7 +152,7 @@ export default {
     }
   },
   created() {},
-  ready() {
+  mounted() {
     this.idInfo = this.idSchema.newModel();
     var employeeId = this.$route.params.employeeId;
     if (!employeeId) {
@@ -167,7 +160,7 @@ export default {
       // this.data.push(this.idSchema.newModel());
     }
   },
-  attached() {},
+
   methods: {
     fixDist(value, dist) {
       var result = '';
@@ -232,7 +225,7 @@ export default {
           break;
       }
       var passed = true;
-      passed = this.idInfo.$schema.isFormValidate(this.$refs.idform);
+      passed = this.$refs.idform.isFormValidate();
       this.idNumberValiate = true;
       if (!passed) {
         return;
@@ -270,25 +263,6 @@ export default {
       this.idFileName = '';
       this.isEdit = false;
     },
-    // changeFile(e) {
-    //   var rawFile = e.srcElement.files;
-    //   var files = Array.prototype.slice.call(rawFile, 0);
-    //   if (!this.checkFileSize(files)) {
-    //     return;
-    //   }
-    //   var name = [];
-    //   var formData = new FormData();
-    //   files.forEach(function(file) {
-    //       name.push(file.name);
-    //       formData.append('file', file);
-    //   });
-    //   this.idFileName = name.join(',');
-    //   this.idInfo.attachmentName = this.idFileName;
-    //   this.$http.post('/system/attachment/uploadFile', formData).then(function(res) {
-    //     //this.data.contractId = res.body;
-    //     this.idInfo.attachmentId = res.body;
-    //   });
-    // },
     delFile() {
       this.idInfo.attachmentId = '';
       this.idInfo.attachmentName = '';
@@ -332,19 +306,16 @@ export default {
     },
     addList: function() {
       this.data.push(this.idSchema.newModel());
-      this.$nextTick(function() {
-          this.$dispatch('ui-collapsible::refresh-height', this.parentId);
-      });
     },
     beforeDel: function(index) {
       this.delIndex = index;
       this.showdel = true;
+      this.$refs.showdel.open()
     },
     delList: function() {
       this.selectedNum = this.selectedNum > this.delIndex ? this.selectedNum - 1 : this.selectedNum;
       this.data.splice(this.delIndex, 1);
       this.$nextTick(function() {
-          this.$dispatch('ui-collapsible::refresh-height', this.parentId);
           var a = document.getElementById('radio-idtype-' + this.selectedNum).getElementsByTagName('input')[0].checked = true;
       });
     },
@@ -353,13 +324,7 @@ export default {
         return;
       }
       return formatDate(new Date(value));
-    }
-  },
-  components: {
-    // InputFile: require('./../input-file.vue'),
-    FileUpload: require('../../../components/basic/FileUpload.vue')
-  },
-  events: {
+    },
     addFileUpload(file, component) {
       if (this.files.auto) {
         component.active = true;
@@ -370,6 +335,10 @@ export default {
       this.idInfo.attachmentName = file.name;
       this.idFileName = file.name;
     }
+  },
+  components: {
+    // InputFile: require('./../input-file.vue'),
+    FileUpload: require('../../../components/basic/FileUpload.vue')
   }
 };
 </script>

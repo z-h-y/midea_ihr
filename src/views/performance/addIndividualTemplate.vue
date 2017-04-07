@@ -74,63 +74,56 @@
 </style>
 
 <template lang="html">
-
-<div class="content-wrap ihr-performance-addOrgTemplate">
-    <panel :title="panelTitle" class="panel-b" header="panel-header">
-        <v-form :class="['rel']" v-ref:orgTempForm :model="orgModel" :schema="orgSchema" label-width="150" label-suffix="" :cols="1">
-            <text-field property='templateName' editor-width="400" @click="show.tipsShow='true'" placeholder="e.g.2016 MIB HR Individual Semi-year Performance"></text-field>
-            <!-- <div class="alert-tips" v-if="show.tipsShow">
-                e.g.2016 MIB HR Individual Semi-year Performance
-                <i class="fa fa-remove r poi" aria-hidden="true" @click="remove"></i>
-            </div> -->
-            <select-field property="indicatorsSetting" editor-width="400" :select-change="setingSelected"></select-field>
-            <text-field type="textarea" :editor-height="100" editor-width="400" property="description"></text-field>
-        </v-form>
-
-        <div v-show="show.isInd">
-            <div class="field ind-select-field">
-                <label class="prop_name">Included Indicators</label>
-                <ui-button @click="show.modal = true" class="query-btn-reset btn-default-bd bd-float" type="flat">select</ui-button>
-                <div class="field-hint field-hint-ind" v-show="show.indlistCheck">
-                    <i class="icon icon-error"></i>Please complete the indicator information.
+<div>
+    <div class="content-wrap ihr-performance-addOrgTemplate">
+        <panel :title="panelTitle" class="panel-b" header="panel-header">
+            <v-form :class="['rel']" ref="orgtempform" :model="orgModel" :schema="orgSchema" label-width="150" label-suffix="" :cols="1">
+                <text-field property='templateName' editor-width="400" @click="show.tipsShow='true'" :placeholder="$t('performance.performanceIndividual')"></text-field>
+                <select-field property="indicatorsSetting" editor-width="400" :select-change="setingSelected"></select-field>
+                <text-field type="textarea" :editor-height="100" editor-width="400" property="description"></text-field>
+            </v-form>
+            <div v-show="show.isInd">
+                <div class="field ind-select-field">
+                    <label class="prop_name">{{$t('performance.includedIndicators')}}</label>
+                    <ui-button @click="$refs.indtablemodel.open()" class="query-btn-reset btn-default-bd bd-float" type="flat">{{$t('button.select')}}</ui-button>
+                    <div class="field-hint field-hint-ind" v-show="show.indlistCheck">
+                        <i class="icon icon-error"></i>{{$t('performance.message.completeIndicator')}}
+                    </div>
                 </div>
+                <div class='field-content'>
+                    <vuetable ref="indicatortable" :api-url="tableUrl" pagination-path="" :selected-to="selectedRow" :append-params="queryParams" :fields="columns" :item-actions="itemActions" :show-pagination="false" table-wrapper=".vuetable-wrapper pl16 pr16 pb16" load-on-start="false"
+                    :sort-order="sortOrder" per-page="10">
+                    </vuetable>
+                </div>
+                <ind-table-selector ref="indtablemodel" :show="show" :handle-comfirmed="handleComfirmed" :selected-indicators="selectedInds" :ind-type="indtypes"></ind-table-selector>
             </div>
-            <div class='field-content'>
-                <vuetable v-ref:indicatortable :api-url="tableUrl" pagination-path="" :selected-to="selectedRow" :append-params="queryParams" :fields="columns" :item-actions="itemActions" show-pagination="false" table-wrapper=".vuetable-wrapper pl16 pr16 pb16" load-on-start="false"
-                :sort-order="sortOrder" per-page="10">
-                </vuetable>
+            <div class="btn-group">
+                <ui-button @click="submitForm" color="primary mr10">{{$t('button.submit')}}</ui-button>
+                <ui-button @click="cancel" class="btn-default-bd" type="flat">{{$t('button.cancel')}}</ui-button>
             </div>
-            <ind-table-selector :show.sync="show" :handle-comfirmed="handleComfirmed" :selected-indicators="selectedInds" :ind-type="indtypes"></ind-table-selector>
-            <!-- <indicator-selector :multiple="true" :show.sync="show" :multiple="false" :handle-comfirmed="handleComfirmed" :selected-indicators="selectedInds" :ind-type="indtypes"></indicator-selector> -->
-        </div>
-        <!-- <text-field property='description' editor-width="400"></text-field> -->
-        <div class="btn-group">
-            <ui-button @click="submitForm" color="primary mr10">Submit</ui-button>
-            <ui-button @click="cancel" class="btn-default-bd" type="flat">Cancel</ui-button>
-        </div>
-    </panel>
-</div>
-<ui-modal id="edit-indicator" :show.sync="show.modal2" type="large" header="Edit Indicator">
-    <v-form v-ref:editIndModal :model="editIndicatorModel" :schema="editIndicatorSchema" label-width="150" label-suffix="" :cols="1" form-style="org-form">
-        <text-field property='indicatorName' editor-width="400"></text-field>
-        <text-field property='unit' editor-width="400"></text-field>
-        <text-field property='target' editor-width="400"></text-field>
-        <text-field property='weight' type="number" editor-width="400">%</text-field>
-        <text-field property='criteria' editor-width="400"></text-field>
-        <radioGroup-field property='mandatory'></radioGroup-field>
-    </v-form>
-    <div slot="footer">
-        <ui-button color="primary mr10" @click="saveEditModal">Submit</ui-button>
-        <ui-button class="btn-default-bd" type="flat" @click="show.modal2 = false">Cancel</ui-button>
+        </panel>
     </div>
-</ui-modal>
-<ui-confirm header="Delete Indicator" @confirmed="deleteConfirmed" @denied="deleteDenied" :show.sync="show.genericConfirm" close-on-confirm>
-    Do you want to delete this?
-</ui-confirm>
-
+    <ui-modal ref="modal2" id="edit-indicator" :show="show.modal2" type="large" :title="$t('performance.editIndicator')">
+        <v-form ref="editindmodal" :model="editIndicatorModel" :schema="editIndicatorSchema" label-width="150" label-suffix="" :cols="1" form-style="org-form">
+            <text-field property='indicatorName' editor-width="400"></text-field>
+            <text-field property='unit' editor-width="400"></text-field>
+            <text-field property='target' editor-width="400"></text-field>
+            <text-field property='weight' type="number" editor-width="400">%</text-field>
+            <text-field property='criteria' editor-width="400"></text-field>
+            <radioGroup-field property='mandatory'></radioGroup-field>
+        </v-form>
+        <div slot="footer">
+            <ui-button color="primary mr10" @click="saveEditModal">{{$t('button.submit')}}</ui-button>
+            <ui-button class="btn-default-bd" type="flat" @click="$refs.modal2.open()">{{$t('button.cancel')}}</ui-button>
+        </div>
+    </ui-modal>
+    <ui-confirm ref="genericconfirm" :title="$t('button.delete')" @confirm="deleteConfirmed" @denied="deleteDenied" :show="show.genericConfirm" close-on-confirm>
+        {{$t('common.deleteConfirm')}}
+    </ui-confirm>
+</div>
 </template>
 
-<script type="text/ecmascript-6">
+<script>
 
 import Vue from 'vue';
 import {
@@ -146,83 +139,89 @@ import {
 }
 from '../../components/basic/message';
 
-let orgSchema = new Schema({
-    templateName: {
-        label: 'Template Name',
-        required: true,
-        whitespace: false
-    },
-    indicatorsSetting: {
-        label: 'Indicators Setting',
-        required: true,
-        mapping: function() {
-            return getDictMapping('INDICATORS_SETTING');
-        }
-    },
-    description: {
-        label: 'Description',
-        whitespace: false
-    }
-});
-let editIndicatorSchema = new Schema({
-    indicatorId: {
-        label: 'IndicatorId',
-        whitespace: false
-    },
-    indicatorName: {
-        label: 'Indicator Name',
-        required: true,
-        whitespace: false
-    },
-    unit: {
-        label: 'Unit',
-        required: true,
-        whitespace: false
-    },
-    target: {
-        label: 'Target',
-        required: true,
-        whitespace: false
-    },
-    weight: {
-        label: 'Weight',
-        required: true,
-        whitespace: false,
-        rules: {
-            type: 'custom',
-            message: 'Please enter a 1~100 positive integer!',
-            validate() {
-                var isValidate = true;
-                if (this.weight < 1 || this.weight > 100) {
-                    isValidate = false;
-                } else {
-                    if (this.weight % 1 !== 0) {
-                        isValidate = false;
-                    }
-                }
-                return isValidate;
-            }
-        }
-    },
-    criteria: {
-        label: 'Criteria',
-        required: true,
-        whitespace: false
-    },
-    mandatory: {
-        label: 'Mandatory',
-        required: true,
-        mapping: {
-            'Yes': 1,
-            'No': 0
-        }
-    }
-});
 
 export default {
     data() {
+      let self = this;
+      let orgSchema = new Schema({
+          templateName: {
+              label: self.$t('performance.templateName'),
+              required: true,
+              whitespace: false
+          },
+          indicatorsSetting: {
+              label: self.$t('performance.indicatorSetting'),
+              required: true,
+              mapping: function() {
+                  return getDictMapping('INDICATORS_SETTING');
+              }
+          },
+          description: {
+              label: self.$t('performance.description'),
+              whitespace: false
+          }
+      });
+      let editIndicatorSchema = new Schema({
+          indicatorId: {
+              label: self.$t('performance.indicatorId'),
+              whitespace: false
+          },
+          indicatorName: {
+              label: self.$t('performance.indicatorName'),
+              required: true,
+              whitespace: false
+          },
+          unit: {
+              label: self.$t('performance.unit'),
+              required: true,
+              whitespace: false
+          },
+          target: {
+              label: self.$t('performance.target'),
+              required: true,
+              whitespace: false
+          },
+          weight: {
+              label: self.$t('performance.weight'),
+              required: true,
+              whitespace: false,
+              rules: {
+                  type: 'custom',
+                  message: self.$t('performance.message.positiveInteger'),
+                  validate() {
+                      var isValidate = true;
+                      if (this.weight < 1 || this.weight > 100) {
+                          isValidate = false;
+                      } else {
+                          if (this.weight % 1 !== 0) {
+                              isValidate = false;
+                          }
+                      }
+                      return isValidate;
+                  }
+              }
+          },
+          criteria: {
+              label: self.$t('performance.criteria'),
+              required: true,
+              whitespace: false
+          },
+          mandatory: {
+              label: self.$t('performance.mandatory'),
+              required: true,
+              mapping() {
+                var key1 = self.$t('common.yes');
+                var key2 = self.$t('common.no');
+                var obj = {};
+                obj[key1] = 1;
+                obj[key2] = 0;
+                return obj;
+              }
+          }
+      });
+
             return {
-                panelTitle: 'Add Individual Template',
+                panelTitle: this.$t('performance.addIndividualTemplate'),
                 tableUrl: '/performance/indicators/findIndicatorList',
                 empTableUrl: 'person/employees',
                 show: {
@@ -244,30 +243,30 @@ export default {
                 indtypes: ['organization', 'fundamentals', 'individual'],
                 columns: [{
                     name: 'indicatorName',
-                    title: 'Indicator Name'
+                    title: this.$t('performance.indicatorName')
                 }, {
                     name: 'unit',
-                    title: 'Unit'
+                    title: this.$t('performance.unit')
                 }, {
                     name: 'target',
                     dataClass: 'tr',
-                    title: 'Target'
+                    title: this.$t('performance.target')
                 }, {
                     name: 'weight',
                     dataClass: 'tr',
-                    title: 'Weight(%)'
+                    title: this.$t('performance.weight') + '(%)'
                 }, {
                     name: 'criteria',
-                    title: 'Criteria'
+                    title: this.$t('performance.criteria')
                 }, {
                     name: 'mandatory',
-                    title: 'Mandatory',
+                    title: this.$t('performance.mandatory'),
                     callback: function(value) {
-                        return value == 1 ? "YES" : "NO"
+                        return value == 1 ? self.$t('common.yes') : self.$t('common.no')
                     }
                 }, {
                     name: '__actions',
-                    title: 'Operate'
+                    title: this.$t('performance.operate')
                 }],
                 itemActions: [{
                     name: 'edit-item',
@@ -292,18 +291,18 @@ export default {
                 return result;
             }
         },
+        mounted() {
+          this.initRoute()
+        },
         events: {
             'vuetable:action': function(action, data) {
                 this.operateRow = data;
                 if (action == 'edit-item') {
-                    this.show.modal2 = true;
+                    this.$refs.modal2.open();
                     this.initEditModal(data);
                 } else if (action == 'delete-item') {
-                    this.show.genericConfirm = true;
+                    this.$refs.genericconfirm.open();
                 }
-            },
-            'vuetable:load-error': function(response) {
-                console.log('Load Error: ', response)
             }
         },
         methods: {
@@ -319,26 +318,24 @@ export default {
                 },
                 saveEditModal() {
 
-                    let passed = this.editIndicatorModel.$schema.isFormValidate(this.$refs.editindmodal);
+                    let passed = this.$refs.editindmodal.isFormValidate();
                     if (!passed) return;
                     this.operateRow.indicatorName = this.editIndicatorModel.indicatorName;
                     this.operateRow.unit = this.editIndicatorModel.unit;
                     this.operateRow.criteria = this.editIndicatorModel.criteria;
-                    this.$set('operateRow.target', this.editIndicatorModel.target);
-                    this.$set('operateRow.weight', this.editIndicatorModel.weight);
-                    this.$set('operateRow.mandatory', this.editIndicatorModel.mandatory);
-                    // this.$set('operateRow.mandatoryName',this.editIndicatorModel.mandatory == '1' ? 'YES' : 'NO');
-                    this.show.modal2 = false;
+                    this.$set(this.operateRow, 'target', this.editIndicatorModel.target);
+                    this.$set(this.operateRow, 'weight', this.editIndicatorModel.weight);
+                    this.$set(this.operateRow, 'mandatory', this.editIndicatorModel.mandatory);
+                    this.$refs.modal2.close();
                 },
                 submitForm() {
-                    // this.$broadcast('vuetable:refresh');
                     let indicatorList = this.$refs.indicatortable.tableData;
                     let _self = this;
                     let _aPerformance = this.orgModel;
 
 
 
-                    let pass = this.orgModel.$schema.isFormValidate(this.$refs.orgtempform);
+                    let pass = this.$refs.orgtempform.isFormValidate();
                     if (!pass) return;
 
                     if (_aPerformance.indicatorsSetting != 2) {
@@ -357,7 +354,7 @@ export default {
                                 weightCount += Number(item.weight)
                             }
                             if (!overZero) {
-                              this.openMessage('error', 'The weight should be 1~100 positive integer!');
+                              this.openMessage('error', this.$t('performance.message.weightPositiveInteger'));
                               return;
                             }
                             if (weightCount > 100 && _aPerformance.indicatorsSetting == 1) {
@@ -365,7 +362,7 @@ export default {
                                 return;
                             }
                             if (weightCount > 100 && _aPerformance.indicatorsSetting == 3) {
-                                this.openMessage('error', 'The sum of the weights must less or equal 100');
+                                this.openMessage('error', this.$t('performance.message.weightsSum'));
                                 return
                             }
                         }
@@ -386,7 +383,7 @@ export default {
                             emulateJSON: true
                         }).then((response) => {
                             _self.openMessage('success', this.$t('common.saveSuccess'));
-                            this.$router.go({
+                            this.$router.push({
                                 name: 'individualTemplate'
                             })
                         }, (response) => {
@@ -398,7 +395,7 @@ export default {
                             emulateJSON: true
                         }).then((response) => {
                             _self.openMessage('success', this.$t('common.saveSuccess'));
-                            this.$router.go({
+                            this.$router.push({
                                 name: 'individualTemplate'
                             })
                         }, (response) => {
@@ -414,15 +411,17 @@ export default {
                     })
                 },
                 submit() {
-                    this.show.genericConfirm = true;
+                    this.$refs.genericconfirm.open();
                 },
                 cancel() {
-                    this.$router.go({
+                    this.$router.push({
                         name: 'individualTemplate',
                     });
                 },
                 deleteConfirmed() {
-                    this.$refs.indicatortable.tableData.$remove(this.operateRow);
+                    var data = this.$refs.indicatortable.tableData;
+                    var index = data.indexOf(this.operateRow);
+                    data.splice(index, 1)
                 },
                 setingSelected(value) {
                     if (value == 2) {
@@ -467,44 +466,41 @@ export default {
                 },
                 remove() {
                     this.show.tipsShow = !this.show.tipsShow;
+                },
+                initRoute() {
+                  let _self = this;
+                  _self.orgModel.id = this.$route.params.id;
+
+                  if (_self.$route.name === 'addIndividualTemplate') {
+                      if (!!this.$route.params.step) {
+
+                          _self.activeTab = this.$route.params.step
+                      }
+                  } else if (_self.$route.name === 'editIndividualTemplate') {
+                      _self.panelTitle = this.$t('performance.editIndividualTemplate');
+                      _self.$http.get('/performance/templates/detail', {
+                          params: {
+                              templatesId: this.$route.params.id
+                          },
+                          emulateJSON: true
+                      }).then((response) => {
+
+                          let result = response.data;
+                          let tableData = this.$refs.indicatortable.tableData;
+                          this.orgModel.templateId = result.templateId;
+                          this.orgModel.templateName = result.templateName;
+                          this.orgModel.indicatorsSetting = result.indicatorsSetting;
+                          this.orgModel.description = result.description;
+                          if (result.indicatorsSetting == 2) {
+                              this.show.isInd = false;
+                          }
+                          // for(let item of  result.indicatorList) {
+                          //   item.mandatoryName =   item.mandatory == '1' ? 'YES' : 'NO';
+                          // }
+                          this.$refs.indicatortable.tableData = result.indicatorList || [];
+                      });
+                  }
                 }
-        },
-        route: {
-            data(transition) {
-
-                let _self = this;
-                _self.orgModel.id = transition.to.params.id;
-
-                if (_self.$route.name === 'addIndividualTemplate') {
-                    if (!!transition.to.params.step) {
-
-                        _self.activeTab = transition.to.params.step
-                    }
-                } else if (_self.$route.name === 'editIndividualTemplate') {
-                    _self.panelTitle = 'Edit Individual Template';
-                    _self.$http.get('/performance/templates/detail', {
-                        params: {
-                            templatesId: this.$route.params.id
-                        },
-                        emulateJSON: true
-                    }).then((response) => {
-
-                        let result = response.data;
-                        let tableData = this.$refs.indicatortable.tableData;
-                        this.orgModel.templateId = result.templateId;
-                        this.orgModel.templateName = result.templateName;
-                        this.orgModel.indicatorsSetting = result.indicatorsSetting;
-                        this.orgModel.description = result.description;
-                        if (result.indicatorsSetting == 2) {
-                            this.show.isInd = false;
-                        }
-                        // for(let item of  result.indicatorList) {
-                        //   item.mandatoryName =   item.mandatory == '1' ? 'YES' : 'NO';
-                        // }
-                        this.$refs.indicatortable.tableData = result.indicatorList || [];
-                    });
-                }
-            }
         },
         components: {
             Panel: require('../../components/basic/panel.vue')

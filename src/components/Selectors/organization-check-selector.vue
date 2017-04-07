@@ -12,13 +12,13 @@
 
 <template lang="html">
 
-<ui-modal id="select-organization " :show.sync="show.modal" transition="ui-modal-fade" header="Select Organization">
+<ui-modal ref="modal" id="select-organization " :show.sync="show.modal" transition="ui-modal-fade" :title="$t('selectors.selectOrganization')">
     <div class="select-cnt">
-        <tree :data="trees" :level-config="levelConfig" :show-checkbox="showCheckbox" v-ref:tree :click-node="loadNodeDetail" :dblclick-node="dblclickNode"></tree>
+        <tree :data="trees" :level-config="levelConfig" :show-checkbox="showCheckbox" ref="tree" :click-node="loadNodeDetail" :dblclick-node="dblclickNode"></tree>
     </div>
     <div slot="footer">
-        <ui-button color="primary" @click="handleSave">Confirm</ui-button>
-        <ui-button @click="show.modal = false">Cancel</ui-button>
+        <ui-button color="primary" @click="handleSave">{{$t('button.confirm')}}</ui-button>
+        <ui-button @click="close">{{$t('button.cancel')}}</ui-button>
     </div>
 </ui-modal>
 
@@ -42,7 +42,13 @@ export default {
                 return [];
             }
         },
-        selectedNode: {}
+        selectedNode: {},
+        handleComfirmed: {
+					type: Function,
+          default() {
+            return function() {};
+          }
+				}
     },
     data() {
         let _self = this;
@@ -94,6 +100,12 @@ export default {
     },
     created() {},
     methods: {
+      open() {
+          this.$refs['modal'].open();
+        },
+        close() {
+          this.$refs['modal'].close()
+        },
         getTreeData() {
                 const currentNode = this.currentNode;
                 let url = `/org/orgs/parent`;
@@ -129,8 +141,8 @@ export default {
              * save to selected node.
              */
             handleSave() {
-                this.show.modal = false;
-                this.$dispatch('organization-selector:selected', this.$refs.tree.getCheckedNodes());
+                this.close();
+                this.handleComfirmed(this.$refs.tree.getCheckedNodes());
             },
             dblclickNode() {
                 this.handleSave();

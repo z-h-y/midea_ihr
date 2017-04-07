@@ -74,7 +74,7 @@
 </style>
 
 <template lang="html">
-
+<div>
 <div class="content-wrap ihr-performance-viewOrgTemplate">
     <panel :title="panelTitle" class=" panel-b" header="panel-header">
         <v-form :model="orgModel" :schema="orgSchema" label-width="150" label-suffix="" :cols="1" form-style="org-form">
@@ -84,40 +84,40 @@
             <text-increment property='description' editor-width="400"></text-increment>
             <div v-show="show.isInd" class="l w-per100">
                 <div class="field">
-                    <label class="prop_name">Included Indicators</label>
+                    <label class="prop_name">{{$t('performance.includedIndicators')}}</label>
                 </div>
                 <div class='field-content'>
-                    <vuetable v-ref:indicatortable :api-url="tableUrl" pagination-path="" :selected-to="selectedRow" :fields="columns" :item-actions="itemActions" show-pagination="false" table-wrapper=".vuetable-wrapper pl16 pr16 pb16" :sort-order="sortOrder" per-page="10">
+                    <vuetable ref="indicatortable" @action="action" :api-url="tableUrl" pagination-path="" :selected-to="selectedRow" :fields="columns" :item-actions="itemActions" show-pagination="false" table-wrapper=".vuetable-wrapper pl16 pr16 pb16" :sort-order="sortOrder" per-page="10">
                     </vuetable>
                 </div>
-                <indicator-selector :show.sync="show" :ind-type="indtypes"></indicator-selector>
+                <indicator-selector :show="show" :ind-type="indtypes"></indicator-selector>
             </div>
             <!-- <text-field property='description' editor-width="400"></text-field> -->
         </v-form>
         <div class="btn-group">
             <!-- <ui-button @click="submitForm" color="primary mr10">Submit</ui-button> -->
-            <ui-button @click="cancel" class="btn-default-bd" type="flat">Cancel</ui-button>
+            <ui-button @click="cancel" class="btn-default-bd" type="flat">{{$t('button.cancel')}}</ui-button>
         </div>
     </panel>
 </div>
-<ui-modal id="edit-indicator" :show.sync="show.modal2" type="large" header="Edit Indicator">
+<ui-modal ref="modal2" id="edit-indicator" :show="show.modal2" type="large" :title="$t('performance.editIndicator')">
     <v-form :model="editIndicatorModel" :schema="editIndicatorSchema" label-width="150" label-suffix="" :cols="1" form-style="org-form">
         <text-field property='indicatorName' editor-width="400"></text-field>
         <text-field property='unit' editor-width="400"></text-field>
         <text-field property='target' editor-width="400"></text-field>
         <text-field property='weight' editor-width="400"></text-field>
         <text-field property='criteria' editor-width="400"></text-field>
-        <radioGroup-field property='mandatory'></radioGroup-field>
+        <radioGroup-field property='mandatory' :mapping="whethertype"></radioGroup-field>
     </v-form>
     <div slot="footer">
-        <ui-button color="primary mr10" @click="saveEditModal">Submit</ui-button>
-        <ui-button class="btn-default-bd" type="flat" @click="show.modal2 = false">Cancel</ui-button>
+        <ui-button color="primary mr10" @click="saveEditModal">{{$t('button.submit')}}</ui-button>
+        <ui-button class="btn-default-bd" type="flat" @click="show.modal2 = false;$refs.modal2.close()">{{$t('button.cancel')}}</ui-button>
     </div>
 </ui-modal>
-
+</div>
 </template>
 
-<script type="text/ecmascript-6">
+<script>
 
 import Vue from 'vue';
 import {
@@ -133,69 +133,75 @@ import {
 }
 from '../../components/basic/message';
 
-let orgSchema = new Schema({
-    templateName: {
-        label: 'Template Name',
-        required: true,
-        whitespace: false
-    },
-    templateCategoryName: {
-        label: 'Template Category',
-        required: true,
-        mapping: function() {
-            return getDictMapping('TEMPLATE_CATEGORY');
-        }
-    },
-    indicatorsSettingName: {
-        label: 'Indicators Setting',
-        required: true,
-        mapping: function() {
-            return getDictMapping('INDICATORS_SETTING');
-        }
-    },
-    description: {
-        label: 'Description',
-        whitespace: false
-    }
-});
-let editIndicatorSchema = new Schema({
-    indicatorId: {
-        label: 'IndicatorId',
-        whitespace: false
-    },
-    indicatorName: {
-        label: 'Indicator Name',
-        whitespace: false
-    },
-    unit: {
-        label: 'Unit',
-        whitespace: false
-    },
-    target: {
-        label: 'Target',
-        whitespace: false
-    },
-    weight: {
-        label: 'Weight',
-        whitespace: false
-    },
-    criteria: {
-        label: 'Criteria',
-        whitespace: false
-    },
-    mandatory: {
-        label: 'Mandatory',
-        mapping: {
-            'Yes': 1,
-            'No': 0
-        }
-    }
-});
 
 export default {
     data() {
+      let self = this;
+      let orgSchema = new Schema({
+          templateName: {
+              label: self.$t('performance.templateName'),
+              required: true,
+              whitespace: false
+          },
+          templateCategoryName: {
+              label: self.$t('performance.templateCategory'),
+              required: true,
+              mapping: function() {
+                  return getDictMapping('TEMPLATE_CATEGORY');
+              }
+          },
+          indicatorsSettingName: {
+              label: self.$t('performance.indicatorsSetting'),
+              required: true,
+              mapping: function() {
+                  return getDictMapping('INDICATORS_SETTING');
+              }
+          },
+          description: {
+              label: self.$t('performance.description'),
+              whitespace: false
+          }
+      });
+      let editIndicatorSchema = new Schema({
+          indicatorId: {
+              label: self.$t('performance.indicatorId'),
+              whitespace: false
+          },
+          indicatorName: {
+              label: self.$t('performance.indicatorName'),
+              whitespace: false
+          },
+          unit: {
+              label: self.$t('performance.unit'),
+              whitespace: false
+          },
+          target: {
+              label: self.$t('performance.target'),
+              whitespace: false
+          },
+          weight: {
+              label: self.$t('performance.weight'),
+              whitespace: false
+          },
+          criteria: {
+              label: self.$t('performance.criteria'),
+              whitespace: false
+          },
+          mandatory: {
+              label: self.$t('performance.mandatory'),
+              mapping() {
+                var key1 = self.$t('common.yes');
+                var key2 = self.$t('common.no');
+                var obj = {};
+                obj[key1] = 1;
+                obj[key2] = 0;
+                return obj;
+              }
+          }
+      });
+
             return {
-                panelTitle: 'View Org Template',
+                panelTitle: this.$t('performance.viewOrgTemplate'),
                 tableUrl: '',
                 empTableUrl: 'person/employees',
                 show: {
@@ -214,26 +220,26 @@ export default {
                 operateRow: {},
                 columns: [{
                     name: 'indicatorName',
-                    title: 'Indicator Name'
+                    title: this.$t('performance.indicatorName')
                 }, {
                     name: 'unit',
-                    title: 'Unit'
+                    title: this.$t('performance.unit')
                 }, {
                     name: 'target',
                     dataClass: 'tr',
-                    title: 'Target'
+                    title: this.$t('performance.target')
                 }, {
                     name: 'weight',
                     dataClass: 'tr',
-                    title: 'Weight(%)'
+                    title: this.$t('performance.weight') + '(%)'
                 }, {
                     name: 'criteria',
-                    title: 'Criteria'
+                    title: this.$t('performance.criteria')
                 }, {
                     name: 'mandatory',
-                    title: 'Mandatory',
+                    title: this.$t('performance.mandatory'),
                     callback: function(value) {
-                        return value == 1 ? "YES" : "NO"
+                        return value == 1 ? self.$t('common.yes') : self.$t('common.no')
                     }
                 }],
                 itemActions: [{
@@ -248,6 +254,11 @@ export default {
                     class: 'operate'
                 }]
             }
+        },
+        mounted() {
+            this.$nextTick(function() {
+                this.initRoute()
+            })
         },
         computed: {
             // queryParams() {
@@ -274,22 +285,19 @@ export default {
                         });
                     }
                 }
-            },
-            'vuetable:action': function(action, data) {
+            }
+        },
+        methods: {
+            action(action, data) {
 
                 this.operateRow = data;
                 if (action == 'edit-item') {
-                    this.show.modal2 = true;
+                    this.$refs.modal2.open();
                     this.initEditModal(data);
                 } else if (action == 'delete-item') {
                     this.show.genericConfirm = true;
                 }
             },
-            'vuetable:load-error': function(response) {
-                console.log('Load Error: ', response)
-            }
-        },
-        methods: {
             initEditModal(data) {
 
                     this.editIndicatorModel.indicatorName = data.indicatorName;
@@ -304,15 +312,14 @@ export default {
                     this.operateRow.indicatorName = this.editIndicatorModel.indicatorName;
                     this.operateRow.unit = this.editIndicatorModel.unit;
                     this.operateRow.criteria = this.editIndicatorModel.criteria;
-                    this.$set('operateRow.target', this.editIndicatorModel.target);
-                    this.$set('operateRow.weight', this.editIndicatorModel.weight);
-                    this.$set('operateRow.mandatory', this.editIndicatorModel.mandatory);
-                    this.$set('operateRow.mandatoryName', this.editIndicatorModel.mandatory == '1' ? 'YES' : 'NO');
-                    this.show.modal2 = false;
+                    this.$set(this.operateRow, 'target', this.editIndicatorModel.target);
+                    this.$set(this.operateRow, 'weight', this.editIndicatorModel.weight);
+                    this.$set(this.operateRow, 'mandatory', this.editIndicatorModel.mandatory);
+                    this.$set(this.operateRow, 'mandatoryName', this.fixWhetherType(this.editIndicatorModel.mandatory));
+                    this.$refs.modal2.close();
                     // this.operateRow. = this.editIndicatorModel.;
                 },
                 submitForm() {
-                    // this.$broadcast('vuetable:refresh');
                     let _self = this;
                     let _aPerformance = this.orgModel;
                     let indicatorList = this.$refs.indicatortable.tableData;
@@ -332,7 +339,7 @@ export default {
                             emulateJSON: true
                         }).then((response) => {
                             _self.openMessage('success', this.$t('common.saveSuccess'));
-                            this.$router.go({
+                            this.$router.push({
                                 name: 'orgTemplate'
                             })
                         }, (response) => {
@@ -344,7 +351,7 @@ export default {
                             emulateJSON: true
                         }).then((response) => {
                             _self.openMessage('success', this.$t('common.saveSuccess'));
-                            this.$router.go({
+                            this.$router.push({
                                 name: 'orgTemplate'
                             })
                         }, (response) => {
@@ -357,7 +364,7 @@ export default {
                         step: (!!tabId) ? tabId : 'basic',
                         id: (!!aid) ? aid : 0
                     };
-                    this.$router.go({
+                    this.$router.push({
                         name: 'addAnnualPerformance',
                         params: param
                     })
@@ -381,7 +388,7 @@ export default {
                         _self.$http.post('/performance/ratios', param, {
                             emulateJSON: true
                         }).then((response) => {
-                            _self.$router.go({
+                            _self.$router.push({
                                 name: 'annualPerformance'
                             });
                         });
@@ -389,7 +396,7 @@ export default {
                         _self.$http.post('/performance/ratios', param, {
                             emulateJSON: true
                         }).then((response) => {
-                            _self.$router.go({
+                            _self.$router.push({
                                 name: 'annualPerformance'
                             });
                         });
@@ -409,12 +416,9 @@ export default {
                     this.saveRatio();
                 },
                 cancel() {
-                    this.$router.go({
+                    this.$router.push({
                         name: 'orgTemplate',
                     });
-                },
-                deleteConfirmed() {
-                    this.$refs.indicatortable.tableData.$remove(this.operateRow);
                 },
                 isExist(obj, arr) {
 
@@ -429,12 +433,10 @@ export default {
                         }
                     }
                     return isExist;
-                }
-        },
-        route: {
-            data(transition) {
+                },
+                initRoute() {
                 let _self = this;
-                _self.orgModel.id = transition.to.params.id;
+                _self.orgModel.id = _self.$route.params.id;
 
                 if (_self.$route.name === 'viewOrgTemplate') {
 

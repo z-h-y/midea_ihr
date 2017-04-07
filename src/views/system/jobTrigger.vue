@@ -45,11 +45,11 @@
             </div>
             <ul class="right-panel-info fix mt20 mb20">
                 <li>
-                    <span class="right-panel-label">Job Name</span>
+                    <span class="right-panel-label">{{ $t('system.jobTrigger.name') }}</span>
                     <span class="right-panel-txt">{{job.name}}</span>
                 </li>
                 <li>
-                    <span class="right-panel-label">Description</span>
+                    <span class="right-panel-label">{{ $t('system.jobTrigger.description') }}</span>
                     <span class="right-panel-txt">{{job.description}}</span>
                 </li>
             </ul>
@@ -58,8 +58,8 @@
                     <div class="right-panel-tit pt15 l">
                         <span>Trigger list</span>
                     </div>
-                    <ui-button class="mr10 dis-tc btn-primary-bd" icon="fa-plus" color="primary" text="Add" @click="add"></ui-button>
-                    <ui-button class="mr10 dis-tc btn-default-bd" icon="fa-remove" type="flat" text="Delete" @click="delete"></ui-button>
+                    <ui-button class="mr10 dis-tc btn-primary-bd" icon="fa-plus" color="primary" :text="$t('button.add')" @click="add"></ui-button>
+                    <ui-button class="mr10 dis-tc btn-default-bd" icon="fa-remove" type="flat" :text="$t('button.delete')" @click="deleteBtn"></ui-button>
                 </div>
                 <vuetable :api-url="triggerUrl" :selected-to="selectedRow" data-path="" show-pagination="false" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="triggerColumns" :sort-order="sortOrder" :item-actions="itemActions" per-page="10">
                 </vuetable>
@@ -98,35 +98,35 @@ export default {
                     title: ''
                 }, {
                     name: 'name',
-                    title: 'Trigger Name',
+                    title: this.$t('system.jobTrigger.tname'),
                     sortField: 'name'
                 }, {
                     name: 'type',
-                    title: 'Trigger Type',
+                    title:  this.$t('system.jobTrigger.type'),
                     sortField: 'type'
                 }, {
                     name: 'startTime',
-                    title: 'Start Time',
+                    title: this.$t('system.jobTrigger.startTime'),
                     dataClass: 'tr',
                     titleClass: 'mw80',
                     sortField: 'startTime'
                 }, {
                     name: 'endTime',
-                    title: 'End Time',
+                    title: this.$t('system.jobTrigger.endTime'),
                     dataClass: 'tr',
                     titleClass: 'mw80',
                     sortField: 'endTime'
                 }, {
                     name: 'description',
-                    title: 'Description',
+                    title: this.$t('system.jobTrigger.description'),
                     sortField: 'description'
                 }, {
                     name: 'createdBy',
-                    title: 'Created By',
+                    title: this.$t('system.jobTrigger.createdBy'),
                     sortField: 'createdBy'
                 }, {
                     name: 'creationDate',
-                    title: 'Creation Date',
+                    title: this.$t('system.jobTrigger.creationDate'),
                     dataClass: 'tr',
                     titleClass: 'mw80',
                     sortField: 'creationDate'
@@ -143,7 +143,7 @@ export default {
             add() {
                     this.show.modal = true;
                 },
-                delete() {
+                deleteBtn() {
                     let _self = this;
                     let rows = _self.selectedRow;
                     if (rows.length === 1) {

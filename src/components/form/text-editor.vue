@@ -30,8 +30,8 @@
 .text-editor input {
     border: 1px solid #dee4e9;
     border-radius: 2px;
-    line-height: 26px;
-    height:26px;
+    line-height: 32px;
+    height:32px;
     width: 100%;
     padding:2px 2px;
     box-sizing: border-box;
@@ -104,7 +104,7 @@
 
 <template>
 
-<span class="text-editor {{size}} {{ haveTrigger ? 'have-trigger' : '' }} {{ pickerVisible ? 'active' : '' }}">
+<span :class="['text-editor', size, haveTrigger ? 'have-trigger' : '', pickerVisible ? 'active' : '']">
     <editor></editor>
     <span @click="toggleDatePicker()" class="text-editor-trigger fa fa-calendar" v-if="haveTrigger"></span>
     <span @click="openSelector()" class="text-editor-trigger fa fa-th" v-if="haveSelector"></span>
@@ -113,8 +113,8 @@
 
 <script type="text/ecmascript-6">
 
-// require('../../static/icon/iconfont.css');
-var Vue = require('vue');
+// require('../../assets/icon/iconfont.css');
+// var Vue = require('vue');
 import {
     merge, formatDate, parseDate
 }
@@ -202,10 +202,12 @@ export default {
                             return;
                         } else if (this.type === 'number') {
                             if (value === null || value === undefined || value === '') {
-                                this.value = null;
+                                // this.value = null;
+                                this.$emit('set-value', null)
                                 return;
                             }
-                            this.value = value;
+                            // this.value = value;
+                            this.$emit('set-value', value)
                             // value = Number(value);
                             // if (!isNaN(value)) {
                             //     this.value = value;
@@ -213,7 +215,8 @@ export default {
 
                             return;
                         }
-                        this.value = value;
+                        // this.value = value;
+                        this.$emit('set-value', value)
                     }
             },
 
@@ -240,14 +243,14 @@ export default {
                 var lazy = parent.lazy;
 
                 if (type === 'date' || type === 'datetime') {
-                this.$options.template = `<input @focus="$parent.handleFocus" @blur="$parent.handleBlur" lazy @change="$parent.handleChange($event)" type="${parent.editorType}" v-model="$parent.visualValue" placeholder="{{$parent.placeholder}}" readonly="{{$parent.readonly}}" :style="{ height: $parent.height ? $parent.height + 'px' : '' }" />`;
+                this.$options.template = `<input @focus="$parent.handleFocus" @blur="$parent.handleBlur" lazy @change="$parent.handleChange($event)" type="${parent.editorType}" v-model="$parent.visualValue" :placeholder="$parent.placeholder" :readonly="$parent.readonly" :style="{ height: $parent.height ? $parent.height + 'px' : '' }" />`;
                 } else if (type === 'number') {
-                    this.$options.template = `<input @keydown="$parent.handleKeydown($event)" @keyup="$parent.handleKeyup($event)" @focus="$parent.handleFocus" @blur="$parent.handleBlur" ${lazy ? 'lazy' : ''} type="${parent.editorType}"  autocomplete="off" v-model="$parent.visualValue" placeholder="{{$parent.placeholder}}" :style="{ height: $parent.height ? $parent.height + 'px' : '' }" readonly="{{$parent.readonly}}" />`;
+                    this.$options.template = `<input @keydown="$parent.handleKeydown($event)" @keyup="$parent.handleKeyup($event)" @focus="$parent.handleFocus" @blur="$parent.handleBlur" ${lazy ? 'lazy' : ''} type="${parent.editorType}"  autocomplete="off" v-model="$parent.visualValue" :placeholder="$parent.placeholder" :style="{ height: $parent.height ? $parent.height + 'px' : '' }" :readonly="$parent.readonly" />`;
                 }
                  else if (type !== 'textarea') {
-                    this.$options.template = `<input @focus="$parent.handleFocus" @blur="$parent.handleBlur" ${lazy ? 'lazy' : ''} type="${parent.editorType}"  autocomplete="off" v-model="$parent.visualValue" placeholder="{{$parent.placeholder}}" :style="{ height: $parent.height ? $parent.height + 'px' : '' }"  readonly="{{$parent.readonly}}" />`;
+                    this.$options.template = `<input @focus="$parent.handleFocus" @blur="$parent.handleBlur" ${lazy ? 'lazy' : ''} type="${parent.editorType}"  autocomplete="off" v-model="$parent.visualValue" :placeholder="$parent.placeholder" :style="{ height: $parent.height ? $parent.height + 'px' : '' }"  :readonly="$parent.readonly" />`;
                 } else {
-                    this.$options.template = `<textarea @focus="$parent.handleFocus" @blur="$parent.handleBlur" ${lazy ? 'lazy' : ''} placeholder="{{$parent.placeholder}}" readonly="{{$parent.readonly}}" v-model="$parent.visualValue" :style="{ height: $parent.height ? $parent.height + 'px' : '' }"  maxlength="{{$parent.maxlength}}"></textarea>`;
+                    this.$options.template = `<textarea @focus="$parent.handleFocus" @blur="$parent.handleBlur" ${lazy ? 'lazy' : ''} :placeholder="$parent.placeholder" :readonly="$parent.readonly" v-model="$parent.visualValue" :style="{ height: $parent.height ? $parent.height + 'px' : '' }"  :maxlength="$parent.maxlength"></textarea>`;
                 }
             }
         }
@@ -326,7 +329,9 @@ export default {
             },
 
             openSelector(event){
-                this.show.modal = true;
+                // this.show.modal = true;
+                this.$emit('open-selector');
+                
               //  this.$dispatch('text:selectorClickEvent',this.optItem);
             },
 
@@ -350,7 +355,8 @@ export default {
                     this.picker.showTime = this.type === 'datetime';
                     this.picker.minDate = this.minDate;
                     this.picker.maxDate = this.maxDate;
-                    this.picker.$appendTo(this.$el);
+                    this.$el.appendChild(this.picker.$el)
+                    // this.picker.$appendTo(this.$el);
 
                     var self = this;
 

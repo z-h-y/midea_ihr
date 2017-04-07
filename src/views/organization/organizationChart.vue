@@ -223,7 +223,7 @@
       overflow: auto;
 
       // 图表样式
-      @import url('../../static/lib/css/jquery.orgchart.less');
+      @import url('../../assets/lib/css/jquery.orgchart.less');
 
 
 
@@ -283,18 +283,20 @@
 
 
   }
-
-
 </style>
 
 <template lang="html">
-
+<div>
 <panel class="panel-b content-wrap" header="panel-header" id="organization-chart-body">
     <div class="orgChart-header">
         <div class="orgChart-selector-box">
-          <v-form v-ref:orgChartForm :model="orgChart" :schema="orgChartSchema" label-width="120" label-suffix="" :cols="1" form-style="org-form">
+          <v-form ref="orgchartform" :model="orgChart" :schema="orgChartSchema" label-width="120" label-suffix="" :cols="1" form-style="org-form">
               <div class="orgChart-selector">
-                   <text-field property="selecteOrg" type="selector" :readonly="true" :show.sync="show" editor-width="200"></text-field>
+                   <text-field property="selecteOrg" type="selector" 
+                   :readonly="true" 
+                   @open-selector="openSelector" 
+                   :show="show" editor-width="200">
+                   </text-field>
               </div>
           </v-form>
         </div>
@@ -311,119 +313,98 @@
 
 </panel>
 
-<organization-selector :show.sync="show" :disable-value="disableValue"></organization-selector>
+<organization-selector ref="organization" @select-organization="receiveOrganization" :show="show" :disable-value="disableValue"></organization-selector>
 
-
+</div>
 </template>
 
 <script >
 
 import {default as Message } from '../../components/basic/message';
 import {default as Schema } from '../../schema/index';
-import {formatDate} from '../../util/assist';
+// import {formatDate} from '../../util/assist';
 import $ from 'jquery';
-require('../../static/lib/js/organizationChart.js');
+require('../../assets/lib/js/organizationChart');
 
-let orgChartSchema = new Schema({
-    selecteOrg: {
-        label: 'Organization',
-        required:true
-    },
 
-    stratDate: {
-        label: 'Date',
-				type: 'date',
-				default () {
-						return new Date();
-				},
-        required: true
-    },
-});
 
 
 export default {
     data() {
+            let orgChartSchema = new Schema({
+              selecteOrg: {
+                label: this.$t('organization.mergeOrg.org'),
+                required:true
+              },
+
+              stratDate: {
+                label: 'Date',
+                type: 'date',
+                default () {
+                  return new Date();
+                },
+                required: true
+              },
+            });
             return {
-                // hasReq: [], //点击请求状态
-                // lastNode:false,
-                // thirdTreeShow: [],  //控制第三级组织的显示隐藏
-                // hideChildNode: [],  //控制节点数量的显示隐藏
-                // rootOrgElement: {},  //根组织
-                // rootFirstChild: [], //根组织的直接下级
-                // rootSecondChild: [], //根组织的二级下属
                 orgChartSchema: orgChartSchema,
                 orgChart: orgChartSchema.newModel(),
                 show: {  //控制组织选择器的显示
                     modal: false
                 },
-                initUrl: '/org/orgs/getUserCurrentOrg',
-                // minDate: '',
-                // submitLoading: false,
-                // searchHistoryDate:''  //查询组织用的日期
+                initUrl: '/org/orgs/getUserCurrentOrg'
             };
-        },
-        computed: {
-          // disableValue() {
-          //   var id = this.$route.params.oid ? [this.$route.params.oid] : [];
-          //   return id;
-          // },
-          // routeName() {
-          //         return this.$route.name;
-          //     },
-          // panelTitle() {
-          //     if (this.routeName === 'organizationChart') return 'Organization Chart';
-          // }
         },
 
         created() {
           this.initUrl = '/org/orgs/getUserCurrentOrg';  //初始获取用户当前数据
         },
-        ready(){
-            let container = document.getElementById("organization-chart-diagram");
-            let height = window.screen.height;
-            container.style.minHeight = (height - 360) + 'px';
-            this.createChart();
+        mounted(){
+            this.$nextTick(() => {
+                let container = document.getElementById("organization-chart-diagram");
+                let height = window.screen.height;
+                container.style.minHeight = (height - 360) + 'px';
+                this.createChart();
+            });
+            
         },
-
-        // watch: {
-        //     '$route': 'fetchData'
-        // },
         methods:{
-
-                createChart(orgId = '') {
-                  let currntUrl = this.initUrl;
-                  let chartContainer = $('#organization-chart-diagram');
-                      chartContainer.html("");
-                  var ajaxURLs = {
-                        'children':function(nodeData) {
-                          return '/org/orgs/getCurrentOrgInfo';
-                        }
-                      };
-
-                      $(chartContainer).organizationChart({
-                        'data' : currntUrl,
-                        'ajaxURL': ajaxURLs,
-                        'orgShortName': 'orgShortName',
-                        'unitId': 'unitId',
-                        'searchId': orgId,
-                        'employeeName': 'employeeName',
-                        'imgUrl': 'imgUrl',
-                        'jobName': 'jobName',
-                        'exportButton': true
-                      });
-                }
-
-
-        },
-        events:{
-            'organization-selector:selected': function(node) {
-                let name = node.orgShortName !== undefined ? node.orgShortName : node.fullUnitName;
-                let orgId = node.orgId;
+          openSelector() {
+            this.$refs['organization'].open();
+            this.show.modal = true;
+          },
+          receiveOrganization(orgInfo) {
+               let name = orgInfo.orgShortName !== undefined ? orgInfo.orgShortName : orgInfo.fullUnitName;
+                let orgId = orgInfo.orgId;
                 this.orgChart.selecteOrg = name;
                 this.initUrl = '/org/orgs/getCurrentOrgInfo';
                 // this.searchId = node.orgId;
                 this.createChart(orgId); //获取组织后查询
-            }
+           },    
+          createChart(orgId = '') {
+            let currntUrl = this.initUrl;
+            let chartContainer = $('#organization-chart-diagram');
+                chartContainer.html("");
+            var ajaxURLs = {
+                  'children':function(nodeData) {
+                    return '/org/orgs/getCurrentOrgInfo';
+                  }
+                };
+
+                $(chartContainer).organizationChart({
+                  'data' : currntUrl,
+                  'ajaxURL': ajaxURLs,
+                  'orgShortName': 'orgShortName',
+                  'unitId': 'unitId',
+                  'searchId': orgId,
+                  'employeeName': 'employeeName',
+                  'imgUrl': 'imgUrl',
+                  'jobName': 'jobName',
+                  'exportButton': true
+                });
+          }
+
+
         },
         components: {
           Panel: require('../../components/basic/panel.vue')

@@ -1,141 +1,120 @@
 <template>
     <button
-        class="ui-fab" :class="[this.type, this.color]" :aria-label="ariaLabel || tooltip"
-        v-disabled="disabled" v-el:button
-    >
-        <ui-icon class="ui-fab-icon" :icon="icon"></ui-icon>
+        class="ui-fab"
+        ref="button"
 
-        <ui-ripple-ink :trigger="$els.button" v-if="!hideRippleInk && !disabled"></ui-ripple-ink>
+        :aria-label="ariaLabel || tooltip"
+        :class="classes"
+
+        @click="onClick"
+    >
+        <div class="ui-fab-icon" v-if="icon || $slots.default">
+            <slot>
+                <ui-icon :icon="icon"></ui-icon>
+            </slot>
+        </div>
+
+        <span class="ui-fab-focus-ring"></span>
+
+        <ui-ripple-ink trigger="button" v-if="!disableRipple"></ui-ripple-ink>
 
         <ui-tooltip
-            :trigger="$els.button" :content="tooltip" :position="tooltipPosition" v-if="tooltip"
+            trigger="button"
+
             :open-on="openTooltipOn"
-        ></ui-tooltip>
+            :position="tooltipPosition"
+
+            v-if="tooltip"
+        >{{ tooltip }}</ui-tooltip>
     </button>
 </template>
 
 <script>
 import UiIcon from './UiIcon.vue';
+import UiRippleInk from './UiRippleInk.vue';
+import UiTooltip from './UiTooltip.vue';
 
-import disabled from './directives/disabled';
-
-import ShowsTooltip from './mixins/ShowsTooltip';
-import ShowsRippleInk from './mixins/ShowsRippleInk';
+import config from './config';
 
 export default {
     name: 'ui-fab',
 
     props: {
-        type: {
+        size: {
             type: String,
-            default: 'normal',
-            coerce(type) {
-                return 'ui-fab-' + type;
-            }
+            default: 'normal' // 'normal' or 'small'
         },
         color: {
             type: String,
-            default: 'default', // 'default', primary', or 'accent'
-            coerce(color) {
-                return 'color-' + color;
-            }
+            default: 'default' // 'default', primary', or 'accent'
         },
-        icon: {
-            type: String,
-            required: true
-        },
+        icon: String,
         ariaLabel: String,
-        disabled: {
+        tooltip: String,
+        openTooltipOn: String,
+        tooltipPosition: String,
+        disableRipple: {
             type: Boolean,
-            default: false
+            default: config.data.disableRipple
+        }
+    },
+
+    computed: {
+        classes() {
+            return [
+                `ui-fab-color-${this.color}`,
+                `ui-fab-size-${this.size}`
+            ];
+        }
+    },
+
+    methods: {
+        onClick(e) {
+            this.$emit('click', e);
         }
     },
 
     components: {
-        UiIcon
-    },
-
-    mixins: [
-        ShowsTooltip,
-        ShowsRippleInk
-    ],
-
-    directives: {
-        disabled
+        UiIcon,
+        UiRippleInk,
+        UiTooltip
     }
 };
 </script>
 
-<style lang="stylus">
+<style lang="scss">
 @import './styles/imports';
 
+$ui-fab-size-normal    : rem-calc(56px) !default;
+$ui-fab-size-small     : rem-calc(40px) !default;
+
 .ui-fab {
-    position: relative;
-    outline: none;
+    align-items: center;
+    border-radius: 50%;
     border: none;
+    box-shadow: 0 2px 5px 0 rgba(black, 0.2), 0 2px 10px 0 rgba(black, 0.16);
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    outline: none;
+    position: relative;
+    transition: box-shadow 0.3s ease;
     z-index: $z-index-fab;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 50%;
-
-    box-shadow: 0 2px 5px 0 alpha(black, 0.2), 0 2px 10px 0 alpha(black, 0.16);
-    transition: box-shadow 0.3s ease;
-
+    // Remove the Firefox dotted outline
     &::-moz-focus-inner {
-      border: 0;
+        border: 0;
     }
 
-    &:hover:not([disabled]),
+    &:hover,
     body[modality="keyboard"] &:focus {
-        box-shadow: 0 8px 17px 0 alpha(black, 0.25), 0 6px 20px 0 alpha(black, 0.2);
+        box-shadow: 0 8px 17px 0 rgba(black, 0.25), 0 6px 20px 0 rgba(black, 0.2);
     }
 
-    &:not([disabled]) {
-        cursor: pointer;
-    }
-
-    &.color-default {
-        background-color: white;
-        color: $md-dark-secondary;
-
-        .ui-fab-icon {
-            color: $md-dark-secondary;
-        }
-
-        .ui-ripple-ink .ripple.held {
-            opacity: 0.2;
-        }
-    }
-
-    &.color-primary,
-    &.color-accent {
-        color: white;
-
-        .ui-fab-icon {
-            color: white;
-        }
-
-        .ui-ripple-ink .ripple.held {
-            opacity: 0.7;
-        }
-    }
-
-    &.color-primary {
-        background-color: $md-brand-primary;
-
-        body[modality="keyboard"] &:focus {
-            background-color: darken($md-brand-primary, 10%);
-        }
-    }
-
-    &.color-accent {
-        background-color: $md-brand-accent;
-
-        body[modality="keyboard"] &:focus {
-            background-color: darken($md-brand-accent, 10%);
+    body[modality="keyboard"] &:focus {
+        .ui-fab-focus-ring {
+            opacity: 1;
+            transform: scale(1);
         }
     }
 
@@ -144,19 +123,92 @@ export default {
     }
 }
 
-.ui-fab-normal {
-    width: 56px;
-    height: 56px;
-}
-
-.ui-fab-mini {
-    width: 40px;
-    height: 40px;
-}
-
 .ui-fab-icon {
-    margin: 0;
-    width: 100%; // Firefox: needs the width and height reset for flexbox centering
     height: initial;
+    margin: 0;
+    position: relative;
+    width: 100%; // Firefox: needs the width and height reset for flexbox centering
+    z-index: 1;
+}
+
+.ui-fab-focus-ring {
+    border-radius: 50%;
+    left: 0;
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    transform-origin: center;
+    transform: scale(0);
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+// ================================================
+// Sizes
+// ================================================
+
+.ui-fab-size-normal {
+    &,
+    .ui-fab-focus-ring {
+        height: $ui-fab-size-normal;
+        width: $ui-fab-size-normal;
+    }
+}
+
+.ui-fab-size-small {
+    &,
+    .ui-fab-focus-ring {
+        width: $ui-fab-size-small;
+        height: $ui-fab-size-small;
+    }
+}
+
+// ================================================
+// Colors
+// ================================================
+
+.ui-fab-color-default {
+    background-color: white;
+    color: $secondary-text-color;
+
+    .ui-fab-icon {
+        color: $secondary-text-color;
+    }
+
+    .ui-ripple-ink-ink {
+        opacity: 0.2;
+    }
+
+    .ui-fab-focus-ring {
+        background-color: rgba(black, 0.15);
+    }
+}
+
+.ui-fab-color-primary,
+.ui-fab-color-accent {
+    color: white;
+
+    .ui-fab-icon {
+        color: white;
+    }
+
+    .ui-ripple-ink-ink {
+        opacity: 0.4;
+    }
+}
+
+.ui-fab-color-primary {
+    background-color: $brand-primary-color;
+
+    .ui-fab-focus-ring {
+        background-color: darken($brand-primary-color, 10%);
+    }
+}
+
+.ui-fab-color-accent {
+    background-color: $brand-accent-color;
+
+    .ui-fab-focus-ring {
+        background-color: darken($brand-accent-color, 10%);
+    }
 }
 </style>

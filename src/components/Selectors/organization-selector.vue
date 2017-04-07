@@ -12,13 +12,13 @@
 
 <template lang="html">
 
-<ui-modal id="select-organization " :show.sync="show.modal" transition="ui-modal-fade" header="Select Organization">
+<ui-modal ref="orgselect" id="select-organization " :show="show.modal" transition="ui-modal-fade" :title="$t('selectors.selectOrganization')">
     <div class="select-cnt">
-        <tree :data="trees" :level-config="levelConfig" :show-checkbox="showCheckbox" v-ref:tree :click-node="loadNodeDetail" :dblclick-node="dblclickNode"></tree>
+        <tree :data="trees" :level-config="levelConfig" :show-checkbox="showCheckbox" ref="tree" :click-node="loadNodeDetail" :dblclick-node="dblclickNode"></tree>
     </div>
     <div slot="footer">
-        <ui-button color="primary" @click="handleSave">Confirm</ui-button>
-        <ui-button @click="show.modal = false">Cancel</ui-button>
+        <ui-button color="primary" @click="handleSave">{{$t('button.confirm')}}</ui-button>
+        <ui-button @click="close">{{$t('button.cancel')}}</ui-button>
     </div>
 </ui-modal>
 
@@ -42,7 +42,13 @@ export default {
                 return [];
             }
         },
-        selectedNode: {}
+        selectedNode: {},
+        handelSelect: {
+            type: Function,
+            default() {
+              return function() {}
+            }
+        }
     },
     data() {
         let _self = this;
@@ -95,6 +101,12 @@ export default {
     },
     created() {},
     methods: {
+      open() {
+        this.$refs['orgselect'].open();
+      },
+      close() {
+        this.$refs['orgselect'].close()
+      },
       getTreeData() {
         const currentNode = this.currentNode;
         let url = `/org/orgs/parent`;
@@ -123,19 +135,20 @@ export default {
          */
 
         loadNodeDetail(node) {
-                this.selectedNode = node;
-            },
+            this.selectedNode = node;
+        },
 
-            /**
-             * save to selected node.
-             */
-            handleSave() {
-                this.show.modal = false;
-                this.$dispatch('organization-selector:selected', this.selectedNode);
-            },
-            dblclickNode() {
-                this.handleSave();
-            }
+        /**
+         * save to selected node.
+         */
+        handleSave() {
+            this.$refs['orgselect'].close();
+            this.$emit('select-organization',this.selectedNode)
+            // this.handelSelect(this.selectedNode);
+        },
+        dblclickNode() {
+            this.handleSave();
+        }
 
     },
     components: {

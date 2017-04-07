@@ -5,100 +5,94 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=9">
     <title>iHR-Login</title>
-    <link href="./static/images/public/ihr-logo-w.ico" rel="shortcut icon" type="image/x-icon">
-    <link rel="stylesheet" href="~/static/styles/login/login.css">
-    <link rel="stylesheet" href="~/vendor/font-awesome/css/font-awesome.min.css">
+    <link href="assets/images/public/ihr-logo-w.ico" rel="shortcut icon" type="image/x-icon">
+    <link rel="stylesheet" href="assets/styles/login/login.css">
 </head>
 
 <body id="login">
-      <div id="app"></div>
-      <div class="login-shade" id="ieShade" style="display: none;"></div>
-      <div class="login-shade-content" id="ieTips" style="display: none;">
+    <div class="login-shade" id="ieShade" style="display: none;"></div>
+    <div class="login-shade-content" id="ieTips" style="display: none;">
         <i class="fa fa-quote-left" aria-hidden="true"></i>
         <div class="login-border">Your browser is incompatible with iHR system. </div>
         <div class="txt">You are recommanded to use these brower</div>
         <!-- <div class="txt">In order to rich experience</div> -->
         <!-- <div class="txt">To try these update more quickly and have a love of the browser</div> -->
         <ul class="browser fix">
-          <li>
-            <img src="~/static/images/public/Google-1.png" alt="">
-            <a class="browser-name" href="http://rj.baidu.com/soft/detail/14744.html?ald" target="_blank">Chrome </a>
-          </li>
+            <li>
+                <img src="assets/images/public/Google-1.png" alt="">
+                <a class="browser-name" href="http://rj.baidu.com/soft/detail/14744.html?ald" target="_blank">Chrome </a>
+            </li>
 
-          <li>
-            <img src="~/static/images/public/Firefox-1.png" alt="">
-            <a class="browser-name" href="http://rj.baidu.com/soft/detail/11843.html?ald" target="_blank">Firefox</a>
-          </li>
-          <li>
-            <img src="~/static/images/public/Mac-1.png" alt="">
-            <a class="browser-name" href="http://rj.baidu.com/soft/detail/12966.html?ald" target="_blank">Safari</a>
-          </li>
-          <li>
-            <img src="~/static/images/public/IE-1.png" alt="">
-            <a class="browser-name" href="http://rj.baidu.com/soft/detail/23360.html?ald" target="_blank">IE9+</a>
-          </li>
+            <li>
+                <img src="assets/images/public/Firefox-1.png" alt="">
+                <a class="browser-name" href="http://rj.baidu.com/soft/detail/11843.html?ald" target="_blank">Firefox</a>
+            </li>
+            <li>
+                <img src="assets/images/public/Mac-1.png" alt="">
+                <a class="browser-name" href="http://rj.baidu.com/soft/detail/12966.html?ald" target="_blank">Safari</a>
+            </li>
+            <li>
+                <img src="assets/images/public/IE-1.png" alt="">
+                <a class="browser-name" href="http://rj.baidu.com/soft/detail/23360.html?ald" target="_blank">IE9+</a>
+            </li>
         </ul>
         <i class="fa fa-quote-right" aria-hidden="true"></i>
-      </div>
+    </div>
 
 
 
-      <div id="loginPage" class="login-page" style="display: block;">
-          <div id="loginBody" class="login-body" @keydown="onkeydown($event)">
-              <div class="login-statement">
-                  <div class="first">
-                      <span class="first-txt">Lead</span> the transformation of Midea to become an open capable and effective global organization
-                  </div>
-                  <div class="second">
-                      That is the Top Employer of the industry
-                  </div>
-              </div>
-              <div class="login-area">
-                  <!-- <div class="test-state">Beta</div> -->
-                  <div class="login-pop-content">
-                      <div class="login-logo">
-                        <img src="./static/images/public/iHR-logo.png" alt="">
-                      </div>
-                      <div class="login-line"></div>
-                      <div class="login-title">Human Capital Management System</div>
-                      <div class="login-pop-form">
-                          <div class="tang-pass-login">
-                              <div class="form-item">
-                                  <label class="label-userName"></label>
-                                  <div class="text-label-userName">
-                                      <input v-model="username" type="text" name="" value="">
-                                  </div>
-                              </div>
-                              <div class="form-item password">
-                                  <label class="label-userPass"></label>
-                                  <div class="text-label-userPass">
-                                      <input v-model="password" type="password" name="" value="">
-                                  </div>
-                                  <div class="field-hint" v-cloak>
-                                      <img src="../static/images/public/error.png" v-show="errorMsg !== ''" alt="" style="width: 12px;height: 12px;margin: 0px 5px 0 0;float: left;">{{errorMsg}}
-                                  </div>
-                              </div>
-                              <div class="form-item">
-                                  <button id="loginBtn" class="login-btn" type="button" name="button">Log In</button>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </div>
+    <div id="loginPage" class="login-page" style="display: block;">
+        <div id="loginBody" class="login-body" @keydown="onkeydown($event)">
+            <div class="login-statement">
+                <div class="first">
+                    <span class="first-txt">Lead</span> the transformation of Midea to become an open capable and effective global organization
+                </div>
+                <div class="second">
+                    That is the Top Employer of the industry
+                </div>
+            </div>
+            <div class="login-area">
+                <!-- <div class="test-state">Beta</div> -->
+                <div class="login-pop-content">
+                    <div class="login-logo">
+                        <img src="./assets/images/public/iHR-logo.png" alt="">
+                    </div>
+                    <div class="login-line"></div>
+                    <div class="login-title">Human Capital Management System</div>
+                    <div class="login-pop-form">
+                        <div class="tang-pass-login">
+                            <div class="form-item">
+                                <label class="label-userName"></label>
+                                <div class="text-label-userName">
+                                    <input v-model="username" type="text" name="" value="">
+                                </div>
+                            </div>
+                            <div class="form-item password">
+                                <label class="label-userPass"></label>
+                                <div class="text-label-userPass">
+                                    <input v-model="password" type="password" name="" value="">
+                                </div>
+                                <div class="field-hint" v-cloak>
+                                    <img src="assets/images/public/error.png" v-show="errorMsg !== ''" alt="" style="width: 12px;height: 12px;margin: 0px 5px 0 0;float: left;">{{errorMsg}}
+                                </div>
+                            </div>
+                            <div class="form-item">
+                                <button id="loginBtn" class="login-btn" type="button" name="button">Log In</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <!--[if IE]>
-    <script src="~/js/browser-polyfill.min.js"></script>
+    <script src="js/browser-polyfill.min.js"></script>
     <![endif]-->
-    <script src="https://unpkg.com/vue/dist/vue.js"></script>
-    <script src="~/js/vue-i18n.min.js"></script>
-    <script src="~/js/vue.resource@0.9.3.js"></script>
-    <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
-    <script src="https://unpkg.com/vuex/dist/vuex.js"></script>
-    <script src="~/js/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/g/vue@2.2.4,vue.resource@0.9.3,vue.router@2.2.1,vuex@2.2.1,element-ui@1.2.5"></script>
+    <script src="https://unpkg.com/vue-i18n@5.0.3/dist/vue-i18n.min.js"></script>
     <script type="text/javascript">
         if (!window.location.origin) {
-            window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '');
+            window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
         }
         if (!Function.prototype.bind) {
             Function.prototype.bind = function(oThis) {
@@ -142,86 +136,82 @@
         }
     </script>
     <script type="text/javascript">
-    // ie8 及以下版本浏览器弹框信息
-    var isIE = function(ver) {
-        var b = document.createElement('b')
-        b.innerHTML = '<!--[if IE ' + ver + ']><i></i><![endif]-->'
-        return b.getElementsByTagName('i').length === 1
-    }
-
-    if (isIE(8)||isIE(7)||isIE(6)) {
-        document.getElementById('ieShade').style.display='block';
-        document.getElementById('ieTips').style.display='block';
-        // document.getElementById('loginPage').style.display='none';
-    }
-    new Vue({
-      el: '#loginPage',
-      data: {
-        username: '',
-        password: '',
-        errorMsg: ''
-      },
-      watch: {
-        username: function() {
-          this.errorMsg = '';
-        },
-        password: function() {
-          this.errorMsg = '';
+        // ie8 及以下版本浏览器弹框信息
+        var isIE = function(ver) {
+            var b = document.createElement('b')
+            b.innerHTML = '<!--[if IE ' + ver + ']><i></i><![endif]-->'
+            return b.getElementsByTagName('i').length === 1
         }
-      },
-      mounted: function(){
-        this.$nextTick(function () {
-          var _self = this;
-          document.onreadystatechange = loadingChange;//当页面加载状态改变的时候执行这个方法.
-              function loadingChange()
-              {
-                  if(document.readyState == "complete"){ //当页面加载状态为完全结束时进入
-                    document.getElementById('loginBtn').style.backgroundColor='#2196f3';
-                    document.getElementById('loginBtn').style.cursor='pointer';//当页面加载完成后将loading页隐藏
-                    document.getElementById('loginBtn').addEventListener('click', function() {
-                        _self.login();
-                    })
-                  }
-              }
-        })
-      },
-      methods: {
-        onkeydown: function(event) {
-          if(document.readyState == "complete"){
-              if (event.keyCode == 13) {
-                  this.login();
-              }
-          }
-        },
-        login: function() {
-          if (!this.username || !this.password) {
-            this.errorMsg = 'Please Input Correct Username or Password';
-            return;
-          }
 
-          this.$http.post('/security/login', {
-                       username: this.username,
-                       password: this.password
-                   }, {
-                       emulateJSON: true
-          }).then(function(res) {
-            if (res.data) {
-                localStorage.setItem('ewptoken', res.data);
-                // location.href = location.origin + '/main.html' +  location.hash + 'ihr'
-                location.href = location.origin + '/' +  location.hash + 'ihr';
+        if (isIE(8) || isIE(7) || isIE(6)) {
+            document.getElementById('ieShade').style.display = 'block';
+            document.getElementById('ieTips').style.display = 'block';
+            // document.getElementById('loginPage').style.display='none';
+        }
+        new Vue({
+            el: '#loginPage',
+            data: {
+                username: '',
+                password: '',
+                errorMsg: ''
+            },
+            watch: {
+                username: function() {
+                    this.errorMsg = '';
+                },
+                password: function() {
+                    this.errorMsg = '';
+                }
+            },
+            mounted: function() {
+                this.$nextTick(function() {
+                    var _self = this;
+                    document.onreadystatechange = loadingChange; //当页面加载状态改变的时候执行这个方法.
+                    function loadingChange() {
+                        if (document.readyState == "complete") { //当页面加载状态为完全结束时进入
+                            document.getElementById('loginBtn').style.backgroundColor = '#2196f3';
+                            document.getElementById('loginBtn').style.cursor = 'pointer'; //当页面加载完成后将loading页隐藏
+                            document.getElementById('loginBtn').addEventListener('click', function() {
+                                _self.login();
+                            })
+                        }
+                    }
+                })
+            },
+            methods: {
+                onkeydown: function(event) {
+                    if (document.readyState == "complete") {
+                        if (event.keyCode == 13) {
+                            this.login();
+                        }
+                    }
+                },
+                login: function() {
+                    if (!this.username || !this.password) {
+                        this.errorMsg = 'Please Input Correct Username or Password';
+                        return;
+                    }
+                    this.$http.post('/security/login', {
+                        username: this.username,
+                        password: this.password
+                    }, {
+                        emulateJSON: true
+                    }).then(function(res) {
+                        if (res.data) {
+
+                            localStorage.setItem('ewptoken', res.data);
+                            // location.href = location.origin + '/main.html' +  location.hash + 'ihr'
+                            location.href = location.origin + '/' + location.hash + 'ihr';
+                        }
+                    }, function(response) {
+                        if (response.status) {
+                            this.errorMsg = 'Please input valid username and password';
+                        }
+                    });
+
+                }
             }
-          },function(response) {
-              if(response.status){
-                this.errorMsg = 'Please input valid username and password';
-              }
-          });
-
-        }
-      }
-    })
-
-
-
+        })
     </script>
 </body>
 

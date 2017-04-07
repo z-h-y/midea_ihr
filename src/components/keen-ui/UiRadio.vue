@@ -1,50 +1,57 @@
 <template>
-<label class="ui-radio" :class="{ 'disabled': disabled, 'checked': active, 'label-left': labelLeft }">
+    <label class="ui-radio" :class="classes" @click="toggleCheck">
         <div class="ui-radio-input-wrapper">
             <input
-                class="ui-radio-input" type="radio" :id="id" :name="name" :value="value"
-                :checked="checked" @focus="focus" @blur="blur" v-model="model" v-disabled="disabled"
+                class="ui-radio-input"
+                type="radio"
+
+                :disabled="disabled"
+                :name="name"
+                :value="trueValue"
+
+                @blur="onBlur"
+                @change="onChange"
+                @focus="onFocus"
             >
 
-            <span class="ui-radio-border"></span>
-            <span class="ui-radio-inner-dot"></span>
+            <div class="ui-radio-focus-ring"></div>
+
+            <span class="ui-radio-outer-circle"></span>
+            <span class="ui-radio-inner-circle"></span>
         </div>
 
-        <div class="ui-radio-label-text" v-if="!hideLabel">
-            <slot>
-                <span v-text="label"></span>
-            </slot>
+        <div class="ui-radio-label-text" v-if="label || $slots.default">
+            <slot>{{ label }}</slot>
         </div>
     </label>
 </template>
 
 <script>
-import disabled from './directives/disabled';
-
 export default {
     name: 'ui-radio',
 
     props: {
-        id: String,
         name: String,
-        model: {
-            type: String,
-            default: '',
-            twoWay: true
+        label: String,
+        value: {
+            type: [Number, String],
+            required: true
+        },
+        trueValue: {
+            type: [Number, String],
+            required: true
         },
         checked: {
             type: Boolean,
             default: false
         },
-        value: String,
-        label: String,
-        hideLabel: {
-            type: Boolean,
-            default: false
+        color: {
+            type: String,
+            default: 'primary' // 'primary' or 'accent'
         },
-        labelLeft: {
-            type: Boolean,
-            default: false
+        buttonPosition: {
+            type: String,
+            default: 'left' // 'left' or 'right'
         },
         disabled: {
             type: Boolean,
@@ -54,142 +61,215 @@ export default {
 
     data() {
         return {
-            active: false
+            isActive: false
         };
     },
 
-    methods: {
-        focus() {
-            this.active = true;
-
-            this.$dispatch('focussed');
+    computed: {
+        classes() {
+            return [
+                `ui-radio-color-${this.color}`,
+                `ui-radio-button-position-${this.buttonPosition}`,
+                { 'is-active': this.isActive },
+                { 'is-checked': this.isChecked },
+                { 'is-disabled': this.disabled }
+            ];
         },
 
-        blur() {
-            this.active = false;
-
-            this.$dispatch('blurred');
+        isChecked() {
+            // eslint-disable-next-line eqeqeq
+            return (String(this.value).length > 0) && (this.value == this.trueValue);
         }
     },
 
-    directives: {
-        disabled
+    created() {
+        if (this.checked) {
+            this.$emit('input', this.trueValue);
+        }
+    },
+
+    methods: {
+        toggleCheck() {
+            if (!this.disabled) {
+                this.$emit('input', this.trueValue);
+            }
+        },
+
+        onFocus(e) {
+            this.isActive = true;
+            this.$emit('focus', e);
+        },
+
+        onBlur(e) {
+            this.isActive = false;
+            this.$emit('blur', e);
+        },
+
+        onChange(e) {
+            this.$emit('change', this.isChecked, e);
+        }
     }
 };
 </script>
 
-<style lang="stylus">
+<style lang="scss">
 @import './styles/imports';
 
-$size = 20px;
-$border-width = 2px;
-$transition-duration = 0.3s;
+$ui-radio-size                  : rem-calc(20px) !default;
+$ui-radio-stroke                : rem-calc(2px) !default;
+$ui-radio-focus-ring-size       : $ui-radio-size * 2.1 !default;
+$ui-radio-transition-duration   : 0.3s !default;
+$ui-radio-label-font-size       : rem-calc(16px) !default;
 
 .ui-radio {
-    font-family: $font-stack;
-    display: flex;
     align-items: center;
-    height: $size;
-    font-size: 15px;
+    display: flex;
+    font-family: $font-stack;
+    font-size: $ui-input-label-font-size;
+    height: $ui-radio-size;
     margin: 0;
 
-    &:hover:not(.disabled) {
-        .ui-radio-input:not(:checked) {
-            & ~ .ui-radio-border {
-                border: $border-width solid $md-dark-secondary;
-            }
+    &:hover:not(.is-disabled):not(.is-checked) {
+        .ui-radio-outer-circle {
+            border: $ui-radio-stroke solid $secondary-text-color;
         }
     }
 
-    &.label-left {
-        .ui-radio-label-text {
-            order: -1;
-            margin-right: auto;
-            margin-left: 0;
+    &.is-checked {
+        .ui-radio-inner-circle {
+            opacity: 1;
+            transform: scale(0.5);
+            z-index: 0;
         }
     }
 
-    &.disabled {
+    &.is-disabled {
         opacity: 0.5;
-    }
 
-    &:not(.disabled) {
+        .ui-radio-input-wrapper,
         .ui-radio-label-text {
-            cursor: pointer;
+            cursor: default;
         }
     }
 }
 
 .ui-radio-input-wrapper {
+    cursor: pointer;
+    height: $ui-radio-size;
     position: relative;
-    width: $size;
-    height: $size;
+    width: $ui-radio-size;
 }
 
 .ui-radio-input {
     appearance: none;
-    outline: none;
+    height: 1px;
+    left: 0;
     margin: 0;
+    opacity: 0;
+    outline: none;
     padding: 0;
     position: absolute;
-    height: 1px;
-    width: 1px;
-    left: 0;
     top: 0;
+    width: 1px;
 
+    body[modality="keyboard"] &:focus + .ui-radio-focus-ring {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.ui-radio-outer-circle {
+    background-color: transparent;
+    border-radius: 50%;
+    border: $ui-radio-stroke solid $hint-text-color;
+    height: $ui-radio-size;
+    left: 0;
+    position: absolute;
+    top: 0;
+    transition: border-color 0.2s;
+    width: $ui-radio-size;
+}
+
+.ui-radio-inner-circle {
+    background-color: $hint-text-color;
+    border-radius: 50%;
+    height: $ui-radio-size;
+    left: 0;
     opacity: 0;
+    position: absolute;
+    top: 0;
+    transform: scale(1.2);
+    transition-duration: $ui-radio-transition-duration;
+    transition-property: transform, opacity, background-color;
+    width: $ui-radio-size;
+    z-index: -1;
+}
 
-    &:checked {
-        & ~ .ui-radio-border {
-            border-color: $md-brand-primary;
+.ui-radio-focus-ring {
+    background-color: rgba(black, 0.1);
+    border-radius: 50%;
+    height: $ui-radio-focus-ring-size;
+    left: -(($ui-radio-focus-ring-size - $ui-radio-size) / 2);
+    opacity: 0;
+    position: absolute;
+    top: -(($ui-radio-focus-ring-size - $ui-radio-size) / 2);
+    transform: scale(0);
+    transition: background-color 0.2s ease, transform 0.15s ease, opacity 0.15s ease;
+    width: $ui-radio-focus-ring-size;
+    z-index: -1;
+}
+
+.ui-radio-label-text {
+    cursor: pointer;
+    font-size: $ui-radio-label-font-size;
+    margin-left: rem-calc(8px);
+}
+
+// ================================================
+// Button Positions
+// ================================================
+
+.ui-radio-button-position-right {
+    .ui-radio-label-text {
+        margin-left: 0;
+        margin-right: auto;
+        order: -1;
+    }
+}
+
+// ================================================
+// Colors
+// ================================================
+
+.ui-radio-color-primary {
+    &.is-checked:not(.is-disabled) {
+        .ui-radio-outer-circle {
+            border-color: $brand-primary-color;
         }
 
-        & ~ .ui-radio-inner-dot {
-            background-color: $md-brand-primary;
-            transform: scale(0.5);
-            opacity: 1;
-            z-index: 0;
+        .ui-radio-inner-circle {
+            background-color: $brand-primary-color;
+        }
+
+        .ui-radio-focus-ring {
+            background-color: rgba($brand-primary-color, 0.2);
         }
     }
 }
 
-.ui-radio-border {
-    position: absolute;
-    top: 0;
-    left: 0;
+.ui-radio-color-accent {
+    &.is-checked:not(.is-disabled) {
+        .ui-radio-outer-circle {
+            border-color: $brand-accent-color;
+        }
 
-    width: $size;
-    height: $size;
-    border-radius: 50%;
-    border: $border-width solid $md-dark-hint;
-    background-color: transparent;
+        .ui-radio-inner-circle {
+            background-color: $brand-accent-color;
+        }
 
-    transition: border-color 0.2s;
-}
-
-.ui-radio-inner-dot {
-    position: absolute;
-    top: 0;
-    left: 0;
-
-    width: $size;
-    height: $size;
-    border-radius: 50%;
-
-    background-color: $md-dark-hint;
-
-    opacity: 0;
-    z-index: -1;
-    transform: scale(1.2);
-
-    transition-property: transform, opacity, background-color;
-    transition-duration: $transition-duration;
-}
-
-.ui-radio-label-text {
-    margin-left: 10px;
-    font-size: 15px;
-    color:rgba(0,0,0,0.54);
-    transition: border-color 0.2s;
+        .ui-radio-focus-ring {
+            background-color: rgba($brand-accent-color, 0.2);
+        }
+    }
 }
 </style>

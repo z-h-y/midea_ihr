@@ -18,15 +18,15 @@
 <template lang="html">
 
 <div class="content-wrap ihr-myPerformance-performance">
-    <panel title="Annual Performance" class="panel-b performance" header="panel-header" id="org-perfor">
+    <panel :title="$t('myperformance.tabText.annualPerformance')" class="panel-b performance" header="panel-header" id="org-perfor">
         <ui-tabs type="text" background-color="clear" text-color="gray" text-color-active="primary">
-            <ui-tab header="My Annual Performance">
+            <ui-tab :header="$t('myperformance.tabText.myAnnualPerformance')">
                 <div class="vuetable-wrapper">
                     <vuetable api-url="/performance/MyAnnualPerformances" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="annualPerformance" :sort-order="sortOrder" per-page="10">
                     </vuetable>
                 </div>
             </ui-tab>
-            <ui-tab header="Confirm Annual Performance" :num="num">
+            <ui-tab :header="$t('myperformance.tabText.confirmAnnualPerformance')" :num="num">
                 <div class="vuetable-wrapper">
                     <vuetable api-url="/performance/ConfirmAnnualPerformances" :load-success-callback="confirmAnnualPerformances" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="confirmAnnualPerformance" :sort-order="sortOrder" per-page="10">
                     </vuetable>
@@ -50,32 +50,32 @@ export default {
             return {
                 annualPerformance: [{
                     name: 'schemeName',
-                    title: 'Scheme Name'
+                    title: this.$t('myperformance.annualperformance.schemeName')
                 }, {
                     name: 'restrictYear',
                     dataClass: 'tr',
-                    title: 'Year'
+                    title: this.$t('myperformance.annualperformance.restrictYear')
                 }, {
                     name: 'finalScore',
                     dataClass: 'tr',
-                    title: 'Score'
+                    title: this.$t('myperformance.annualperformance.restrictYear')
                 }, {
                     name: 'grade',
-                    title: 'Grade',
+                    title: this.$t('myperformance.annualperformance.grade')
                 }],
                 confirmAnnualPerformance: [{
                     name: 'schemeName',
-                    title: 'Scheme Name'
+                    title: this.$t('myperformance.annualperformance.schemeName')
                 }, {
                     name: 'restrictYear',
                     dataClass: 'tr',
-                    title: 'Year'
+                    title: this.$t('myperformance.annualperformance.restrictYear')
                 }, {
                     name: 'validStatusName',
-                    title: 'Status'
+                    title: this.$t('myperformance.annualperformance.validStatusName')
                 }, {
                     name: 'operate',
-                    title: 'Operate',
+                    title: this.$t('myperformance.annualperformance.operate') ,
                     callback: function(value, data) {
                         return _self.operate(value, data);
                     }
@@ -88,9 +88,9 @@ export default {
             operate(value, data) {
                 if (data) {
                     if (data.confirmedHod == '0') {
-                        return `<a href="${location.href}/annualPerformanceConfirm/${data.schemeYearId}/${data.schemeName}/0">Confirm</a>`;
+                        return `<a href="${location.href}/annualPerformanceConfirm/${data.schemeYearId}/${data.schemeName}/0">${this.$t('button.confirm')}</a>`;
                     } else {
-                        return `<a href="${location.href}/annualPerformanceConfirm/${data.schemeYearId}/${data.schemeName}/1">View</a>`;
+                        return `<a href="${location.href}/annualPerformanceConfirm/${data.schemeYearId}/${data.schemeName}/1">${this.$t('button.view')}</a>`;
                     }
                 }
             }

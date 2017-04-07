@@ -1,56 +1,57 @@
 <template>
-    <label :class="{'file-uploads': true, 'file-uploads-html5': $mode == 'html5', 'file-uploads-html4': $mode == 'html4'}">
+    <label :class="['file-uploads',{'file-uploads-html5': $mode == 'html5', 'file-uploads-html4': $mode == 'html4'}]">
         <span v-html="title"></span>
         <input-file></input-file>
     </label>
 </template>
 
 <style>
-.file-uploads {
-    overflow: hidden;
-    position: relative;
-    text-align: center;
-}
-.file-uploads span{
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    -o-user-select: none;
-    user-select: none;
-}
-.file-uploads input{
-    z-index: 1;
-    opacity: 0;
-    font-size: 20em;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+
+  .file-uploads {
+      overflow: hidden;
+      position: relative;
+      text-align: center;
+  }
+  .file-uploads span{
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      -o-user-select: none;
+      user-select: none;
+  }
+  .file-uploads input{
+      z-index: 1;
+      opacity: 0;
+      font-size: 20em;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+  }
+  .file-uploads.file-uploads-html5 input{
+      float: left;
+      width: 1px !important;
+      height: 1px !important;
+      top:-1px !important;
+      left:-1px !important;
+      right:auto !important;
+      bottom:auto !important;
+  }
+  .menu-option-upload {
+    display: none;
     position: absolute;
+    top: 0;
     width: 100%;
-    height: 100%;
-}
-.file-uploads.file-uploads-html5 input{
-    float: left;
-    width: 1px !important;
-    height: 1px !important;
-    top:-1px !important;
-    left:-1px !important;
-    right:auto !important;
-    bottom:auto !important;
-}
-.menu-option-upload {
-  display: none;
-  position: absolute;
-  top: 0;
-  width: 100%;
-  text-align: left;
-  padding: 0 16px;
-  height: 40px;
-  line-height: 40px;
-  opacity: 0;
-  cursor: pointer;
-}
+    text-align: left;
+    padding: 0 16px;
+    height: 40px;
+    line-height: 40px;
+    opacity: 0;
+    cursor: pointer;
+  }
 </style>
 
 <script>
@@ -98,9 +99,9 @@ export default {
 
   components: {
     inputFile : {
-      template: '<input type="file" :name="$parent.name" :id="$parent.id||$parent.name" :accept="$parent.accept" @change="change" :multiple="$parent.multiple && $parent.$mode == \'html5\'">',
+      template: `<input type="file" :name="$parent.name" :id="$parent.id||$parent.name" :accept="$parent.accept" @change="selectedFile" :multiple="$parent.multiple && $parent.$mode == \'html5\'">`,
       methods: {
-        change(e) {
+        selectedFile(e) {
           this.$parent._addFileUploads(e.target);
           this.$destroy();
         },
@@ -130,14 +131,9 @@ export default {
   },
 
 
-  beforeCreate() {
-    var input = document.createElement('input');
-    input.type = 'file';
-    if (window.FormData && input.files)  {
-      this.$mode = 'html5';
-    } else {
-      this.$mode = 'html4';
-    }
+  created() {
+    //判断当前浏览器是否支持多文件上传
+    this.$mode = this.judgeUploadModel();
     this._index = 0;
     this._dropActive = 0;
     this._files = {};
@@ -185,7 +181,7 @@ export default {
           iframe.onabort({type:'abort'});
         }
         delete this._files[id];
-        this._uploadEvents('removeFileUpload', file);
+        this._uploadEvents('remove-upload', file);
       }
       this._index = 0;
     },
@@ -204,6 +200,19 @@ export default {
   },
 
   methods: {
+    //返回当前浏览器是否支持多文件上传
+    judgeUploadModel() {
+      let model = '';
+      var input = document.createElement('input');
+      input.type = 'file';
+      if (window.FormData && input.files)  {
+        model = 'html5';
+      } else {
+        model = 'html4';
+      }
+      return model;
+    },
+
     clear() {
       if (this.files.length) {
         this.files.splice(0, this.files.length);
@@ -211,11 +220,13 @@ export default {
     },
 
     _uploadEvents(name, file) {
-      this.$dispatch && this.$dispatch(name, file, this);
+      this.$emit(name, file, this)
+      // this.$dispatch && this.$dispatch(name, file, this);
       this[name] && this[name](file);
       this.events && this.events[name] && this.events[name](file, this);
     },
 
+    //初始化drag,drop事件
     _drop(value) {
       if (this.dropElement && this.$mode === 'html5') {
         try {
@@ -224,6 +235,7 @@ export default {
           this.dropElement.removeEventListener('dragover', this._onDragover, false);
           this.dropElement.removeEventListener('drop', this._onDrop, false);
         } catch (e) {
+
         }
       }
 
@@ -246,11 +258,13 @@ export default {
         this.dropElement.addEventListener('drop', this._onDrop, false);
       }
     },
+    //目标被拖拉
     _onDragenter(e) {
       this._dropActive++;
       this.dropActive = !!this._dropActive;
       e.preventDefault();
     },
+    //拖拉离开原盒子
     _onDragleave(e) {
       e.preventDefault();
       this._dropActive--;
@@ -258,10 +272,12 @@ export default {
         this.dropActive = !!this._dropActive;
       }
     },
+    //拖放开始
     _onDragover(e) {
       e.preventDefault();
     },
 
+    //确认开始上传文件
     _addFileUpload(hiddenData, file) {
       var defaultFile = {
         size:-1,
@@ -295,7 +311,8 @@ export default {
       this._files[file.id] = hiddenData;
       file = this.files[this.files.push(file) - 1];
       this._files[file.id]._file = file;
-      this._uploadEvents('addFileUpload', file);
+      //分发上传事件
+      this._uploadEvents('add-upload', file);
     },
     _onDrop(e) {
       this._dropActive = 0;
@@ -320,15 +337,16 @@ export default {
         nfile = document.selection.createRange().text;
         document.selection.empty();
       }
-      var Component = this.$options.components.inputFile;
-      new Component({
-        parent: this,
-        el: el,
-      });
+      // var Component = this.$options.components.inputFile;
+      // new Component({
+      //   parent: this,
+      //   el: el,
+      // });
       this.uploaded = false;
 
 
       if (el.files) {
+        // _addFileUpload
         if(!this._checkFile(el.files)) {
           return;
         };
@@ -369,7 +387,7 @@ export default {
           }
 
           if (file.name.search(extensions) == -1) {
-            this._uploadEvents('fileUploadFail', file);
+            this._uploadEvents('upload-fail', file);
             isValidate = false;
             break;
           }
@@ -499,7 +517,7 @@ export default {
             speedTime = speedTime2;
           }
         }
-        _self._uploadEvents('fileUploadProgress', file);
+        _self._uploadEvents('upload-progress', file);
       };
 
 
@@ -549,7 +567,7 @@ export default {
           if (!fileUploads) {
             fileUploads = true;
             if (!file.removed) {
-              _self._uploadEvents('afterFileUpload', file);
+              _self._uploadEvents('after-upload', file);
               if (file.error) {
                 Message({
                     type: 'error',
@@ -604,7 +622,7 @@ export default {
           }
         }
       }, 100);
-      this._uploadEvents('beforeFileUpload', file);
+      this._uploadEvents('before-upload', file);
     },
     _fileUploadPut(file) {
         var _self = this;
@@ -797,7 +815,7 @@ export default {
             fileUploads = true;
             iframe.parentNode && iframe.parentNode.removeChild(iframe);
             if (!file.removed) {
-              _self._uploadEvents('afterFileUpload', file);
+              _self._uploadEvents('after-upload', file);
               _self.active = false;
             }
             setTimeout(function() {
@@ -824,7 +842,7 @@ export default {
             }
           }
         }, 50);
-        _self._uploadEvents('beforeFileUpload', file);
+        _self._uploadEvents('before-upload', file);
       }, 10);
     },
   }

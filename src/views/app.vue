@@ -32,7 +32,6 @@
 }
 
 
-
 </style>
 
 <template lang="html">
@@ -44,10 +43,10 @@
 
   </div>
   <div id="aside" class="aside-wrap" :class="[expanded?showtransition.classA:showtransition.classB]">
-
+      
       <nav-menu>
-          <nav-menu-item v-on:menuUrls="setMenuUrls" v-for="menu in menus" :text="menu.menuName" :path="menu.menuAddress" :data="menu" :icon="menu.icon">
-          </nav-menu-item>
+        <nav-menu-item v-on:menu-urls="setMenuUrls" v-for="menu in menus" :key="menu.id" :text="menu.language" :path="menu.menuAddress" :data="menu" :icon="menu.icon">
+        </nav-menu-item>
       </nav-menu>
   </div>
   <main-view :urls="urls"></main-view>
@@ -94,7 +93,7 @@ export default {
               while (item.$isNavMenu !== true) {
                   let curUrl = {
                       url: item.data.menuAddress,
-                      name: item.data.menuName,
+                      name: item.data.language,
                       mId: item.data.menuId,
                       parentId: item.data.parentMenuId
                   };
@@ -107,7 +106,7 @@ export default {
               }
               this.urls.unshift({
                   url: item.data.menuAddress,
-                  name: item.data.menuName,
+                  name: item.data.language,
                   mId: item.data.menuId,
                   parentId: item.data.parentMenuId
               });
@@ -131,9 +130,9 @@ export default {
                         localStorage.setItem('isAdmin', '0');
                     }
                     this.flag = flag;
-                    let menuUrl = '/public-access/defaultmenus';
+                    let menuUrl = '/public-access/defaultmenuslanguage';
                     if (flag === '1' && isAdmin) {
-                        menuUrl = '/public-access/menus';
+                        menuUrl = '/public-access/menuslanguage';
                     }
                     this.$http.get(menuUrl).then((response) => {
                         this.oriMenus = response.json();
@@ -157,7 +156,7 @@ export default {
                         if (this.oriMenus[k].menuAddress === path) {
                             this.urls.push({
                                 url: this.oriMenus[k].menuAddress,
-                                name: this.oriMenus[k].menuName,
+                                name: this.oriMenus[k].language,
                                 mId: this.oriMenus[k].menuId,
                                 parentId: this.oriMenus[k].parentMenuId
                             });
@@ -175,7 +174,7 @@ export default {
                         if (this.oriMenus[k].menuId === parentMenuId) {
                             this.urls.unshift({
                                 url: this.oriMenus[k].menuAddress,
-                                name: this.oriMenus[k].menuName,
+                                name: this.oriMenus[k].language,
                                 mId: this.oriMenus[k].menuId,
                                 parentId: this.oriMenus[k].parentMenuId
                             });
@@ -185,19 +184,16 @@ export default {
                             break;
                         }
                     }
+                },
+                'main:initMenu': function(expanded) {
+                    this.loading = true;
+                    this.initMenu(expanded);
+                    var timer;
+                    clearTimeout(timer);
+                    timer = setTimeout(() => {
+                        this.loading = false;
+                    }, 300);
                 }
-        },
-        events: {
-            'main:initMenu': function(expanded) {
-                this.loading = true;
-                this.initMenu(expanded);
-                var timer;
-                clearTimeout(timer);
-                timer = setTimeout(() => {
-                    this.loading = false;
-                }, 300);
-            }
-
         }
 };
 

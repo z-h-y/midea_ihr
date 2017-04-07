@@ -16,7 +16,7 @@
 
     <panel :title="$t('staff.completeProbation')" class="panel-b mb-suitable" header="panel-header">
       <employee-common-info :employee-id="employeeId" :edit-able="false"></employee-common-info>
-      <v-form v-ref:myForm :model="comp" :schema="compSchema" label-width="250" label-suffix="" :cols="1" form-style="org-form">
+      <v-form ref="myform" :model="comp" :schema="compSchema" label-width="250" label-suffix="" :cols="1" form-style="org-form">
           <text-increment property="beginDate" editor-width="400"></text-increment>
           <text-increment property="endDate" editor-width="400"></text-increment>
           <text-field property='actualEndDate' :min-date="comp.beginDate" editor-width="400"></text-field>
@@ -25,14 +25,14 @@
           <text-field class="visa-upload" property="visa" editor-width="400">
             <!-- <input-file class="visa-upload-file" name="file" :file-name="fileName" :change-file="changeFile" :del-file="delFile" accept="image/gif,image/jpg,image/jpeg,image/png,application/pdf,application/msexcel,application/msword,application/x-zip-compressed"></input-file> -->
             <div class="file-upload-content">
-              <file-upload title="upload" class="file-upload" name="file" :post-action="files.url" :extensions="files.extensions" :accept="files.accept" :multiple="files.multiple" :size="files.size" v-ref:upload :drop="files.drop"></file-upload>
+              <file-upload @addFileUpload="addFileUpload" @afterFileUpload="afterFileUpload" :title="$t('button.upload')" class="file-upload" name="file" :post-action="files.url" :extensions="files.extensions" :accept="files.accept" :multiple="files.multiple" :size="files.size" ref="upload" :drop="files.drop"></file-upload>
               <span class="file-name" :title="fileName">{{fileName}}</span>
               <i v-show="fileName || fileName === '0'" class="fa fa-trash-o" aria-hidden="true" @click="delFile"></i>
             </div>
           </text-field>
       </v-form>
     </panel>
-    <employee-submit v-ref:employeesubmit :form-confirmed="confirmed" :form-cancel="cancel" :is-form-validate="isFormValidate"></employee-submit>
+    <employee-submit ref="employeesubmit" :form-confirmed="confirmed" :form-cancel="cancel" :is-form-validate="isFormValidate"></employee-submit>
   </div>
 </template>
 
@@ -76,7 +76,7 @@ export default {
             fileName: '',
             files: {
               url: Vue.config.APIURL + '/system/attachment/uploadFile',
-              accept: 'image/*,application/msexcel,application/msword,application/pdf',
+              accept: 'image/:,application+/msexcel,application/msword,application/pdf',
               size: 1024 * 1024 * 2,
               multiple: false,
               extensions: 'gif,jpg,jpeg,png,pdf,doc,docx,xlsx,xls',
@@ -90,7 +90,7 @@ export default {
         };
     },
     computed: {},
-    ready() {
+    mounted() {
         this.$http.get('/employee/onProbation/employees/' + this.employeeId + '/probationInfo').then(function(res) {
             Object.assign(this.comp, res.data);
             if (res.data.beginDate) {
@@ -102,25 +102,7 @@ export default {
             }
         })
     },
-    attached() {},
     methods: {
-        // changeFile(e) {
-        //   var rawFile = e.srcElement.files;
-        //   var files = Array.prototype.slice.call(rawFile, 0);
-        //   if (!this.checkFileSize(files)) {
-        //     return;
-        //   }
-        //   var name = [];
-        //   var formData = new FormData();
-        //   files.forEach(function(file) {
-        //       name.push(file.name);
-        //       formData.append('file', file);
-        //   });
-        //   this.idFileName = name.join(',');
-        //   this.$http.post('/system/attachment/uploadFile', formData).then(function(res) {
-        //     this.comp.visa = res.body;
-        //   });
-        // },
         delFile() {
           this.comp.visa = '';
           this.fileName = '';
@@ -140,7 +122,7 @@ export default {
           return validate;
         },
         isFormValidate() {
-          var passed = this.comp.$schema.isFormValidate(this.$refs.myform);
+          var passed = this.$refs.myform.isFormValidate();
           return passed;
         },
         confirmed() {
@@ -156,7 +138,7 @@ export default {
                     type: 'success',
                     message: this.$t('staff.message.probationSuccess')
                 });
-                  this.$route.router.go({
+                  this.$router.push({
                       name: 'employeesOnProbation'
                   });
               },(response) => {
@@ -164,21 +146,19 @@ export default {
               });
         },
         cancel() {
-            this.$route.router.go({
+            this.$router.push({
                 name: 'employeesOnProbation'
             });
+        },
+        addFileUpload(file, component) {
+          if (this.files.auto) {
+            component.active = true;
+          }
+        },
+        afterFileUpload(file, component) {
+          this.comp.visa = file.data;
+          this.fileName = file.name;
         }
-    },
-    events: {
-      addFileUpload(file, component) {
-        if (this.files.auto) {
-          component.active = true;
-        }
-      },
-      afterFileUpload(file, component) {
-        this.comp.visa = file.data;
-        this.fileName = file.name;
-      }
     },
     components: {
         EmployeeSubmit: require('../employeeSubmit.vue'),

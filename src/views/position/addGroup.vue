@@ -12,15 +12,15 @@
 
 <div class="content-wrap ihr-position-addGroup">
     <panel :title="panelTitle" class="panel-b" id="panelB" header="panel-header">
-        <v-form v-ref:groupform :model="group" :schema="groupSchema" label-width="150" label-suffix="" :cols="1" form-style="org-form">
-            <text-field v-ref:jobfamilyname property='jobFamilyName' editor-width="400"></text-field>
+        <v-form ref="groupform" :model="group" :schema="groupSchema" label-width="150" label-suffix="" :cols="1" form-style="org-form">
+            <text-field ref="jobfamilyname" property='jobFamilyName' editor-width="400"></text-field>
             <text-field property='standardJobCodePrefix' editor-width="400"></text-field>
             <text-increment property='parentJobFamilyName' editor-width="400"></text-increment>
         </v-form>
     </panel>
     <div class="btn-group" style="height:73px;">
-        <ui-button @click="submit" color="primary mr10">Submit</ui-button>
-        <ui-button @click="cancel" class="btn-default-bd" type="flat">Cancel</ui-button>
+        <ui-button @click="submit" color="primary mr10">{{ $t('button.submit') }}</ui-button>
+        <ui-button @click="cancel" class="btn-default-bd" type="flat">{{ $t('button.cancel') }}</ui-button>
     </div>
 </div>
 
@@ -43,7 +43,7 @@ export default {
     data() {
             let groupSchema = new Schema({
                 jobFamilyName: {
-                    label: 'Family Name',
+                    label: this.$t('position.label.familyName'),
                     required: true,
                     rules: {
                         type: 'custom',
@@ -59,13 +59,13 @@ export default {
                     }
                 },
                 standardJobCodePrefix: {
-                    label: 'Abbreviation'
+                    label: this.$t('position.label.abbreviation')
                 },
                 parentjobFamilyId: {
 
                 },
                 parentJobFamilyName: {
-                    label: 'Superior Family'
+                    label: this.$t('position.label.superiorFamily')
                 }
             });
             return {
@@ -74,7 +74,28 @@ export default {
                 group: groupSchema.newModel(),
             }
         },
-        ready() {
+        created() {
+
+            let _self = this;
+            _self.group.jobFamilyId = _self.$route.params.jobFamilyId;
+            _self.group.parentJobFamilyName = _self.$route.params.jobFamilyName;
+
+            if (_self.$route.name === 'addGroup') {
+                _self.panelTitle = _self.$t('position.addFamily');
+
+            } else if (_self.$route.name === 'editGroup') {debugger
+                _self.panelTitle = _self.$t('position.editFamily');
+                _self.$http.get(`/pos/jobFamilys/${_self.group.jobFamilyId}`).then((response) => {
+                    let props = response.json();
+                    for (let prop in props) {
+                        if (props.hasOwnProperty(prop)) {
+                            _self.group[prop] = props[prop];
+                        }
+                    }
+                });
+            }
+        },
+        mounted() {
             var _self = this;
             _self.initHeight();
             window.addEventListener('resize', function() {
@@ -96,13 +117,13 @@ export default {
                     let _jobGroupModel = this.group,
                         _self = this;
 
-                    let passed = this.group.$schema.isFormValidate(this.$refs.groupform);
+                    let passed = _self.$refs.groupform.isFormValidate();
                     if (!passed) return;
 
                     if (_self.$route.name === 'addGroup') {
                         _self.$http.post('/pos/jobFamilys/', {
                             jobFamilyName: _jobGroupModel.jobFamilyName,
-                            parentJobFamilyId: _jobGroupModel.jobFamilyId,
+                            parentJobFamilyId: _self.$route.params.jobFamilyId,
                             jobFamilyCode: _jobGroupModel.jobFamilyCode,
                             standardJobCodePrefix: _jobGroupModel.standardJobCodePrefix
                         }, {
@@ -110,9 +131,11 @@ export default {
                         }).then((response) => {
                             this.group.jobFamilyId = response.data;
                             this.setCacheTreeData('add', this.group);
-                            _self.$router.go({
+                            _self.$router.push({
                                 name: 'group',
-                                query: {jobFamilyId: response.data}
+                                query: {
+                                    jobFamilyId: response.data
+                                }
                             });
                             Message({
                                 type: 'success',
@@ -129,11 +152,13 @@ export default {
                         }, {
                             emulateJSON: true
                         }).then((response) => {
-                                this.setCacheTreeData('edit', this.group);
-                                _self.$router.go({
-                                    name: 'group',
-                                    query: {jobFamilyId: this.$route.params.jobFamilyId}
-                                });
+                            this.setCacheTreeData('edit', this.group);
+                            _self.$router.push({
+                                name: 'group',
+                                query: {
+                                    jobFamilyId: this.$route.params.jobFamilyId
+                                }
+                            });
                             Message({
                                 type: 'success',
                                 message: _self.$t('common.saveSuccess')
@@ -143,39 +168,47 @@ export default {
 
                 },
                 cancel() {
-                    this.$router.go({
+                    this.$router.push({
                         name: 'group',
-                        query: {jobFamilyId: this.$route.params.jobFamilyId}
+                        query: {
+                            jobFamilyId: this.$route.params.jobFamilyId
+                        }
                     });
                 },
                 setCacheTreeData(type, org) {
-                  var jobFamilyId = this.$route.params.jobFamilyId;
-                  var treeData = this.$root.$data.orgGroupTreeCache;
-                  var walk = function(data) {
-                    if (data && data.length > 0) {
-                      data.forEach(function(child, key) {
-                        if (jobFamilyId === String(child['jobFamilyId'])) {
-                          switch(type) {
-                            case 'add':
-                              child['isParent'] = 'true';
-                              var node = {isParent: 'false', parentJobFamilyId: org.parentJobFamilyId, jobFamilyId :org.jobFamilyId, jobFamilyName: org.jobFamilyName};
-                              if (child['children'] instanceof Array) {
-                                child['children'].push(node);
-                              } else {
-                                child['children'] = [node];
-                              }
-                              break;
-                            case 'edit':
-                              child['jobFamilyName'] = org.jobFamilyName;break;
-                          }
-                        } else {
-                          var children = child['children'];
-                          walk(children);
+                    var jobFamilyId = this.$route.params.jobFamilyId;
+                    var treeData = this.$root.$data.orgGroupTreeCache;
+                    var walk = function(data) {
+                        if (data && data.length > 0) {
+                            data.forEach(function(child, key) {
+                                if (jobFamilyId === child['jobFamilyId']) {
+                                    switch (type) {
+                                        case 'add':
+                                            child['isParent'] = 'true';
+                                            var node = {
+                                                isParent: 'false',
+                                                parentJobFamilyId: org.parentJobFamilyId,
+                                                jobFamilyId: org.jobFamilyId,
+                                                jobFamilyName: org.jobFamilyName
+                                            };
+                                            if (child['children'] instanceof Array) {
+                                                child['children'].push(node);
+                                            } else {
+                                                child['children'] = [node];
+                                            }
+                                            break;
+                                        case 'edit':
+                                            child['jobFamilyName'] = org.jobFamilyName;
+                                            break;
+                                    }
+                                } else {
+                                    var children = child['children'];
+                                    walk(children);
+                                }
+                            });
                         }
-                      });
-                    }
-                  };
-                  walk(treeData);
+                    };
+                    walk(treeData);
                 }
         },
         watch: {
@@ -199,31 +232,8 @@ export default {
                 }
             }
         },
-        route: {
-            data(transition) {
-                let _self = this;
-                _self.group.jobFamilyId = transition.to.params.jobFamilyId;
-                _self.group.parentJobFamilyName = transition.to.params.jobFamilyName;
-
-                if (_self.$route.name === 'addGroup') {
-                    _self.panelTitle = 'Add Family';
-
-
-                } else if (_self.$route.name === 'editGroup') {
-                    _self.panelTitle = 'Edit Family';
-                    _self.$http.get(`/pos/jobFamilys/${_self.group.jobFamilyId}`).then((response) => {
-                        let props = response.json();
-                        for (let prop in props) {
-                            if (props.hasOwnProperty(prop)) {
-                                _self.group[prop] = props[prop];
-                            }
-                        }
-                    });
-                }
-            }
-        },
         components: {
-          Panel: require('../../components/basic/panel.vue')
+            Panel: require('../../components/basic/panel.vue')
         }
 };
 

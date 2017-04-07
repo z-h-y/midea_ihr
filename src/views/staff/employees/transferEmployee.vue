@@ -11,11 +11,11 @@
 
 <div class="content-wrap bg-w ihr-staff-interns">
   <panel :title="$t('staff.transferEmployee')" class="panel-b mb-suitable" header="panel-header">
-    <employee-common-info :employee-id="employeeId" :employee-info.sync="employeeInfo"></employee-common-info>
-    <v-form v-ref:myform :model="transferEmp" :schema="transferEmpSchema" label-width="240" label-suffix="" :cols="1" form-style="transferEmp-form">
+    <employee-common-info :employee-id="employeeId" :employee-info="employeeInfo"></employee-common-info>
+    <v-form ref="myform" :model="transferEmp" :schema="transferEmpSchema" label-width="240" label-suffix="" :cols="1" form-style="transferEmp-form">
         <select-field property="reason" :mapping="changeReason" editor-width="400"></select-field>
         <text-field property="effectiveDate" :min-date="employeeInfo.hireDate" editor-width="400"></text-field>
-        <text-field property="transferPositionName" type="selector" :readonly="true" :show.sync="position" editor-width="400"></text-field>
+        <text-field property="transferPositionName" @open-selector="openSelector" type="selector" :readonly="true" :show="position" editor-width="400"></text-field>
         <text-field property="businessCardTitle" editor-width="400"></text-field>
         <text-field property="transferUnitName" :readonly="true" :placeholder="$t('staff.selectPosition')" editor-width="400"></text-field>
         <select-field :mapping="mibGradeMapping" property="jobGrade" editor-width="400"></select-field>
@@ -25,8 +25,8 @@
         <radiogroup-field property="agreementTerminationon" :mapping="whetherType"></radiogroup-field>
     </v-form>
   </panel>
-    <position-selector :show.sync="position" :handle-comfirmed="selectPosition"></position-selector>
-    <employee-submit v-ref:employeesubmit :form-confirmed="confirmed" :form-cancel="cancel" :is-form-validate="isFormValidate"></employee-submit>
+    <position-selector ref="posselect" :show="position" :handle-comfirmed="selectPosition"></position-selector>
+    <employee-submit ref="employeesubmit" :form-confirmed="confirmed" :form-cancel="cancel" :is-form-validate="isFormValidate"></employee-submit>
 </div>
 
 </template>
@@ -126,18 +126,20 @@ export default {
             }
         });
     },
-    ready() {
+    mounted() {
         this.transferEmp = this.transferEmpSchema.newModel()
     },
-    attached() {},
     methods: {
+      openSelector() {
+        this.$refs['posselect'].open();
+      },
         cancel() {
-            this.$route.router.go({
+            this.$router.push({
                 name: 'regularEmployees'
             });
         },
         isFormValidate() {
-            var passed = this.transferEmp.$schema.isFormValidate(this.$refs.myform);
+            var passed = this.$refs.myform.isFormValidate();
             if (!passed) {
                 return;
             }
@@ -155,7 +157,7 @@ export default {
                     type: 'success',
                     message: this.$t('staff.message.transferSuccess')
                 });
-                this.$route.router.go({
+                this.$router.push({
                     name: 'regularEmployees'
                 });
             }, function(response) {

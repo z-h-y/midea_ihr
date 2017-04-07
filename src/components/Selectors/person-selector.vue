@@ -103,35 +103,35 @@
 
 <template lang="html">
 
-<ui-modal class="person-select" :show.sync="show.modal" type="large" header="Select Person" body="" :backdrop-dismissible="false">
+<ui-modal ref="perselect" class="person-select" :show="show.modal" type="large" :title="$t('selectors.selectPerson')" body="" :backdrop-dismissible="false">
     <div class="leftRight-panel bg-f5f5f5 fix">
         <div class="left-panel p10">
-            <tree :data="regions" :level-config="levelConfig" :show-checkbox="showCheckbox" v-ref:tree :click-node="clickNode"></tree>
+            <tree :data="regions" :level-config="levelConfig" :show-checkbox="showCheckbox" ref="tree" :click-node="clickNode"></tree>
         </div>
         <div class="right-panel">
             <div class="search-ctx">
                 <div class="search-pos">
                     <span class="search-bg">
-                 <input @keydown="goSearch($event)" class="search-input" placeholder="Search" type="text" v-model="searchTxt" />
+                 <input @keydown="goSearch($event)" class="search-input" :placeholder="$t('button.search')" type="text" v-model="searchTxt" />
                  <span @click="search" class="search-btn"><i class="fa fa-search"></i></span>
                     </span>
                 </div>
             </div>
             <div class="vuetable-wrapper">
-                <vuetable v-ref:vuetable :api-url="selectedTableUrl" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="tableColumns" per-page="10" :load-success-callback="loadSuccessCallback">
+                <vuetable ref="vuetable" :api-url="selectedTableUrl" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="tableColumns" per-page="10" :load-success-callback="loadSuccessCallback">
                 </vuetable>
             </div>
         </div>
     </div>
     <div class="bottom-panel">
-      <span class="all-selected-person" v-for="item in allSelectedPer" track-by="$index">
+      <span class="all-selected-person" v-for="(item, index) in allSelectedPer" track-by="index">
         {{item.employeeName}}
-        <i class="rm-btn fa fa-times" aria-hidden="true" @click="delPer($index)"></i>
+        <i class="rm-btn fa fa-times" aria-hidden="true" @click="delPer(index)"></i>
       </span>
     </div>
     <div slot="footer">
-        <ui-button @click="yes" color="primary">Confirm</ui-button>
-        <ui-button @click="show.modal = false">Cancel</ui-button>
+        <ui-button @click="confirmSelect" color="primary">{{$t('button.confirm')}}</ui-button>
+        <ui-button @click="close">{{$t('button.cancel')}}</ui-button>
     </div>
 </ui-modal>
 
@@ -176,17 +176,17 @@ export default {
           title: ''
         }, {
             name: 'employeeName',
-            title: 'Employee Name'
+            title: this.$t('staff.employeeName')
         }, {
             name: 'positionName',
-            title: 'Position'
+            title: this.$t('performance.position')
         }, {
             name: 'officePhone',
             dataClass: 'tr',
-            title: 'Phone'
+            title: this.$t('selectors.phone')
         }, {
             name: 'email',
-            title: 'Email'
+            title: this.$t('selectors.email')
         }];
         if (this.multiSelected) {
           tableColumns[0].name = '__checkbox:';
@@ -248,10 +248,17 @@ export default {
       }
     },
     computed: {},
-    ready() {
+    mounted() {
 
     },
     methods: {
+        open() {
+          this.$refs['perselect'].open();
+        },
+        close() {
+          // this.handleComfirmed(this.allSelectedPer, this.orgGroup);
+          this.$refs['perselect'].close()
+        },
         getTreeData() {
           this.selectedTableUrl = '/org/orgs/getUnitMembersByUserId';
           var url = '/org/orgs/parent';
@@ -268,15 +275,19 @@ export default {
               });
           });
         },
-        yes() {
+        confirmSelect() {
+            var orgChiefInfo = this.allSelectedPer;
+            var orgGroup = this.orgGroup;
             var self = this;
-            if (this.allSelectedPer.length < 1) {
+            if (orgChiefInfo.length < 1) {
                 Message({
                     type: 'error',
-                    message: 'Please select a valid employee.'
+                    message: this.$t('selectors.selectEmployee')
                 })
+                return false;
             }
-            var validate = this.handleBeforeComfirmed(this.allSelectedPer, this.orgGroup, function(value) {
+            this.$emit('select-chief',orgChiefInfo,orgGroup);
+            var validate = this.handleBeforeComfirmed(orgChiefInfo, orgGroup, function(value) {
                 if (value) {
                   self.close();
                 }
@@ -284,11 +295,6 @@ export default {
             if (validate) {
               this.close();
             }
-        },
-        close() {
-          this.show.modal = false;
-          this.handleComfirmed(this.allSelectedPer, this.orgGroup);
-          this.$dispatch('selected-person', this.allSelectedPer);
         },
         goSearch(event) {
           if (event.keyCode === 13) {

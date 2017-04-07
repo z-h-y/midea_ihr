@@ -1,39 +1,55 @@
-<style lang="stylus">
-
-@import './styles/imports';
-.ui-icon {
-    font-size: 24px;
-    width: 1em;
-    height: 1em;
-    display: inline-block;
-    cursor: inherit;
-    vertical-align: middle;
-}
-
-</style>
-
 <template>
+    <span class="ui-icon" :class="[iconSet, icon]" :aria-label="ariaLabel">
+        <svg class="ui-icon-svg" v-if="useSvg">
+            <use xmlns:xlink="http://www.w3.org/1999/xlink" :xlink:href="'#' + icon"></use>
+        </svg>
 
-<!-- <i class="ui-icon material-icons fa" :class="[icon]" v-text="removeText ? null : icon" aria-hidden="true"></i> -->
-<i class="fa" :class="[icon]" v-text="removeText ? null : icon" aria-hidden="true"></i>
-
+    </span>
 </template>
 
 <script>
-
 export default {
     name: 'ui-icon',
 
     props: {
-        icon: {
+        icon: String,
+        iconSet: {
             type: String,
-            required: true
+            default: 'fa'
         },
+        ariaLabel: String,
         removeText: {
             type: Boolean,
-            default: true
+            default: false
+        },
+        useSvg: {
+            type: Boolean,
+            default: false
         }
     }
 };
-
 </script>
+
+<style lang="scss">
+@import './styles/imports';
+
+$ui-icon-font-size  : rem-calc(24px) !default;
+$ui-icon-size       : 1em !default;
+
+.ui-icon {
+    cursor: inherit;
+    display: inline-block;
+    height: $ui-icon-size;
+    user-select: none;
+    vertical-align: middle;
+    width: $ui-icon-size;
+
+    svg {
+        fill: currentColor;
+        height: $ui-icon-size;
+        margin: 0;
+        padding: 0;
+        width: $ui-icon-size;
+    }
+}
+</style>

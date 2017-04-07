@@ -12,7 +12,7 @@ _gh_pages/*
 
 .idea/*
 .svn/*
-src/website/static/*
+src/website/assets/*
 src/website/media/*
 
 bin

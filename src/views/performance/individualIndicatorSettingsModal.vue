@@ -41,28 +41,28 @@
 }
 </style>
 <template>
-<ui-modal id="select-indicator" :show.sync="show" type="large" header="Indicators Settings" v-ref:itemforms>
+<ui-modal id="select-indicator" :show="show" type="large" :title="$t('performance.indicatorSetting')" ref="itemforms">
     <div class="field-row">
         <div class="cell tl w100 ind-th">
-            <label>Indicator Name</label>
+            <label>{{$t('performance.indicatorName')}}</label>
         </div>
         <div class="cell tl w100 ind-th">
-            <label>Unit </label>
+            <label>{{$t('performance.unit')}}</label>
         </div>
         <div class="cell tl w100 ind-th">
-            <label>Target</label>
+            <label>{{$t('performance.target')}}</label>
         </div>
         <div class="cell tl w100 ind-th">
-            <label>Weight</label>
+            <label>{{$t('performance.weight')}}</label>
         </div>
         <div class="cell tl w100 ind-th">
-            <label>Criteria	</label>
+            <label>{{$t('performance.criteria')}}	</label>
         </div>
         <div class="cell tl w100 ind-th">
-            <label>Mandatory</label>
+            <label>{{$t('performance.mandatory')}}</label>
         </div>
         <div class="cell tl w100 ind-th">
-            <label>operate</label>
+            <label>{{$t('performance.operate')}}</label>
         </div>
     </div>
     <template v-for="item in tableData">
@@ -93,20 +93,20 @@
       </v-form>
     </template>
     <div slot="footer">
-       <ui-button color="primary" @click="save">Save</ui-button>
-       <ui-button @click="show = false">Close</ui-button>
+       <ui-button color="primary" @click="save">{{$t('button.save')}}</ui-button>
+       <ui-button @click="show = false">{{$t('button.close')}}</ui-button>
    </div>
  </ui-modal>
  <div id = "deleteConfirm">
    <ui-confirm
-     @confirmed="deleteConfirmed" :show.sync="isDelConfirm"
+     @confirm="deleteConfirmed" :show="isDelConfirm"
      close-on-confirm>
-     Do you want to delete this?
+     {{$t('common.deleteConfirm')}}
    </ui-confirm>
  </div>
  </template>
 
-<script type="text/ecmascript6">
+<script>
 import {
     removeClass, addClass
 }
@@ -114,60 +114,6 @@ from 'wind-dom';
 import { default as Message } from '../../components/basic/message';
 import {default as Schema} from '../../schema/index';
 
-let mandatoryOption = [
-    {
-        text: 'Yes',
-        value: '1'
-    },
-    {
-        text: 'NO',
-        value: '0'
-    }
-];
-
-let indSettingsSchema = new Schema({
-    indicatorName: {
-        label: 'Template Name',
-        required: true,
-        whitespace: false
-    },
-    unit: {
-        label: 'Template Category',
-        required: true
-    },
-    target: {
-        label: 'Template Category',
-        required: true
-    },
-    weight: {
-        label: 'Template Category',
-        required: true
-    },
-    positionName: {
-        label: 'Indicators Setting',
-        required: true,
-        whitespace: false
-    },
-    orgFullName: {
-        label: 'Description',
-        required: true,
-        whitespace: false
-    },
-    criteria: {
-        label: 'Description',
-        required: true,
-        whitespace: false
-    },
-    mandatory: {
-        label: 'Description',
-        required: true,
-        whitespace: false,
-        mapping: {
-          'Yes':'1',
-          'No':'0'
-        }
-    }
-});
 
 export default {
   props: {
@@ -184,6 +130,66 @@ export default {
 
   },
   data() {
+    let self = this;
+    let mandatoryOption = [
+        {
+            text: 'Yes',
+            value: '1'
+        },
+        {
+            text: 'NO',
+            value: '0'
+        }
+    ];
+
+    let indSettingsSchema = new Schema({
+        indicatorName: {
+            label: self.$t('performance.templateName'),
+            required: true,
+            whitespace: false
+        },
+        unit: {
+            label: self.$t('performance.templateCategory'),
+            required: true
+        },
+        target: {
+            label: self.$t('performance.templateCategory'),
+            required: true
+        },
+        weight: {
+            label: self.$t('performance.templateCategory'),
+            required: true
+        },
+        positionName: {
+            label: self.$t('performance.indicatorsSetting'),
+            required: true,
+            whitespace: false
+        },
+        orgFullName: {
+            label: self.$t('performance.description'),
+            required: true,
+            whitespace: false
+        },
+        criteria: {
+            label: self.$t('performance.description'),
+            required: true,
+            whitespace: false
+        },
+        mandatory: {
+            label: self.$t('performance.description'),
+            required: true,
+            whitespace: false,
+            mapping() {
+              var key1 = self.$t('common.yes');
+              var key2 = self.$t('common.no');
+              var obj = {};
+              obj[key1] = 1;
+              obj[key2] = 0;
+              return obj;
+            }
+        }
+    });
+
     return {
       tableData:[],
       mandatoryOption,
@@ -197,9 +203,6 @@ export default {
     'indModal:refresh': function() {
         this.initTable();
     }
-  },
-  ready() {
-    // this.initTable();
   },
   methods: {
     initTable() {
@@ -219,7 +222,6 @@ export default {
       });
     },
     showConfirm(value) {
-      debugger;
       this.isDelConfirm = true;
       this.optItem = value;
     },
@@ -236,9 +238,8 @@ export default {
       }
 
       _self.tableData.forEach(function(item, index) {
-        debugger;
           let vform = _self.$refs.itemforms.$children[index+3];
-          passed = item.$schema.isFormValidate(vform);
+          passed = vform.isFormValidate();
       });
       if (!passed) {
         return;
@@ -254,11 +255,11 @@ export default {
           employeeId:this.params.employeeId,
           schemeIndicatorList: this.tableData
       }
-      this.$dispatch('indModal:submit',params);
+      // unknow 暂时还不知道这一项的作用，这里先注释掉
+      // this. $dispatch('indModal:submit',params);
     },
     deleteConfirmed() {
       let _self = this;
-      debugger;
       this.$http.delete(`/performance/schemeInfo/indicator/delete`,{
         params:{
           employeeIndicatorIds:[this.optItem.employeeIndicatorId]

@@ -1,29 +1,30 @@
 <template lang="html">
-  <ui-confirm header="Delete this" @confirmed="delList" :show.sync="showdel" close-on-confirm autofocus="confirm-button">
-      Do you want to delete this?
+<div>
+  <ui-confirm ref="showdel" :title="$t('button.delete')" @confirm="delList" :show="showdel" close-on-confirm autofocus="confirm-button">
+      {{$t('common.deleteConfirm')}}
   </ui-confirm>
   <div class="edit-tab">
     <div class="tab-header">
-      <span>Academic Background</span>
+      <span>{{$t('staff.academicBackground')}}</span>
       <i v-show="!isEdit" class="fa fa-plus-square-o" aria-hidden="true" @click="add"></i>
     </div>
     <div class="edu-tab tab-content">
-      <div class="edu-list fix" v-for="item in data">
+      <div class="edu-list fix" v-for="(item, index) in data">
         <ul class="fix">
-          <li><span>Alma Mater</span>{{item.institution}}</li>
-          <li><span>Major</span>{{item.major}}</li>
-          <li><span>Admission Date</span>{{item.admissionDate}}</li>
-          <li><span>Graduation Date</span>{{item.graduationDate}}</li>
-          <li><span>Academic Degree</span>{{fixDist(item.educationLevel, 'degree')}}</li>
-          <li><span>Certificate Number</span>{{item.certificateNumber}}</li>
-          <li><span>Study Mode</span>{{fixDist(item.learnType, 'learnType')}}</li>
-          <li><span>Highest-Level Certificate</span>{{fixDist(item.isTopGrade, 'whetherType')}}</li>
-          <li><span>Graduation Grade</span>{{fixDist(item.grade, 'grade')}}</li>
+          <li><span>{{$t('staff.almaMater')}}</span>{{item.institution}}</li>
+          <li><span>{{$t('staff.major')}}</span>{{item.major}}</li>
+          <li><span>{{$t('staff.admissionDate')}}</span>{{item.admissionDate}}</li>
+          <li><span>{{$t('staff.graduationDate')}}</span>{{item.graduationDate}}</li>
+          <li><span>{{$t('staff.academicDegree')}}</span>{{fixDist(item.educationLevel, 'degree')}}</li>
+          <li><span>{{$t('staff.certificateNumber')}}</span>{{item.certificateNumber}}</li>
+          <li><span>{{$t('staff.studyMode')}}</span>{{fixDist(item.learnType, 'learnType')}}</li>
+          <li><span>{{$t('staff.highestLevelCertificate')}}</span>{{fixDist(item.isTopGrade, 'whetherType')}}</li>
+          <li><span>{{$t('staff.graduationGrade')}}</span>{{fixDist(item.grade, 'grade')}}</li>
         </ul>
-        <span class="list-operate edu-operate"><i class="fa fa-pencil-square-o" aria-hidden="true" @click="edit($index)"></i><i class="fa fa-trash-o" aria-hidden="true" @click="beforeDel($index)"></i></span>
+        <span class="list-operate edu-operate"><i class="fa fa-pencil-square-o" aria-hidden="true" @click="edit(index)"></i><i class="fa fa-trash-o" aria-hidden="true" @click="beforeDel(index)"></i></span>
       </div>
       <div class="edit-form edit-bg" v-show="isEdit">
-        <v-form v-ref:eduform :model="edu" :schema="academicSchema" label-width="220" label-suffix="" :cols="4" form-style="update-interns-form">
+        <v-form ref="eduform" :model="edu" :schema="academicSchema" label-width="220" label-suffix="" :cols="4" form-style="update-interns-form">
             <text-field property="institution" editor-width="220"></text-field>
             <text-field property="major" editor-width="220"></text-field>
             <text-field property="admissionDate" :max-date="edu.graduationDate" editor-width="220"></text-field>
@@ -35,12 +36,13 @@
             <select-field property="grade" :mapping="dist.grade" editor-width="220"></select-field>
         </v-form>
         <div class="save-info-group">
-            <ui-button color="primary mr10" @click="submitForm">Save</ui-button>
-            <ui-button class="btn-default-bd" @click="cancel" type="flat">Cancel</ui-button>
+            <ui-button color="primary mr10" @click="submitForm">{{$t('button.save')}}</ui-button>
+            <ui-button class="btn-default-bd" @click="cancel" type="flat">{{$t('button.cancel')}}</ui-button>
         </div>
       </div>
     </div>
   </div>
+</div>
 </template>
 
 <script>
@@ -52,57 +54,49 @@ import {
     getDictMapping,formatDate
 } from '../../../util/assist';
 export default {
-  props: [
-    {
-      name: 'data',
-      type: Array
-    },
-    {
-      name: 'parentId'
-    },
-    {
-      name: 'dist',
-      type: Object
-    }
-  ],
+  props: {
+    dist: {},
+    parentId: {}
+  },
   data() {
     var academicData = {
         institution: {
-            label: 'Alma Mater',
+            label: this.$t('staff.almaMater'),
             required: true
         },
         major: {
-            label: 'Major',
+            label: this.$t('staff.major'),
             required: true
         },
         admissionDate: {
             type: 'date',
-            label: 'Admission Date',
+            label: this.$t('staff.admissionDate'),
             required: true
         },
         graduationDate: {
             type: 'date',
-            label: 'Graduation Date',
+            label: this.$t('staff.graduationDate'),
             required: true
         },
         educationLevel: {
-            label: 'Academic Degree'
+            label: this.$t('staff.academicDegree')
         },
         certificateNumber: {
-            label: 'Certificate Number'
+            label: this.$t('staff.certificateNumber')
         },
         learnType: {
-            label: 'Study Mode'
+            label: this.$t('staff.studyMode')
         },
         isTopGrade: {
-            label: 'Highest-Level Certificate',
+            label: this.$t('staff.highestLevelCertificate'),
             default: '2'
         },
         grade: {
-            label: 'Graduation Grade'
+            label: this.$t('staff.graduationGrade')
         }
     };
     return {
+      data: [],
       academicSchema: new Schema(academicData),
       delIndex: 0,
       showdel: false,
@@ -116,7 +110,7 @@ export default {
   },
   created() {
   },
-  ready() {
+  mounted() {
     this.edu = this.academicSchema.newModel();
     var employeeId = this.$route.params.employeeId;
     if (employeeId) {
@@ -134,7 +128,7 @@ export default {
     }
 
   },
-  attached() {},
+
   methods: {
     arrSort(arr, key) {
       arr.sort(function(a, b) {
@@ -188,7 +182,7 @@ export default {
       var data = {};
       var index = -1;
       var passed = true;
-      passed = this.edu.$schema.isFormValidate(this.$refs.eduform);
+      passed = this.$refs.eduform.isFormValidate();
       if (!passed) {
         return;
       }
@@ -225,7 +219,7 @@ export default {
       var passed = true;
       var data = this.data;
       for (var i = 0, len = data.length; i < len; i++) {
-        passed = data[i].$schema.isFormValidate(this.$children[i + 1]);
+        passed = this.$children[i + 1].isFormValidate();
         if (!passed) {
             break;
         }
@@ -234,12 +228,10 @@ export default {
         return;
       }
       this.data.push(this.academicSchema.newModel());
-      this.$nextTick(function() {
-          this.$dispatch('ui-collapsible::refresh-height', this.parentId);
-      });
     },
     beforeDel: function(index) {
       this.delIndex = index;
+      this.$refs.showdel.open()
       this.showdel = true;
     },
     delList: function() {

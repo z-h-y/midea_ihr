@@ -19,7 +19,7 @@
 <div class="main" id="main" :class="{'expanded-transitio': expanded}">
     <i-navbar></i-navbar>
     <breadcrumb>
-        <breadcrumb-item v-for="item in urls" :link="item.url">{{item.name}}</breadcrumb-item>
+        <breadcrumb-item v-for="item in urls" :key="item.id" :link="item.url">{{item.name}}</breadcrumb-item>
     </breadcrumb>
     <div id="content" class="content rel">
         <router-view></router-view>

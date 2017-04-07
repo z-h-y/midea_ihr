@@ -16,6 +16,7 @@
     transition: all 0.2s ease-out 0s;
 }
 
+
 </style>
 
 <template>
@@ -33,6 +34,11 @@ export default {
         exclusive: {
             type: Boolean,
             default: true
+        }
+    },
+    data() {
+        return {
+
         }
     },
 

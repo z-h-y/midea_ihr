@@ -1,64 +1,76 @@
 <style lang="less">
 
-.d-navmenu-item {
-    box-sizing: border-box;
-}
-
-.toplevel > .d-navmenu-item-label {
-    border-left: 2px solid transparent;
-}
-
-.toplevel > .d-navmenu-item-label:hover {
-    background-color: #354661;
-    border-left-color: #3aa2eb;
-}
-
-.d-navmenu-item.expanded > .d-navmenu-item-content {
-    display: block;
-}
-
-.d-navmenu-item-label {
-    position: relative;
-    cursor: pointer;
-}
-
-.d-navmenu-item-label > a {
-    display: inline-block;
-    text-decoration: none;
-    padding: 8px 15px 8px 15px;
-    line-height: 24px;
-    width: 100%;
-    font-size: 14px;
-    font-weight: bold;
-    box-sizing: border-box;
-    color: #a5acbe;
-    white-space: nowrap;
-}
-
-.d-navmenu-item-label .d-icon {
-    position: absolute;
-    right: 20px;
-    top: 11px;
-    font-size: 14px;
-    margin-top: 3px;
-    color: #a5acbe;
-}
-
-.d-navmenu-item-label:hover {
-    a {
-        color: #fff;
+    .d-navmenu-item {
+        box-sizing: border-box;
+        transition:width 1s;
     }
-}
 
-.d-navmenu-item-label:hover .d-icon {
-    font-weight: normal;
-}
+    .toplevel > .d-navmenu-item-label {
+        border-left: 2px solid transparent;
+    }
 
-.d-navmenu-item-content {
-    padding-left: 20px;
-    display: none;
-    overflow: hidden;
-}
+    .toplevel > .d-navmenu-item-label:hover {
+        background-color: #354661;
+        border-left-color: #3aa2eb;
+    }
+
+    .d-navmenu-item.expanded > .d-navmenu-item-content {
+        display: block;
+    }
+
+    .d-navmenu-item-label {
+        position: relative;
+        cursor: pointer;
+    }
+
+    .d-navmenu-item-label > a {
+        display: inline-block;
+        text-decoration: none;
+        padding: 8px 15px 8px 15px;
+        line-height: 24px;
+        width: 100%;
+        font-size: 14px;
+        font-weight: bold;
+        box-sizing: border-box;
+        color: #a5acbe;
+        white-space: nowrap;
+    }
+
+    .d-navmenu-item-label .d-icon {
+        position: absolute;
+        right: 20px;
+        top: 11px;
+        font-size: 14px;
+        margin-top: 3px;
+        color: #a5acbe;
+    }
+
+    .d-navmenu-item-label:hover {
+        a {
+            color: #fff;
+        }
+    }
+
+    .d-navmenu-item-label:hover .d-icon {
+        font-weight: normal;
+    }
+
+    .d-navmenu-item-content {
+        padding-left: 20px;
+        display: none;
+
+        overflow: hidden;
+    }
+    .nav-fade{
+      transition: all 0.2s ease-in-out;
+      overflow: hidden;
+      max-height: 500px;
+      padding-left: 20px;
+    }
+    .nav-fade-enter,
+    .nav-fade-leave-active{
+        max-height:0;
+    }
 
 </style>
 
@@ -74,9 +86,11 @@
         </router-link>
         <span :class="['d-icon', 'fa',hasChild && curExpanded ? 'fa-angle-down' : 'fa-angle-right']" v-if="hasChild"></span>
     </div>
-    <div class="d-navmenu-item-content" @click="$event.stopPropagation()" transition="collapse" v-show="curExpanded">
-        <nav-menu-item v-on:menuUrls="setMenuUrls" v-for="childs in data.children" :text="childs.menuName" :path="childs.menuAddress" :data="childs"></nav-menu-item>
-    </div>
+    <transition name="nav-fade">
+        <div class="nav-fade" @click.stop v-show="curExpanded">
+            <nav-menu-item v-on:menu-urls="setMenuUrls" v-for="childs of data.children" :key="childs.id" :text="childs.language" :path="childs.menuAddress" :data="childs"></nav-menu-item>
+        </div>
+    </transition>
 </div>
 
 </template>
@@ -118,14 +132,14 @@ export default {
 
     methods: {
        setMenuUrls(item) {
-         this.$emit('menuUrls', item)
+         this.$emit('menu-urls', item)
        },
         handleHeaderClick() {
 
                 if (this.hasChild) {
                     this.curExpanded = !this.curExpanded;
                 } else {
-                    this.$emit('menuUrls', this)
+                    this.$emit('menu-urls', this)
                 }
             },
 

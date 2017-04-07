@@ -31,11 +31,11 @@
 <div class="content-wrap bg-w ihr-staff-emp-pro">
     <div class="mb20 pt20">
         <div class="search-area">
-            <organization-selector :show.sync="org"></organization-selector>
+            <organization-selector ref="orgselect" :show="org" :handel-select="selectOrg"></organization-selector>
             <v-form :class="{expended: expended}" :model="probation" :schema="probationSchema" label-width="170" label-suffix="" :cols="3" form-style="probation-form">
                 <text-field property='fullName' editor-width="150"></text-field>
                 <text-field property="employeeCode" editor-width="150"></text-field>
-                <text-field type="selector" :readonly="true" :show.sync="org" property="orgUnitName" editor-width="150"></text-field>
+                <text-field type="selector" :readonly="true" @open-selector="openSelector" :show="org" property="orgUnitName" editor-width="150"></text-field>
                 <text-field v-show="expended" property="positionName" editor-width="150"></text-field>
                 <select-field v-show="expended" :mapping="employeeContractDist" property="contractType" editor-width="150"></select-field>
             </v-form>
@@ -46,11 +46,11 @@
             </div>
         </div>
         <div class="group">
-            <ui-button class="mr10 dis-tc btn-primary-bd" @click="goComplete" color="primary" :text="$t('staff.completeProbation')"></ui-button>
-            <ui-button class="mr10 dis-tc btn-default-bd" @click="goExtend" type="flat" :text="$t('staff.extendProbation')"></ui-button>
+            <ui-button class="mr10 dis-tc btn-primary-bd" @click="goComplete" color="primary">{{$t('staff.completeProbation')}}</ui-button>
+            <ui-button class="mr10 dis-tc btn-default-bd" @click="goExtend" type="flat">{{$t('staff.extendProbation')}}</ui-button>
         </div>
         <div class="vuetable-wrapper">
-          <vuetable api-url="/employee/onProbation/employees" :append-params="moreParams" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="columns" per-page="10">
+          <vuetable ref="vuetable" api-url="/employee/onProbation/employees" :append-params="moreParams" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="columns" per-page="10">
           </vuetable>
         </div>
 
@@ -81,7 +81,7 @@ export default {
               label: this.$t('staff.organization')
             },
             positionName: {
-                label: this.$t('staff.position')
+                label: this.$t('staff.mibPostion')
             },
             contractType: {
               label: this.$t('staff.contractType')
@@ -119,7 +119,7 @@ export default {
                     },
                     {
                       name: 'positionName',
-                      title: this.$t('staff.position')
+                      title: this.$t('staff.mibPostion')
                     },
                     {
                       name: 'unitShortName',
@@ -151,9 +151,10 @@ export default {
             self.employeeContractDist = res;
           });
         },
-        ready() {},
-        attached() {},
         methods: {
+          openSelector() {
+            this.$refs['orgselect'].open();
+          },
             search() {
               this.moreParams = [];
               for (let i = 0, len = this.moreParamsKeys.length; i < len; i++) {
@@ -164,7 +165,7 @@ export default {
                 }
               }
               this.$nextTick(function() {
-                this.$broadcast('vuetable:refresh')
+                this.$refs.vuetable.reloadData();
               })
             },
             reset() {
@@ -173,7 +174,7 @@ export default {
             },
             goComplete() {
               if (this.selectedRow.length === 1) {
-                this.$route.router.go({ name: 'completeProbation', params: { employeeId: this.selectedRow[0] }});
+                this.$router.push({ name: 'completeProbation', params: { employeeId: this.selectedRow[0] }});
               } else {
                 Message({
                     type: 'error',
@@ -183,7 +184,7 @@ export default {
             },
             goExtend() {
               if (this.selectedRow.length === 1) {
-                this.$route.router.go({ name: 'extendProbation', params: { employeeId: this.selectedRow[0] }});
+                this.$router.push({ name: 'extendProbation', params: { employeeId: this.selectedRow[0] }});
               } else {
                 Message({
                     type: 'error',
@@ -223,14 +224,12 @@ export default {
             },
             fixContract(value) {
               return this.fixDist(value, 'contract');
-            }
-        },
-        events: {
-            'organization-selector:selected': function(value) {
-                if (value) {
-                    this.probation.orgUnitName = value.orgShortName;
-                    this.probation.unitId = value.orgId;
-                }
+            },
+            selectOrg(value) {
+              if (value) {
+                  this.probation.orgUnitName = value.orgShortName;
+                  this.probation.unitId = value.orgId;
+              }
             }
         },
         components: {}

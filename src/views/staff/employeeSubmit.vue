@@ -1,32 +1,33 @@
 <template lang="html">
-  <div class="btn-group">
-      <ui-button color="primary mr10" @click="submitForm" :loading="loading">{{$t('button.submit')}}</ui-button>
-      <ui-button class="btn-default-bd" @click="cancel" type="flat">{{$t('button.cancel')}}</ui-button>
+  <div class="">
+    <div class="btn-group">
+        <ui-button color="primary mr10" @click="submitForm" :loading="loading">{{$t('button.submit')}}</ui-button>
+        <ui-button class="btn-default-bd" @click="cancel" type="flat">{{$t('button.cancel')}}</ui-button>
+    </div>
+    <ui-confirm :title="show.confirmedhd" @confirm="confirmed" :show="show.confirmed" close-on-confirm autofocus="confirm-button">
+        {{ show.confirmedText }}
+    </ui-confirm>
   </div>
-  <ui-confirm :header="show.confirmedhd" @confirmed="confirmed" :show.sync="show.confirmed" close-on-confirm autofocus="confirm-button">
-      {{ show.confirmedText }}
-  </ui-confirm>
 </template>
 
 <script>
 export default {
-  props: [
-    {
-        name: 'formConfirmed',
-        type: Function,
-        required: true
-    },{
-        name: 'formCancel',
-        type: Function,
-        required: true
-    },{
-      name: 'isFormValidate',
+  props: {
+    formConfirmed: {
+      type: Function,
+      required: true
+    },
+    formCancel: {
+      type: Function,
+      required: true
+    },
+    isFormValidate: {
       type: Function,
       default() {
-        return true;
+        return function() {};
       }
     }
-  ],
+  },
   data() {
     return {
       show: {
@@ -39,8 +40,6 @@ export default {
     };
   },
   computed: {},
-  ready() {},
-  attached() {},
   methods: {
     submitForm() {
       var passed = this.isFormValidate();

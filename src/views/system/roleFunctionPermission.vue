@@ -38,10 +38,10 @@
 <div class="content-wrap b-radius4 bg-w ihr-roleFunctionPermission">
     <div class="panel pb35">
         <div class="panel-tit">
-            <span class="c-2a3c59 f18">Fuctions Permission</span>
+            <span class="c-2a3c59 f18">{{ $t('system.roleFunctionPermission.functionsPermission') }}</span>
         </div>
         <div class="panel-content">
-            <ui-collapsible :open="true" v-for="menu in parentMenus" :header="menu.menuName">
+            <ui-collapsible :open="true" v-for="menu in parentMenus" :key="menu.id" :header="menu.menuName">
                 <table class="panel-content-table">
                     <tr v-for="m in getChildNodes(menu)">
                         <td style="width:155px;" class="f14 c-72777c">
@@ -56,8 +56,8 @@
         </div>
     </div>
     <div class="btn-group">
-        <ui-button @click="submit" color="primary mr10">Submit</ui-button>
-        <ui-button @click="cancel" class="btn-default-bd" type="flat">Cancel</ui-button>
+        <ui-button @click="submit" color="primary mr10">{{$t('button.submit')}}</ui-button>
+        <ui-button @click="cancel" class="btn-default-bd" type="flat">{{$t('button.cancel')}}</ui-button>
     </div>
 </div>
 

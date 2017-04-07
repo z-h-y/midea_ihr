@@ -219,16 +219,16 @@
 
 <template lang="html">
 
-<ui-modal id="select-indicator" :show.sync="show.modal" type="large" header="Select Indicators">
+<ui-modal ref="modal" id="select-indicator" :show.sync="show.modal" type="large" :title="$t('selectors.selectIndicators')">
     <div class="select-person fix ">
         <!-- <div class="person-tree l">
-            <tree :data="trees" :level-config="levelConfig" :show-checkbox="showCheckbox" v-ref:tree :click-node="queryPerson"></tree>
+            <tree :data="trees" :level-config="levelConfig" :show-checkbox="showCheckbox" ref="tree" :click-node="queryPerson"></tree>
         </div> -->
         <div class="select-area l">
             <div class="search-ctx">
                 <div class="search-pos">
                     <span class="search-bg">
-                 <input class="search-input" placeholder="Search" type="text" v-model="searchTxt" />
+                 <input class="search-input" :placeholder="$t('button.search')" type="text" v-model="searchTxt" />
                  <span @click="search"><i class="fa fa-search"></i></span>
                     </span>
                 </div>
@@ -236,13 +236,13 @@
             <div class="selected-area fix">
                 <div class="select-list l">
                     <div class="selected-title">
-                        <h3>Not selected</h3></div>
+                        <h3>{{$t('selectors.notselected')}}</h3></div>
                     <div class="not-selected">
                         <ul class="search-result">
                             <div class="loading" v-show="loadStatus">
                                 <i class="load-icon"></i>
                             </div>
-                            <template v-for="(index,item) of indicators">
+                            <template v-for="(item, index) of indicators">
                                 <li class="li-item" @dblclick="toSelectedEmplaoyees(index)" @mousedown="selected($event,index,'notSelected')"><span class="nickname">{{ item["indicatorName"] }}</span></li>
                             </template>
                         </ul>
@@ -251,25 +251,25 @@
                 <div class="operat-area l">
                     <div class="btns">
                         <div class="btn">
-                            <ui-button class="dis-tc btn-primary-bd wh" @click="save" color="primary" icon="fa-angle-double-right" :icon-right="true" text="Save"></ui-button>
+                            <ui-button class="dis-tc btn-primary-bd wh" @click="save" color="primary" icon="fa-angle-double-right" :icon-right="true" :text="$t('button.save')"></ui-button>
                         </div>
                         <div class="btn">
-                            <ui-button class="dis-tc btn-primary-bd wh" @click="allTo" color="primary" icon="fa-angle-double-right" :icon-right="true" text="All"></ui-button>
+                            <ui-button class="dis-tc btn-primary-bd wh" @click="allTo" color="primary" icon="fa-angle-double-right" :icon-right="true" :text="$t('button.all')"></ui-button>
                         </div>
                         <div class="btn">
-                            <ui-button class="dis-tc btn-default-bd wh" @click="cancel" type="flat" icon="fa-angle-double-left" text="Cancel"></ui-button>
+                            <ui-button class="dis-tc btn-default-bd wh" @click="cancel" type="flat" icon="fa-angle-double-left" :text="$t('button.cancel')"></ui-button>
                         </div>
                         <div class="btn">
-                            <ui-button class="dis-tc btn-default-bd wh" @click="toAll" type="flat" icon="fa-angle-double-left" text="All"></ui-button>
+                            <ui-button class="dis-tc btn-default-bd wh" @click="toAll" type="flat" icon="fa-angle-double-left" :text="$t('button.all')"></ui-button>
                         </div>
                     </div>
                 </div>
                 <div class="select-list l">
                     <div class="selected-title">
-                        <h3>selected</h3></div>
+                        <h3>{{$t('selectors.selected')}}</h3></div>
                     <div class="selected">
                         <ul class="selected-result">
-                            <template v-for="(index,item) of selectedIndicators">
+                            <template v-for="(item, index) of selectedIndicators">
                                 <li class="li-item" @dblclick="toEmployees(index)" @mousedown="selected($event,index,'selected')"><span class="nickname">{{ item["indicatorName"] }}</span></li>
                             </template>
                         </ul>
@@ -279,20 +279,20 @@
             <div class="details">
                 <div class="details-bor">
                     <p class="prompt-message" v-show="prompt.employeeId">
-                        <label class="current-index">Current location:</label>
+                        <label class="current-index">{{$t('selectors.currentlocation')}}:</label>
                         <span class="message-txt">{{prompt.employeeName}}</span>
                     </p>
                 </div>
             </div>
         </div>
         <!-- <div class="person-tree l">
-            <tree :data="trees" :level-config="levelConfig" :show-checkbox="showCheckbox" v-ref:tree :click-node="queryPerson"></tree>
+            <tree :data="trees" :level-config="levelConfig" :show-checkbox="showCheckbox" ref="tree" :click-node="queryPerson"></tree>
         </div> -->
     </div>
 
     <div slot="footer">
-        <ui-button color="primary" @click="submitModal">Confirm</ui-button>
-        <ui-button @click="closeModal">Cancel</ui-button>
+        <ui-button color="primary" @click="submitModal">{{$t('button.confirm')}}</ui-button>
+        <ui-button @click="closeModal">{{$t('button.cancel')}}</ui-button>
     </div>
 </ui-modal>
 
@@ -367,6 +367,12 @@ export default {
         this.initNoChoiceData();
     },
     methods: {
+      open() {
+          this.$refs['modal'].open();
+        },
+        close() {
+          this.$refs['modal'].close()
+        },
             initNoChoiceData() {
               let indCategoryIds = [];
               for(let item of this.indType) {
@@ -492,14 +498,14 @@ export default {
                 this.handleComfirmed(this.selectedIndicators);
 
                 this.$nextTick(function() {
-                  this.show.modal = false;
+                  this.close();
                 });
             },
 
             closeModal() {
                 this.selectedIndicators = [];
                 this.$nextTick(function() {
-                    this.show.modal = false;
+                    this.close()
                 });
             }
     },

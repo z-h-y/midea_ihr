@@ -1,4 +1,4 @@
-<style lang="css">
+<style lang="less">
 
 .message {
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .12), 0 0 6px 0 rgba(0, 0, 0, .04);
@@ -28,7 +28,6 @@
   margin-left: 0px;
 }
 .message-error .error-info {
-  width: 400px;
   margin: 0 auto;
   display: table-cell;
   vertical-align: middle;
@@ -39,7 +38,7 @@
   max-height: 400px;
   overflow: auto;
 }
-.message__icon {
+.message-icon {
     width: 40px;
     height: 40px;
     position: absolute;
@@ -47,19 +46,19 @@
     left: 0;
 }
 
-.message .message__group {
+.message .message-group {
   cursor: pointer;
     color: #666;
     margin-left: 38px;
     position: relative;
 }
 
-.message__group > p {
+.message-group > p {
     line-height: 20px;
     padding-right: 25px;
 }
 
-.message__closeBtn {
+.message-closeBtn {
     position: absolute;
     top: 2px;
     right: 0px;
@@ -80,24 +79,33 @@
 .ui-modal-footer .footer {
   display: inline-block;
 }
+.ui-icon-button-icon{
+    color: rgba(0, 0, 0, 0.38);
+}
+.ui-close-button:hover{
+    i {
+        color: #000;
+    }
+}
 </style>
 
 <template lang="html">
 
 <div v-if="visible" :class="['message', {'message-error': isError}]" transition="fade" @mouseenter="clearTimer" @mouseleave="startTimer">
-    <img v-if="!isError" class="message__icon" :src="typeImg" alt="">
-    <div v-if="!isError" class="message__group">
+    <img v-if="!isError" class="message-icon" :src="typeImg" alt="">
+    <div v-if="!isError" class="message-group">
         <p>{{message}}</p>
-        <div v-if="showClose" class="message__closeBtn icon-close" @click="handleClose"></div>
+        <div v-if="showClose" class="message-closeBtn icon-close" @click="handleClose"></div>
     </div>
     <div class="error-info" v-if="isError">
         <div class="ui-modal-container" tabindex="-1">
             <div class="ui-modal-header fix" style="cursor: move;">
-                <h1 class="ui-modal-header-text">Error</h1>
-
-                <button class="ui-icon-button ui-modal-close-button ui-icon-button-clear color-default" type="button" @click="handleClose">
-                  <i class="fa ui-icon-button-icon fa-close" aria-hidden="true"></i>
-                </button>
+                <h1 class="ui-modal-header-text">{{$t('common.error')}}</h1>
+                <div class="ui-modal-close-button">
+                  <button aria-label="Close" type="button" class="ui-close-button ui-close-button-size-normal ui-close-button-color-black" @click="handleClose">
+                    <i class="fa ui-icon-button-icon fa-close" aria-hidden="true"></i>
+                  </button>
+                </div>
             </div>
             <div class="ui-modal-body">
               <p>{{message}}</p>
@@ -105,10 +113,10 @@
             </div>
             <div class="ui-modal-footer">
                 <div class="footer">
-                  <button class="ui-button ui-button-normal color-default" type="submit" @click="handleClose">
+                  <button class="ui-button ui-button-type-primary ui-button-color-primary ui-button-icon-position-left ui-button-size-normal" type="submit" @click="handleClose">
                     <div class="ui-button-content">
                       <div class="ui-button-text">
-                        Cancel
+                        {{$t('button.cancel')}}
                       </div>
                     </div>
                   </button>
@@ -122,62 +130,60 @@
 </template>
 
 <script>
-
 export default {
-    data() {
-            return {
-                visible: false,
-                message: '',
-                extralMessage: [],
-                duration: 2000,
-                type: 'info',
-                onClose: null,
-                showClose: false,
-                closed: false,
-                timer: null
-            };
-        },
-        computed: {
-            typeImg() {
-                return require(`../../static/message/${this.type}.svg`);
-            },
-            isError() {
-              return this.type === 'error';
-            }
-        },
-        watch: {
-            closed(newVal) {
-                if (newVal) {
-                  this.visible = false;
-                }
-            }
-        },
-        mounted() {
-          this.startTimer();
-        },
-        methods: {
-            handleClose() {
-                    this.closed = true;
-                    if (typeof this.onClose === 'function') {
-                        this.onClose();
-                    }
-                },
-                clearTimer() {
-                    clearTimeout(this.timer);
-                },
-                startTimer() {
-                  if(this.type === 'error') {
-                    return;
-                  }
-                    if (this.duration > 0) {
-                        this.timer = setTimeout(() => {
-                            if (!this.closed) {
-                                this.handleClose();
-                            }
-                        }, this.duration);
-                    }
-                }
-        }
+  data() {
+    return {
+      visible: false,
+      message: '',
+      extralMessage: [],
+      duration: 2000,
+      type: 'info',
+      onClose: null,
+      showClose: false,
+      closed: false,
+      timer: null
+    };
+  },
+  computed: {
+    typeImg() {
+      return require(`../../assets/message/${this.type}.svg`);
+    },
+    isError() {
+      return this.type === 'error';
+    }
+  },
+  watch: {
+    closed(newVal) {
+      if (newVal) {
+        this.visible = false;
+      }
+    }
+  },
+  mounted() {
+    this.startTimer();
+  },
+  methods: {
+    handleClose() {
+      this.closed = true;
+      if (typeof this.onClose === 'function') {
+        this.onClose();
+      }
+    },
+    clearTimer() {
+      clearTimeout(this.timer);
+    },
+    startTimer() {
+      if (this.type === 'error') {
+        return;
+      }
+      if (this.duration > 0) {
+        this.timer = setTimeout(() => {
+          if (!this.closed) {
+            this.handleClose();
+          }
+        }, this.duration);
+      }
+    }
+  }
 };
-
 </script>

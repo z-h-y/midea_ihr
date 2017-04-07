@@ -138,22 +138,22 @@
 
 <div class="content-wrap ihr-system-processSettingsUpdate">
 
-    <panel title="Add Process Template" class="panel-b" header="panel-header">
-        <v-form v-ref:processform :model="processData" :schema="processSchema" class="mt20 mb10 pl20" label-width="125" label-suffix="" :cols="" form-style="update-process-form">
+    <panel  :title="$t('system.checkProcess.tAdd')"  class="panel-b" header="panel-header">
+        <v-form ref="processform" :model="processData" :schema="processSchema" class="mt20 mb10 pl20" label-width="125" label-suffix="" form-style="update-process-form">
             <text-field class="templateName" property='templateName' editor-width="140"></text-field>
         </v-form>
-        <ui-collapsible header="Performance Plan Process" :open.sync="collapsible.arolecoll" id="arolecoll-info">
+        <ui-collapsible  :header="$t('system.checkProcess.hPlan')"  :open.sync="collapsible.arolecoll" id="arolecoll-info">
             <div class="update-interns">
                 <div class="p20">
-                    <id-role v-ref:arole :data.sync="aroleList" parent-id="arolecoll-info" :employee-id.sync="ptid"></id-role>
+                    <id-role ref="s" :data.sync="aroleList" parent-id="arolecoll-info" :employee-id.sync="ptid"></id-role>
                 </div>
             </div>
         </ui-collapsible>
         <!-- <select-field class="selfEvaluateCycle" property='selfEvaluateCycle' editor-width="140"></select-field> -->
-        <ui-collapsible header="Performance Evaluation Process" :open.sync="collapsible.prolecoll" id="prolecoll-info">
+        <ui-collapsible  :header="$t('system.checkProcess.hEvaluation')"  :open.sync="collapsible.prolecoll" id="prolecoll-info">
             <div class="update-interns">
                 <div class="p20">
-                    <id-role v-ref:prole :data.sync="proleList" parent-id="prolecoll-info" :employee-id.sync="ptid"></id-role>
+                    <id-role ref="prole" :data.sync="proleList" parent-id="prolecoll-info" :employee-id.sync="ptid"></id-role>
                 </div>
             </div>
         </ui-collapsible>
@@ -161,8 +161,8 @@
     </panel>
 
     <div class="btn-group">
-        <ui-button @click="submit" color="primary mr10">Submit</ui-button>
-        <ui-button @click="cancel" class="btn-default-bd" type="flat">Cancel</ui-button>
+        <ui-button @click="submit" color="primary mr10">{{$t('button.submit')}}</ui-button>
+        <ui-button @click="cancel" class="btn-default-bd" type="flat">{{$t('button.cancel')}}</ui-button>
     </div>
 </div>
 
@@ -184,15 +184,16 @@ import {
 }
 from '../../util/assist';
 
-let processSchema = new Schema({
-    templateName: {
-        label: 'Template Name',
-        required: true,
-        whitespace: false
-    }
-});
 export default {
     data() {
+
+            let processSchema = new Schema({
+                templateName: {
+                    label: this.$t('system.checkProcess.templateName'),
+                    required: true,
+                    whitespace: false
+                }
+            });
             return {
                 processSchema: processSchema,
                 processData: processSchema.newModel(),

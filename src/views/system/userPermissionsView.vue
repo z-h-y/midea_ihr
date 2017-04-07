@@ -1,4 +1,3 @@
-<!-- 用户权限视图 -->
 <style lang="less">
 
 .ihr-position-userPermissionsView {
@@ -181,157 +180,60 @@ from '../../components/basic/message';
 import Datashaping from '../../util/assist.js';
 export default {
     data() {
-            let _self = this;
-            return { //初始化
-                membersUrl: "", //titles表格地址
-                subordinateUrl: "", //positions表格地址
-                //titles表格字段
-                membersColumns: [{
-                    name: '',
-                    title: 'Employee Name',
-                    sortField: ''
-                }, {
-                    name: '',
-                    title: 'Employee ID',
-                    sortField: ''
-                }, {
-                    name: '',
-                    title: 'Position Name',
-                    sortField: ''
-                }, {
-                    name: 'standardJobName',
-                    title: 'MIB Grade',
-                    sortField: 'standardJobName'
-                }, {
-                    name: '',
-                    title: 'Email',
-                    sortField: ''
-                }, {
-                    name: '',
-                    title: 'Location',
-                    sortField: ''
-                }],
-                //positions表格字段
-                subordinateColumns: [{
-                    name: '',
-                    title: 'Position Name',
-                    sortField: ''
-                }, {
-                    name: '',
-                    title: 'Position ID',
-                    sortField: ''
-                }, {
-                    name: '',
-                    title: 'Job Category',
-                    sortField: ''
-                }, {
-                    name: '',
-                    title: 'MID Grade',
-                    sortField: ''
-                }, {
-                    name: '',
-                    title: 'Effective Date',
-                    sortField: ''
-                }],
-                //tree
-                regions: [],
-                levelConfig: {
-                    labelProperty: 'jobFamilyName',
-                    children: {
-                        lazy: true,
-                        recursive: true,
-                        labelProperty: 'jobFamilyName',
-                        load: function(node, callback) {
-                            var data;
-                            if (node.data.isParent) {
-                                let parentId = node.data.jobFamilyId;
-                                _self.$http.get(`/pos/jobFamilys/${parentId}/children`).then((response) => {
-                                    node.children = response.data;
-                                    if (callback) {
-                                        callback();
-                                    }
-
-                                }, (response) => {
-                                    Message({
-                                        type: 'error',
-                                        message: response.statusText
-                                    });
-                                });
-                            } else {
-                                node.children = [];
-                            }
-                        }
-                    }
-                },
-                showCheckbox: false, //树隐藏多选框
-                //树点击节点
-                clickNode: function(node) {
-                    //titles 表格url
-                    _self.titlesUrl = "/pos/jobFamilys/" + node.jobFamilyId + "/titles";
-                    //positions 表格url
-                    _self.positionsUrl = "/pos/jobFamilys/" + node.jobFamilyId + "/positions";
-                    _self.jobGroup = node; //树节点对象
-                    //请求当前节点数据
-                    _self.$http.get("/pos/jobFamilys/" + node.jobFamilyId + "/basicinfo").then((response) => {
-                        _self.basicinfo = response.data;
-                    }, (response) => {
-                        console.log('错误信息 ：' + response.statusText);
-                    });
-                }
-            };
-        },
-        ready() {
-            // 初始化加载职群树
-            this.$http.get('/pos/jobFamilys/0/children').then((response) => {
-                let Items = [];
-                Items.push(response.data);
-
-                this.regions = Items;
-            }, (response) => {
-                console.log('错误信息 ：' + response.statusText);
-            });
-        },
-        methods: {
-            add() {
-                    this.checkIsSelectNode('addGroup');
-                },
-                delete() {
-                    let jobFamilyId = this.jobGroup.jobFamilyId;
-                    if (jobFamilyId) {
-                        this.$http.delete(`/pos/jobFamilys/${jobFamilyId}`).then((response) => {
-                            Message({
-                                type: 'success',
-                                message: 'Delete Success!'
-                            });
-                        });
-                    } else {
-                        Message({
-                            type: 'error',
-                            message: 'Please select a valid node.'
-                        })
-                    }
-
-                },
-                edit() {
-                    this.checkIsSelectNode('editGroup');
-                },
-                checkIsSelectNode(_pathName) {
-                    let _self = this;
-                    if (!_self.jobGroup.jobFamilyId) {
-                        Message({
-                            type: 'error',
-                            message: 'Please select a valid node.'
-                        })
-                        return;
-                    }
-                    _self.$router.go({
-                        name: _pathName,
-                        params: {
-                            id: _self.jobGroup.jobFamilyId
-                        }
-                    });
-                }
+        let _self = this;
+        return { //初始化
+            membersUrl: "", //titles表格地址
+            subordinateUrl: "", //positions表格地址
+            //titles表格字段
+            membersColumns: [{
+                name: '',
+                title: 'Employee Name',
+                sortField: ''
+            }, {
+                name: '',
+                title: 'Employee ID',
+                sortField: ''
+            }, {
+                name: '',
+                title: 'Position Name',
+                sortField: ''
+            }, {
+                name: 'standardJobName',
+                title: 'MIB Grade',
+                sortField: 'standardJobName'
+            }, {
+                name: '',
+                title: 'Email',
+                sortField: ''
+            }, {
+                name: '',
+                title: 'Location',
+                sortField: ''
+            }],
+            //positions表格字段
+            subordinateColumns: [{
+                name: '',
+                title: 'Position Name',
+                sortField: ''
+            }, {
+                name: '',
+                title: 'Position ID',
+                sortField: ''
+            }, {
+                name: '',
+                title: 'Job Category',
+                sortField: ''
+            }, {
+                name: '',
+                title: 'MID Grade',
+                sortField: ''
+            }, {
+                name: '',
+                title: 'Effective Date',
+                sortField: ''
+            }],
         }
+    }
 };
 
 </script>

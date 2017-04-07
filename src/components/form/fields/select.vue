@@ -1,21 +1,21 @@
 <template>
-  <div class='field selectfield' :class="{ 'validate-error': hintType === 'error', require: isRequired, 'field-hashint': !hideHint }">
+  <div :class="['field', 'selectfield', fieldClass, { 'validate-error': hintType === 'error', require: isRequired, 'field-hashint': !hideHint }]">
     <label :style="{ width: labelWidth != null ? labelWidth + 'px' : '' }" v-show="!hideLabel">{{ labelText }}</label>
     <div class="field-content" :style="{ marginLeft: labelWidth != null ? labelWidth + 'px' : '' }">
       <div  @click="toggleSelect($event)" class="selectfield-box" :class="{ active: selectVisible, multiSelect: multiSelect ,'select-readonly':readonly}" :style="{ width: realEditorWidth ? realEditorWidth : '' }">
         <ul v-if="multiSelect" class="multiSelectList fix">
-          <li class="select-list" v-for="item in textValue">
+          <li class="select-list" v-for="item in textValue" :key="item.id">
             <span>{{item.label}}</span>
-            <i class="fa fa-times" aria-hidden="true" @click="removeSelect(item.value)"></i>
+            <i class="fa fa-times" aria-hidden="true" @click.stop="removeSelect(item.value)"></i>
           </li>
-          <li><input type="text" placeholder="{{placeholder}}" class="mutiselectfield-box-text"  @keydown="handleKeydown" @input="handleInput"/></li>
+          <li><input type="text" :placeholder="placeholder" class="mutiselectfield-box-text"  @keydown="handleKeydown" @input="handleInput"/></li>
         </ul>
-        <input type="text" placeholder="{{placeholder}}" readonly="{{readonly}}" class="selectfield-box-text" :class="{'select-readonly':readonly, 'c-c1c1d2': isSelectOption}" @keydown="handleKeydown" @input="handleInput" v-model="searchText"/>
+        <input type="text" :placeholder="placeholder" :readonly="readonly" class="" :class="['selectfield-box-text',{'select-readonly':readonly, 'c-c1c1d2': isSelectOption}]" @keydown="handleKeydown" @input="handleInput" v-model="searchText"/>
           <span class="selectfield-trigger">
              <i class="fa fa-sort-desc" aria-hidden="true"></i>
           </span>
-        <v-select v-ref:select :disable-value="disableValue" :mapping="mapping" v-if="selectActive" v-show="selectVisible" :multi-select="multiSelect" :select-change="selectChange" :value.sync="selectValue" @select="selectVisible = false" @selection-change="handleSelectionChange" @click="$event.stopPropagation()">
-          <input class="filter-input" type="text" name="" value="" v-model="filterWord">
+        <v-select ref="select" :disable-value="disableValue" :mapping="actualMapping" v-if="selectActive" v-show="selectVisible" :multi-select="multiSelect" :select-change="selectChange" :value.sync="selectValue" @selectItem="handleSelect" @selection-change="handleSelectionChange" @click.stop>
+          <input class="filter-input" type="text" name="" v-model="filterWord">
           <div v-show="!multiSelect" class="select-option" :class="{ selected: selectValue === '' }" @click="handleClickSelect">
             --Select--
           </div>
@@ -131,11 +131,6 @@
       transition: border 0.3s;
       padding: 0 5px;
    }
-
-
-
-
-
 </style>
 
 <script type="text/ecmascript-6">
@@ -147,6 +142,10 @@
 
   export default {
     props: merge({
+      labelWidth: {
+        type: String,
+        default: ''
+      },
       multiSelect: {
         type: Boolean,
         default: false
@@ -177,13 +176,18 @@
         }
       }
     }, common.props),
-
     data() {
       return {
         searchModel: '',
         selectActive: false,
         selectVisible: false,
-        filterWord: ''
+        filterWord: '',
+        form: {},
+        model: {},
+        // labelWidth: 120,
+        label: '',
+        hintMessage: '',
+        isToggle: true
       };
     },
 
@@ -197,7 +201,7 @@
         }
       },
       textValue() {
-        const mapping = this.mapping;
+        const mapping = this.actualMapping;
         const selectValue = this.selectValue;
 
         if (!this.multiSelect && (selectValue === undefined || selectValue === '' || selectValue === null)) {
@@ -262,7 +266,7 @@
 
     destroyed: common.onDestroyed,
 
-    compiled: common.onCompiled,
+    mounted: common.onMounted,
 
     watch: {
       selectVisible(newVal) {
@@ -276,6 +280,11 @@
     },
 
     methods: merge({
+      handleSelect(value) {
+        this.selectValue = value;
+        this.selectVisible = false;
+        this.isToggle = false;
+      },
       handleClickSelect() {
         this.selectVisible = false;
         this.selectValue = '';
@@ -303,17 +312,22 @@
         const children = this.$refs.select.$children;
         const value = [];
         children.forEach(function(child) {
-          if (child.selected) {
+          if (child.selectedItme) {
             value.push(child.value);
           }
         });
         this.selectValue = value;
       },
 
-      toggleSelect() {
-
+      toggleSelect(e) {
+        if (e.target.className === 'filter-input') {
+          return
+        }
         if(this.readonly) return;
-
+        if (!this.isToggle) {
+          this.isToggle = true;
+          return;
+        }
         this.editorFocused = true;
         this.selectActive = true;
         this.selectVisible = !this.selectVisible;
@@ -335,10 +349,10 @@
         const children = this.$refs.select.$children;
         const value = [];
         children.forEach(function(child) {
-          if (child.selected && val !== child.value) {
+          if (child.selectedItme && val !== child.value) {
             value.push(child.value);
           } else {
-            child.selected = false;
+            child.selectedItme = false;
           }
         });
         this.selectValue = value;

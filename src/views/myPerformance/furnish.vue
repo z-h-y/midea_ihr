@@ -237,10 +237,10 @@
             position: absolute;
             top: 36px;
             right: -6px;
-            content: url(../../static/images/public/arrow-blue.png);
+            content: url(../../assets/images/public/arrow-blue.png);
         }
         .process-history-item.gray:after {
-            content: url(../../static/images/public/arrow-gray.png);
+            content: url(../../assets/images/public/arrow-gray.png);
         }
         li:first-child {
             .text {
@@ -319,23 +319,23 @@
             <div class="help-desk-ctn">
                 <ul class="regular fix">
                     <li>
-                        <span class="prop-name">Employee Name</span>
+                        <span class="prop-name">{{ $t('myperformance.furnish.employeeName') }}</span>
                         <span class="prop-val">{{basicInfo.employeeName}}</span>
                     </li>
                     <li v-if="basicInfo.pfmType==='1'">
-                        <span class="prop-name">Unit Name</span>
+                        <span class="prop-name">{{ $t('myperformance.furnish.unitName') }}</span>
                         <span class="prop-val">{{basicInfo.unitName}}</span>
                     </li>
                     <li>
-                        <span class="prop-name">Position</span>
+                        <span class="prop-name">{{ $t('myperformance.furnish.position') }}</span>
                         <span class="prop-val">{{basicInfo.positionName}}</span>
                     </li>
                     <li>
-                        <span class="prop-name">Restrict To Year</span>
+                        <span class="prop-name">{{ $t('myperformance.furnish.restricttoYear') }}</span>
                         <span class="prop-val">{{basicInfo.restrictYear}}</span>
                     </li>
                     <li>
-                        <span class="prop-name">Evaluation Location</span>
+                        <span class="prop-name">{{ $t('myperformance.furnish.evaluationLocation') }}</span>
                         <span class="prop-val">{{basicInfo.startDate | formatDate }} To {{basicInfo.endDate | formatDate}}</span>
                     </li>
                 </ul>
@@ -343,14 +343,14 @@
         </div>
         <div id="total-indicators" class="total-indicators-head">
             <div class="bte bg">
-                <h3 class="head-title"> Indicators（Weight {{sumWeight()}}）</h3>
+                <h3 class="head-title"> {{$t('myperformance.indicators')}}（{{$t('myperformance.weight')}} {{sumWeight()}}）</h3>
             </div>
         </div>
         <div id="indicators-ctn-wrap" class="indicators-ctn-wrap">
-            <furnish-indicator v-ref:indicators :data.sync="indicatorList"></furnish-indicator>
+            <furnish-indicator ref="indicators" :data.sync="indicatorList"></furnish-indicator>
             <div class="indicators-item" v-show="newIndicator">
-                <v-form v-ref:indicatorform :model="indicator" :schema="indicatorSchema" label-width="150" label-suffix="" :cols="1" class="form-edit-ctn">
-                    <text-field property='indicatorName' editor-width="400"><a class="select-indicator" href="javascript:;" @click="showModel.modal = true">Select from indicators pool</a></text-field>
+                <v-form ref="indicatorform" :model="indicator" :schema="indicatorSchema" label-width="150" label-suffix="" :cols="1" class="form-edit-ctn">
+                    <text-field property='indicatorName' editor-width="400"><a class="select-indicator" href="javascript:;" @click="showModel.modal = true">{{$t('myperformance.furnish.sel')}}</a></text-field>
                     <text-field property='unit' editor-width="400"></text-field>
                     <text-field property='weight' editor-width="400" type="number"></text-field>
                     <text-field property='target' editor-width="400"></text-field>
@@ -358,8 +358,8 @@
                     <text-field property='dataSources' editor-width="400"></text-field>
                     <div class='field'>
                         <div class="btn-wrap">
-                            <ui-button color="primary mr10" @click="handleAddSubmit()">Save</ui-button>
-                            <ui-button class="btn-default-bd" @click="handleCancelAdd()" type="flat">Cancel</ui-button>
+                            <ui-button color="primary mr10" @click="handleAddSubmit()">{{$t('button.save')}}</ui-button>
+                            <ui-button class="btn-default-bd" @click="handleCancelAdd()" type="flat">{{$t('button.cancel')}}</ui-button>
                         </div>
                     </div>
                 </v-form>
@@ -373,11 +373,11 @@
             </div> -->
             <div class="indicators-item" v-show="isAdmin">
                 <div class="add-indicators" @click="handleAdd">
-                    <i class="fa fa-plus-circle" aria-hidden="true"></i><span class="add-txt">Add New Indicator</span>
+                    <i class="fa fa-plus-circle" aria-hidden="true"></i><span class="add-txt">{{$t('performance.addNewIndicator')}}</span>
                 </div>
             </div>
         </div>
-        <ui-collapsible :open="true" id="coll-process-history" header="Process History">
+        <ui-collapsible :open="true" id="coll-process-history" :header="$t('myperformance.viewprocess.processHistory')">
 
             <div id="process-history" class="process-history">
                 <div class="process-history-ctn">
@@ -389,7 +389,7 @@
                                     <div class="valign">
                                         <div v-bind:class="{'valign-ctn active':item.nowNode,'valign-ctn': !item.nowNode}">
                                             <img v-if="item.nodeUserDetailList.length > 0" class="valign-inner" :src='photoUrl(item.nodeUserDetailList[0].photoId)' />
-                                            <img v-if="item.nodeUserDetailList.length == 0" class="valign-inner" src='/static/images/public/xwz.png' />
+                                            <img v-if="item.nodeUserDetailList.length == 0" class="valign-inner" src='/assets/images/public/xwz.png' />
                                         </div>
                                     </div>
                                     <div class="person-ico" v-if="item.templateRoleId && item.nodeUserDetailList.length > 1">
@@ -411,26 +411,26 @@
                                         <p style="role-nodeName">{{item.nodeName}}</p>
                                     </div>
                                 </div>
-                                <ui-button v-if="item.modify" class="btn-default-bd modify" @click="showPerson($index,item.nodeUserDetailList)" type="flat">Modify Approval</ui-button>
+                                <ui-button v-if="item.modify" class="btn-default-bd modify" @click="showPerson($index,item.nodeUserDetailList)" type="flat">{{$t('myperformance.furnish.modifyApproval')}}</ui-button>
                             </li>
                         </template>
                     </ul>
                 </div>
             </div>
         </ui-collapsible>
-        <ui-collapsible class="mt16" :open="true" id="coll-memo" header="Process Record">
+        <ui-collapsible class="mt16" :open="true" id="coll-memo" :header="$t('myperformance.viewprocess.processRecord')">
             <div id="process-history-list">
                 <div class="process-history-ctn">
                     <table class="vuetable ui blue striped selectable celled stackable attached table">
                         <thead>
                             <tr>
-                                <th>Stage</th>
-                                <th>Role</th>
-                                <th>Recipient</th>
-                                <th>Operation</th>
-                                <th>Suggestion</th>
-                                <!-- <th></th> -->
-                                <th>Date</th>
+                              <th>{{$t('myperformance.stage')}}</th>
+                              <th>{{$t('myperformance.role')}}</th>
+                              <th>{{$t('myperformance.recipient')}}</th>
+                              <th>{{$t('myperformance.operation')}}</th>
+                              <th>{{$t('myperformance.suggestion')}}</th>
+                              <!-- <th></th> -->
+                              <th>{{$t('myperformance.date')}}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -456,14 +456,14 @@
             </div>
         </ui-collapsible>
     </panel>
-    <ind-table-selector v-ref:indicatorselector :show.sync="showModel" :multi-selected="false" :selected-indicators="selectedInds"  :handle-comfirmed="indicatorCallBack" :ind-type="indtypes"></ind-table-selector>
+    <ind-table-selector ref="indicators"elector :show.sync="showModel" :multi-selected="false" :selected-indicators="selectedInds"  :handle-comfirmed="indicatorCallBack" :ind-type="indtypes"></ind-table-selector>
     <div class="btn-group">
-        <ui-button color="primary mr16" @click="handleSubmit('1')">Submit</ui-button>
-        <ui-button class="btn-default-bd mr16 ml-4" @click="handleSubmit('0')" type="flat">Save</ui-button>
-        <ui-button class="btn-default-bd ml-4" @click="handleCancel" type="flat">Cancel</ui-button>
+        <ui-button color="primary mr16" @click="handleSubmit('1')">{{$t('button.submit')}}</ui-button>
+        <ui-button class="btn-default-bd mr16 ml-4" @click="handleSubmit('0')" type="flat">{{$t('button.save')}}</ui-button>
+        <ui-button class="btn-default-bd ml-4" @click="handleCancel" type="flat">{{$t('button.cancel')}}</ui-button>
     </div>
 
-    <process-person-selector v-ref:pselector :show.sync="personShowModel" :all-selected-per.sync="selectedPer"></process-person-selector>
+    <process-person-selector ref="pselector" :show.sync="personShowModel" :all-selected-per.sync="selectedPer"></process-person-selector>
 
 </div>
 
@@ -484,62 +484,62 @@ import {
 }
 from '../../util/assist';
 
-let indicatorSchema = new Schema({
-    indicatorName: {
-        label: 'Indicator Name',
-        required: true,
-        whitespace: false,
-    },
-    unit: {
-        label: 'Unit',
-        required: true,
-        whitespace: false,
-    },
-    weight: {
-        label: 'Weight',
-        required: true,
-        whitespace: false,
-        rules: {
-            type: 'custom',
-            message: 'Please enter a 1~101 positive integer!',
-            validate() {
-                var isValidate = true;
-                if (this.weight < 1 || this.weight > 100) {
-                    isValidate = false;
-                } else {
-                    if (this.weight % 1 !== 0) {
-                        isValidate = false;
-                    }
-                }
-                return isValidate;
-            }
-        }
-    },
-    target: {
-        label: 'Targets',
-        required: true,
-        whitespace: false
-    },
-    criteria: {
-        label: 'Criteria/Formula',
-        required: true,
-        whitespace: false,
-    },
-    dataSources: {
-        label: 'Data Source Dept',
-        required: true,
-        whitespace: false,
-    },
-    mandatory: {
-
-    },
-    employeeIndicatorId: {
-
-    }
-});
 
 export default {
     data() {
+      let indicatorSchema = new Schema({
+          indicatorName: {
+              label: this.$t('myperformance.furnish.indicatorName'),
+              required: true,
+              whitespace: false,
+          },
+          unit: {
+              label: this.$t('myperformance.furnish.unita'),
+              required: true,
+              whitespace: false,
+          },
+          weight: {
+              label: this.$t('myperformance.furnish.weight'),
+              required: true,
+              whitespace: false,
+              rules: {
+                  type: 'custom',
+                  message: this.$t('myperformance.furnish.ee'),
+                  validate() {
+                      var isValidate = true;
+                      if (this.weight < 1 || this.weight > 100) {
+                          isValidate = false;
+                      } else {
+                          if (this.weight % 1 !== 0) {
+                              isValidate = false;
+                          }
+                      }
+                      return isValidate;
+                  }
+              }
+          },
+          target: {
+              label:this.$t('myperformance.furnish.target'),
+              required: true,
+              whitespace: false
+          },
+          criteria: {
+              label: this.$t('myperformance.furnish.criteria'),
+              required: true,
+              whitespace: false,
+          },
+          dataSources: {
+              label: this.$t('myperformance.furnish.dataSources'),
+              required: true,
+              whitespace: false,
+          },
+          mandatory: {
+
+          },
+          employeeIndicatorId: {
+
+          }
+      });
             let _self = this;
             return {
                 show: {
@@ -597,7 +597,7 @@ export default {
                     if (photoId)
                         return Vue.config.APIURL + `/system/attachment/downloadImg/${photoId}`;
                     else
-                        return `/static/images/public/xwz.png`;
+                        return `/assets/images/public/xwz.png`;
                 },
                 handleFormatDate(value) {
                     return formatDate(new Date(value));

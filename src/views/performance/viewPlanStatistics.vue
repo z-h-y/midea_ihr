@@ -32,30 +32,30 @@
         <div class="mb20 pt20">
             <div class="search-area">
                 <v-form :class="{expended: expended}" :model="planState" :schema="planStateSchema" label-width="150" :cols="3">
-                    <text-field property='unitName' editor-width="150" type="selector" :readonly="true" :show.sync="show"></text-field>
+                    <text-field property='unitName' editor-width="150" @open-selector="openSelector" type="selector" :readonly="true" :show="show"></text-field>
                     <text-field property='employeeName' editor-width="150"></text-field>
                     <select-field property='status' editor-width="150">
-                        </text-field>
+                    </select-field>
                 </v-form>
                 <!-- <ui-icon-button class="expend-btn" :class="{expended: expended}" :icon="expendIcon" @click="expendSearch"></ui-icon-button> -->
                 <div class="query-btn">
-                    <ui-button class="query-btn-search mr10" color="primary" @click="searchTable">Search</ui-button>
-                    <ui-button class="query-btn-reset btn-default-bd" type="flat" @click="resetTable">Reset</ui-button>
+                    <ui-button class="query-btn-search mr10" color="primary" @click="searchTable">{{$t('button.search')}}</ui-button>
+                    <ui-button class="query-btn-reset btn-default-bd" type="flat" @click="resetTable">{{$t('button.reset')}}</ui-button>
                 </div>
             </div>
             <div class="group">
-                <ui-button class="mr10 dis-tc btn-primary-bd" @click="goStart" color="primary" text="Start Evaluation" button-type="button"></ui-button>
+                <ui-button class="mr10 dis-tc btn-primary-bd" @click="goStart" color="primary" button-type="button">{{$t('performance.button.startEvaluation')}}</ui-button>
             </div>
             <div>
-                <vuetable :api-url="tableUrl" :selected-to="selectedRow" :append-params="queryParams" :fields="columns" pagination-path="" table-wrapper=".vuetable-wrapper" :sort-order="sortOrder" :item-actions="itemActions" per-page="10">
+                <vuetable ref="vuetable" @action="action" :api-url="tableUrl" :selected-to="selectedRow" :append-params="queryParams" :fields="columns" pagination-path="" table-wrapper=".vuetable-wrapper" :sort-order="sortOrder" :item-actions="itemActions" per-page="10">
                 </vuetable>
             </div>
         </div>
     </panel>
     <div class="btn-group">
-        <ui-button @click="goCancel" class="btn-default-bd">Back</ui-button>
+        <ui-button @click="goCancel" class="btn-default-bd">{{$t('button.back')}}</ui-button>
     </div>
-    <org-table-selector :show.sync="show" :multi-selected="false"></org-table-selector>
+    <org-table-selector ref="orgselect" :show="show" :multi-selected="false" handle-comfirmed="orgSelect"></org-table-selector>
 </div>
 
 </template>
@@ -76,25 +76,27 @@ import {
 }
 from '../../components/basic/message';
 
-let planStateSchema = new Schema({
-    unitName: {
-        label: 'Organization'
-    },
-    employeeName: {
-        label: ' Principal Name'
-    },
-    status: {
-        label: ' Status',
-        mapping: function() {
-            return getDictMapping('SCHEME_PROCESS_STAGE_NAME');
-        }
-    }
-});
 
 export default {
     data() {
+            let self = this;
+            let planStateSchema = new Schema({
+                unitName: {
+                    label: self.$t('staff.organization')
+                },
+                employeeName: {
+                    label: self.$t('performance.principalName')
+                },
+                status: {
+                    label: self.$t('performance.status'),
+                    mapping: function() {
+                        return getDictMapping('SCHEME_PROCESS_STAGE_NAME');
+                    }
+                }
+            });
+
             return {
-                panelTitle: 'View Plan Statistics',
+                panelTitle: this.$t('performance.viewPlanStatistics'),
                 tableUrl: '/performance/schemeInfos/department/planStatisticsList',
                 planStateSchema: planStateSchema,
                 planState: planStateSchema.newModel(),
@@ -108,19 +110,19 @@ export default {
                 status: '',
                 columns: [{
                     name: 'unitName',
-                    title: 'Organization Name'
+                    title: this.$t('performance.organizationName')
                 }, {
                     name: 'unitCode',
-                    title: 'Organization ID'
+                    title: this.$t('performance.organizationID')
                 }, {
                     name: 'employeeName',
-                    title: 'Principal Name'
+                    title: this.$t('performance.principalName')
                 }, {
                     name: 'processStatusName',
-                    title: 'Status'
+                    title: this.$t('performance.status')
                 }, {
                     name: '__actions',
-                    title: 'Operate'
+                    title: this.$t('performance.operate')
                 }],
                 itemActions: [{
                     name: 'view-item',
@@ -151,8 +153,20 @@ export default {
                     return this.$route.params.id ? this.$route.params.id : 0;
                 }
         },
-        events: {
-            'vuetable:action': function(action, data) {
+        methods: {
+            orgSelect(value) {
+                if (value && value instanceof Array) {
+                    let tempNames = [],
+                        tempIds = [];
+                    for (let index of value.keys()) {
+                        tempNames.push(value[index].unitShortName);
+                        tempIds.push(value[index].unitId);
+                    }
+                    this.planState.unitName = tempNames.toString();
+                    this.selectedUnitIds = tempIds.toString();
+                }
+            },
+            action(action, data) {
                 this.operateRow = data;
                 if (action == 'view-item') {
                     let param = {
@@ -168,29 +182,17 @@ export default {
                     this.forwardUrl('performanceView', param);
                 }
             },
-            'selected-org': function(value) {
-                if (value && value instanceof Array) {
-                    let tempNames = [],
-                        tempIds = [];
-                    for (let index of value.keys()) {
-                        tempNames.push(value[index].unitShortName);
-                        tempIds.push(value[index].unitId);
-                    }
-                    this.planState.unitName = tempNames.toString();
-                    this.selectedUnitIds = tempIds.toString();
-                }
-            }
-        },
-        ready() {},
-        methods: {
+            openSelector() {
+              this.$refs.orgselect.open();
+            },
             searchTable() {
-                    this.$broadcast('vuetable:refresh');
+                    this.$refs.vuetable.reloadData();
                 },
                 resetTable() {
                     this.selectedUnitIds = "";
                     this.planState.reset();
                     this.$nextTick(() => {
-                        this.$broadcast('vuetable:refresh');
+                        this.$refs.vuetable.reloadData();
                     })
                 },
                 goStart() {
@@ -204,7 +206,7 @@ export default {
                             type: 'success',
                             message: this.$t('performance.message.startSuccess')
                         });
-                        this.$broadcast('vuetable:refresh');
+                        this.$refs.vuetable.reloadData();
                     });
                 },
                 goCancel() {
@@ -213,11 +215,11 @@ export default {
                 expendSearch() {
                     this.expended = !this.expended;
                     this.expendIcon = this.expended ? 'fa-angle-double-up' : 'fa-angle-double-down';
-                    this.$broadcast('vuetable:refresh');
+                    this.$refs.vuetable.reloadData();
                 },
                 forwardUrl(pathName, params) {
                     params = params || {};
-                    this.$router.go({
+                    this.$router.push({
                         name: pathName,
                         params: params
                     });

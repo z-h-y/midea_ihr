@@ -20,7 +20,7 @@
 //     min-height: 560px;
 //     position: relative;
 //     overflow: hidden;
-//     background: #3aa2eb url("../static/images/public/login-bg.png") center no-repeat;
+//     background: #3aa2eb url("../../assets/images/public/login-bg.png") center no-repeat;
 //     background-size: cover;
 //     .login-body {
 //         width: 1016px;
@@ -75,10 +75,10 @@
 //             background-repeat: no-repeat;
 //         }
 //         .label-userName {
-//             background-image: url("../static/images/public/user-ico.png");
+//             background-image: url("../../assets/images/public/user-ico.png");
 //         }
 //         .label-userPass {
-//             background-image: url("../static/images/public/password-ico.png");
+//             background-image: url("../../assets/images/public/password-ico.png");
 //         }
 //         .text-label-userName,
 //         .text-label-userPass {
@@ -151,7 +151,7 @@
 //     .login-logo {
 //         height: 40px;
 //         margin-top: 0;
-//         background: url("../static/images/public/iHR-logo.png") no-repeat center;
+//         background: url("../../assets/images/public/iHR-logo.png") no-repeat center;
 //     }
 //     .login-title {
 //         margin: 30px auto;

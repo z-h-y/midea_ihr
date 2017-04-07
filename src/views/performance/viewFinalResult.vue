@@ -54,22 +54,22 @@
 <template lang="html">
 
 <div class="content-wrap bg-w ihr-staff-annualResults">
-    <h3>Annual Performance Results ({{annualName}})</h3>
+    <h3>{{$t('performance.annualPerformanceResults')}} ({{annualName}})</h3>
     <div class="table-annualResults">
         <table class="vuetable ui blue striped selectable celled stackable attached table">
             <thead>
                 <tr>
                     <th></th>
-                    <th class="w-per15">Excellent</th>
-                    <th class="w-per15">Very Good</th>
-                    <th class="w-per15">Good</th>
-                    <th class="w-per15">Needs Improvement</th>
-                    <th class="w-per15">Disqualified</th>
+                    <th class="w-per15">{{$t('performance.excellent')}}</th>
+                    <th class="w-per15">{{$t('performance.veryGood')}}</th>
+                    <th class="w-per15">{{$t('performance.good')}}</th>
+                    <th class="w-per15">{{$t('performance.needsImprovement')}}</th>
+                    <th class="w-per15">{{$t('performance.disqualified')}}</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>Default Sort Order</td>
+                    <td>{{$t('performance.defaultSortOrder')}}</td>
                     <td>{{defaultRatio.excellentRatio + '%'}}</td>
                     <td>{{defaultRatio.veryGoodRatio + '%'}}</td>
                     <td>{{defaultRatio.goodRatio + '%'}}</td>
@@ -82,16 +82,16 @@
             <thead>
                 <tr>
                     <th></th>
-                    <th class="w-per15">Excellent</th>
-                    <th class="w-per15">Very Good</th>
-                    <th class="w-per15">Good</th>
-                    <th class="w-per15">Needs Improvement</th>
-                    <th class="w-per15">Disqualified</th>
+                    <th class="w-per15">{{$t('performance.excellent')}}</th>
+                    <th class="w-per15">{{$t('performance.veryGood')}}</th>
+                    <th class="w-per15">{{$t('performance.good')}}</th>
+                    <th class="w-per15">{{$t('performance.needsImprovement')}}</th>
+                    <th class="w-per15">{{$t('performance.disqualified')}}</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>Actual Ratio</td>
+                    <td>{{$t('performance.actualRatio')}}</td>
                     <td>{{actRatio.excellent}}</td>
                     <td>{{actRatio.veryGood}}</td>
                     <td>{{actRatio.good}}</td>
@@ -102,28 +102,28 @@
         </table>
     </div>
     <div class="group">
-        <ui-button class="mr10 dis-tc btn-primary-bd" @click="goConfirmed" color="primary" text="Release Results" button-type="button"></ui-button>
-        <ui-button class="mr10 dis-tc btn-default-bd" @click="goModify" type="flat" text="Modify Grade" button-type="button"></ui-button>
-        <ui-button class="mr10 dis-tc btn-default-bd" @click="goCalculate" type="flat" text="Calculate" button-type="button"></ui-button>
+        <ui-button class="mr10 dis-tc btn-primary-bd" @click="goConfirmed" color="primary" button-type="button">{{$t('performance.button.releaseResults')}}</ui-button>
+        <ui-button class="mr10 dis-tc btn-default-bd" @click="goModify" type="flat" button-type="button">{{$t('performance.button.modifyGrade')}}</ui-button>
+        <ui-button class="mr10 dis-tc btn-default-bd" @click="goCalculate" type="flat" button-type="button">{{$t('performance.button.calculate')}}</ui-button>
     </div>
     <div class="vuetable-wrapper pl16 pr16 pb16">
-        <vuetable v-ref:resulttable :api-url="tableUrl" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper pl16 pr16 pb16" :fields="columns" per-page="10">
+        <vuetable ref="resulttable" :api-url="tableUrl" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper pl16 pr16 pb16" :fields="columns" per-page="10">
         </vuetable>
     </div>
     <div class="btn-group">
         <!-- <ui-button @click="submitForm" color="primary mr10">Submit</ui-button> -->
-        <ui-button @click="goCancel" class="btn-default-bd" type="flat">Back</ui-button>
+        <ui-button @click="goCancel" class="btn-default-bd" type="flat">{{$t('button.back')}}</ui-button>
     </div>
-    <ui-modal id="edit-modify" :show.sync="show.modifyModal" header="Modify Grade">
+    <ui-modal id="edit-modify" :show="show.modifyModal" :title="$t('performance.button.modifyGrade')">
         <v-form :model="modifyModel" :schema="modifySchema" label-width="150" label-suffix="" :cols="1" form-style="org-form">
             <select-field property='grade' editor-width="150" :mapping="gradeDist"></select-field>
         </v-form>
         <div slot="footer">
-            <ui-button color="primary mr10" @click="saveGrade">save</ui-button>
-            <ui-button class="btn-default-bd" type="flat" @click="show.modifyModal = false">Cancel</ui-button>
+            <ui-button color="primary mr10" @click="saveGrade">{{$t('button.save')}}</ui-button>
+            <ui-button class="btn-default-bd" type="flat" @click="show.modifyModal = false">{{$t('button.cancel')}}</ui-button>
         </div>
     </ui-modal>
-    <ui-confirm @confirmed="confirmedFunc" :show.sync="show.finalConfirm" :header="confirm.confirmTitle" close-on-confirm>
+    <ui-confirm ref="finalconfirm" @confirm="confirmedFunc" :show="show.finalConfirm" :title="confirm.confirmTitle" close-on-confirm>
         {{confirm.confirmText}}
     </ui-confirm>
 </div>
@@ -145,15 +145,16 @@ import {
 }
 from '../../util/assist';
 
-let modifySchema = new Schema({
-    grade: {
-        label: 'Adjust Grade'
-    }
-})
-let modifyS
+
 
 export default {
     data() {
+      let self = this;
+      let modifySchema = new Schema({
+          grade: {
+              label: self.$t('performance.adjustGrade')
+          }
+      })
             return {
                 gradeDist: {},
                 show: {
@@ -161,8 +162,8 @@ export default {
                     finalConfirm: false
                 },
                 confirm: {
-                    confirmTitle: 'Important Tip',
-                    confirmText: 'Once scores have been released, they could not be modified. Are you sure to release the scores?',
+                    confirmTitle: this.$t('performance.header.importantTip'),
+                    confirmText: this.$t('performance.message.releasedScoresConfirm')
                 },
                 modifySchema: modifySchema,
                 modifyModel: modifySchema.newModel(),
@@ -187,67 +188,67 @@ export default {
                     titleClass: 'hideBorderT'
                 }, {
                     name: 'employeeName',
-                    title: 'Employee Name',
+                    title: this.$t('staff.employeeName'),
                     titleClass: 'hideTitle'
                 }, {
                     name: 'employeeCode',
-                    title: 'Employee ID',
+                    title: this.$t('staff.employeeId'),
                     dataClass: 'tr',
                     titleClass: 'hideTitle'
                 }, {
                     name: 'positionName',
-                    title: 'Position',
+                    title: this.$t('performance.position'),
                     titleClass: 'hideTitle'
                 }, {
                     name: 'businessUnitScore',
-                    title: 'Score',
+                    title: this.$t('performance.score'),
                     dataClass: 'tr',
                     callback: 'fixZeroValue'
                 }, {
                     name: 'businessUnitWeight',
-                    title: 'Weight',
+                    title: this.$t('performance.weight'),
                     dataClass: 'tr',
                     callback: 'addPercent'
                 }, {
                     name: 'unitScore',
-                    title: 'Score',
+                    title: this.$t('performance.score'),
                     dataClass: 'tr',
                     callback: 'fixZeroValue'
                 }, {
                     name: 'unitWeight',
-                    title: 'Weight',
+                    title: this.$t('performance.weight'),
                     dataClass: 'tr',
                     callback: 'addPercent'
                 }, {
                     name: 'personalScore',
-                    title: 'Score',
+                    title: this.$t('performance.score'),
                     dataClass: 'tr',
                     callback: 'fixZeroValue'
                 }, {
                     name: 'personalWeight',
-                    title: 'Weight',
+                    title: this.$t('performance.weight'),
                     dataClass: 'tr',
                     callback: 'addPercent'
                 }, {
                     name: 'finalScore',
-                    title: 'Final Score',
+                    title: this.$t('performance.finalScore'),
                     dataClass: 'tr',
                     callback: 'fixZeroValue'
                 }, {
                     name: 'grade',
-                    title: 'Grade',
+                    title: this.$t('performance.grade'),
                     callback: 'fixGrade'
                 }, {
                     name: 'adjustGrade',
-                    title: 'Adjusted Grade',
+                    title: this.$t('performance.adjustGrade'),
                     titleClass: 'gradeThClass',
                     callback: 'fixGrade'
                 }, {
                     name: 'rank',
-                    title: 'Rank',
+                    title: this.$t('performance.rank'),
                 }, {
                     name: 'releaseStatusName',
-                    title: 'Status'
+                    title: this.$t('performance.status')
                 }],
             };
         },
@@ -305,25 +306,24 @@ export default {
                 })
                 // this.countActualratio();
         },
-        ready() {
+        mounted() {
             // var html = this.$refs.resulttable.$el.getElementsByTagName('thead')[0].innerHTML;
             // this.$refs.resulttable.$el.getElementsByTagName('thead')[0].innerHTML = '<tr><th rowspan="2"></th><th rowspan="2">Employee Name</th><th rowspan="2">Employee ID</th><th rowspan="2">Position</th><th colspan="2">Business Unit</th><th colspan="2">Department</th><th colspan="2">Individual</th><th colspan="5">Final</th></tr>' + html;
 
             // var html = this.$refs.resulttable.$el.getElementsByTagName('thead')[0].innerHTML;
             var tr = document.createElement('tr');
             tr.appendChild(this.creatThElement({class: 'hideBorderB'}));
-            tr.appendChild(this.creatThElement({rowspan: 2}, 'Employee Name'));
-            tr.appendChild(this.creatThElement({rowspan: 2}, 'Employee ID'));
-            tr.appendChild(this.creatThElement({rowspan: 2}, 'Position'));
-            tr.appendChild(this.creatThElement({colspan: 2}, 'Business Unit'));
-            tr.appendChild(this.creatThElement({colspan: 2}, 'Department'));
-            tr.appendChild(this.creatThElement({colspan: 2}, 'Individual'));
-            tr.appendChild(this.creatThElement({colspan: 5}, 'Final'));
+            tr.appendChild(this.creatThElement({rowspan: 2}, this.$t('staff.employeeName')));
+            tr.appendChild(this.creatThElement({rowspan: 2}, this.$t('staff.employeeId')));
+            tr.appendChild(this.creatThElement({rowspan: 2}, this.$t('performance.position')));
+            tr.appendChild(this.creatThElement({colspan: 2}, this.$t('performance.businessUnit')));
+            tr.appendChild(this.creatThElement({colspan: 2}, this.$t('performance.department')));
+            tr.appendChild(this.creatThElement({colspan: 2}, this.$t('performance.individual')));
+            tr.appendChild(this.creatThElement({colspan: 5}, this.$t('performance.final')));
             var thead = this.$refs.resulttable.$el.getElementsByTagName('thead')[0];
             thead.insertBefore(tr, thead.getElementsByTagName('tr')[0]);
             // this.$refs.resulttable.$el.getElementsByTagName('thead')[0].insertAdjacentHTML('afterBegin', '<tr><th class="hideBorderB"></th><th rowspan="2">Employee Name</th><th rowspan="2">Employee ID</th><th rowspan="2">Position</th><th colspan="2">Business Unit</th><th colspan="2">Department</th><th colspan="2">Individual</th><th colspan="5">Final</th></tr>');
         },
-        attached() {},
         methods: {
             creatThElement(attr, text) {
               var th = document.createElement('th');
@@ -338,7 +338,7 @@ export default {
             goConfirmed() {
                     if (!this.checkSelected('release')) return;
                     if (!this.isRelease) {
-                        this.show.finalConfirm = true;
+                        this.$refs.finalconfirm.open();
                     }
                 },
                 confirmedFunc() {
@@ -375,7 +375,7 @@ export default {
                             type: 'success',
                             message: this.$t('performance.message.viewResultReleaseResultSuccess')
                         });
-                        _self.$broadcast('vuetable:refresh');
+                        _self.$refs.resulttable.reloadData();
                     });
                 },
                 goCalculate() {
@@ -385,11 +385,11 @@ export default {
                             message: this.$t('performance.message.finalResultGoCalculate')
                         });
                         this.getActualRatio();
-                        this.$broadcast("vuetable:refresh");
+                        this.$refs.resulttable.reloadData();
                     })
                 },
                 goCancel() {
-                    this.$router.go({
+                    this.$router.push({
                         name: 'annualPerformance',
                     });
                 },
@@ -418,7 +418,7 @@ export default {
                             type: 'success',
                             message: this.$t("common.saveSuccess")
                         });
-                        _self.$broadcast('vuetable:refresh');
+                        _self.$refs.resulttable.reloadData();
                         _self.getActualRatio();
                         _self.show.modifyModal = false;
                         // _self.countActualratio();
@@ -440,7 +440,7 @@ export default {
                 countActualratio() {
                     //计算实际权重
                     this.$http.post(``).then(() => {
-                        this.$broadcast('vuetable:refresh');
+                        this.$refs.resulttable.reloadData();
                         this.show.modifyModal = false;
                         this.countActualratio();
                     });

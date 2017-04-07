@@ -12,14 +12,14 @@
   <div class="ihr-staff-interns content-wrap">
 
     <panel :title="$t('staff.terminate')" class="panel-b mb-suitable" header="panel-header">
-      <v-form v-ref:myForm :model="terminate" :schema="terminateSchema" label-width="250" label-suffix="" :cols="1" form-style="org-form">
+      <v-form ref="myform" :model="terminate" :schema="terminateSchema" label-width="250" label-suffix="" :cols="1" form-style="org-form">
           <text-increment property="parttimePosition" editor-width="400"></text-increment>
           <text-increment property="parttimeOrganization" editor-width="400"></text-increment>
           <text-field type="textarea" :editor-height="100" editor-width="400" property="terminationReason"></text-field>
           <text-field property="effectiveDate" editor-width="400"></text-field>
       </v-form>
     </panel>
-    <employee-submit v-ref:employeesubmit :form-confirmed="confirmed" :form-cancel="cancel" :is-form-validate="isFormValidate"></employee-submit>
+    <employee-submit ref="employeesubmit" :form-confirmed="confirmed" :form-cancel="cancel" :is-form-validate="isFormValidate"></employee-submit>
   </div>
 </template>
 
@@ -65,10 +65,10 @@ export default {
           this.terminate.parttimeOrganization = res.data.unitName;
         })
     },
-    attached() {},
+    
     methods: {
         isFormValidate() {
-          var passed = this.terminate.$schema.isFormValidate(this.$refs.myform);
+          var passed = this.$refs.myform.isFormValidate();
           return passed;
         },
         confirmed() {
@@ -85,7 +85,7 @@ export default {
                     type: 'success',
                     message: this.$t('staff.message.success')
                 });
-                  this.$route.router.go({
+                  this.$router.push({
                       name: 'staffPartTimeRole'
                   });
               },(response) => {
@@ -93,7 +93,7 @@ export default {
               });
         },
         cancel() {
-            this.$route.router.go({
+            this.$router.push({
                 name: 'staffPartTimeRole'
             });
         }

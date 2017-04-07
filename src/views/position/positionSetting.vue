@@ -87,10 +87,10 @@
 
 <div class="content-wrap fix ihr-position-positionSetting">
     <div class="group" id="group" style="height:40px;">
-        <ui-button class="mr10 dis-tc btn-primary-bd" icon="fa-plus" color="primary" text="Add" @click="add"  button-type="button"></ui-button>
-        <ui-button class="mr10 dis-tc btn-default-bd" icon="fa-pencil-square-o" type="flat" text="Edit" @click="edit" button-type="button"></ui-button>
-        <ui-button class="mr10 dis-tc btn-default-bd" icon="fa-remove" type="flat" text="Delete" @click="delete" button-type="button"></ui-button>
-        <ui-button class="dis-tc-t btn-default-bd" icon="fa-download" type="flat" text="Download" @click="downloadExcel" button-type="button"></ui-button>
+        <ui-button class="mr10 dis-tc btn-primary-bd" icon="fa-plus" color="primary" @click="add"  button-type="button">{{$t('button.add')}}</ui-button>
+        <ui-button class="mr10 dis-tc btn-default-bd" icon="fa-pencil-square-o" type="flat" @click="edit" button-type="button">{{$t('button.edit')}}</ui-button>
+        <ui-button class="mr10 dis-tc btn-default-bd" icon="fa-remove" type="flat" @click="deleteBtn" button-type="button">{{$t('button.delete')}}</ui-button>
+        <ui-button class="dis-tc-t btn-default-bd" icon="fa-download" type="flat" @click="downloadExcel" button-type="button">{{$t('button.download')}}</ui-button>
         <!-- <ui-button class="dis-tc-t btn-default-bd" type="flat" show-menu-icons has-dropdown-menu :menu-options="shareMenuOptions" icon="fa-caret-down" :icon-right="true" open-dropdown-on="click" @menu-option-selected="menuOptionSelected" :text="$t('button.more')"></ui-button> -->
         <!-- <input id="excelFile" class="dn" type="file" name="file" v-on:change="uploadExcel($event)"> -->
         <div class="search-ctx">
@@ -102,25 +102,24 @@
             </div>
         </div>
     </div>
-
-    <ui-modal :show.sync="show.modal" header="Delete" :body="delShowText">
-        <div slot="footer">
-            <ui-button @click="deleteAlert" color="primary">Confirm</ui-button>
-            <ui-button @click="show.modal = false">Close</ui-button>
-        </div>
-    </ui-modal>
     <div class="tree-panel fix">
         <div class="treelist p10" id="treePanel">
-            <tree :data="regions" :level-config="levelConfig" :show-checkbox="showCheckbox" v-ref:tree :click-node="clickNode"></tree>
+            <tree :data="regions" :level-config="levelConfig" :show-checkbox="showCheckbox" ref="tree" :click-node="clickNode"></tree>
         </div>
         <div class="help-desk treelist-detail" id="treelistDetail">
             <div class="vuetable-wrapper">
-                <vuetable :api-url="tableUrl" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="tableColumns" :item-actions="itemActions" per-page="10">
+                <vuetable ref="protable" :api-url="tableUrl" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="tableColumns" :item-actions="itemActions" per-page="10">
                 </vuetable>
             </div>
         </div>
     </div>
-</div>
+    <ui-modal ref="showDelTips" :title="$t('button.delete')">
+        {{delShowText}}
+        <div slot="footer">
+            <ui-button @click="deleteAlert" color="primary">{{ $t('button.confirm') }}</ui-button>
+            <ui-button @click="close('showDelTips')">{{ $t('button.close') }}</ui-button>
+        </div>
+    </ui-modal>
 </div>
 
 </template>
@@ -154,32 +153,32 @@ export default {
                     title: ''
                 }, {
                     name: 'positionName',
-                    title: 'MIB Position',
+                    title: this.$t('position.columns.pSetMIBPosition'),
                     callback: 'goPositionDetail'
                 }, {
                     name: 'standardJobName',
-                    title: 'Restrict To Title'
+                    title: this.$t('position.columns.pSetRestrictToTitle')
                 }, {
                     name: 'positionCode',
-                    title: 'Position ID'
+                    title: this.$t('position.columns.pSetPositionID')
                 }, {
                     name: 'positionCategory',
-                    title: 'Position Category',
+                    title: this.$t('position.columns.pSetPositionCategory'),
                     callback: function(value) {
                         return _self.fixPOSITIONType(value);
                     }
                 }, {
                     name: 'mibGrade',
-                    title: 'MIB Grade',
+                    title: this.$t('position.columns.pSetMIBGrade'),
                     callback: function(value) {
                         return _self.fixMIBType(value);
                     }
                 }, {
                     name: 'localGrade',
-                    title: 'Job Grade'
+                    title: this.$t('position.columns.pSetJobGrade')
                 }, {
                     name: 'businessTitle',
-                    title: 'Position'
+                    title: this.$t('position.columns.pSetPosition')
                 }],
                 dist: {
                     POSITION_CATEGORY: {},
@@ -214,7 +213,7 @@ export default {
             };
         },
         computed: {},
-        ready() {
+        mounted() {
             let _self = this;
             window.addEventListener('resize', function() {
                 _self.initHeight();
@@ -236,6 +235,9 @@ export default {
             });
         },
         methods: {
+            close(type) {
+                this.$refs[type].close()
+            },
             clickNode: function(node) {
                 let _self = this;
                 _self.tableUrl = '/pos/positions/' + node.orgId + '/positionList';
@@ -332,7 +334,7 @@ export default {
                 let orgid = _self.orgGroup.orgId;
                 let orgShortName = _self.orgGroup.orgShortName;
                 if (_self.orgGroup.orgId) {
-                    _self.$router.go({
+                    _self.$router.push({
                         name: 'addPosition',
                         params: {
                             id: _self.orgGroup.orgId,
@@ -346,7 +348,7 @@ export default {
                     });
                 }
             },
-            delete() {
+            deleteBtn() {
                 let _self = this;
                 let rows = _self.selectedRow;
                 if (rows.length === 0) {
@@ -371,9 +373,8 @@ export default {
                                 message: this.$t('position.message.checkPositionReport2')
                             });
                         } else if (response.body === '3') {
-
                             _self.delShowText = this.$t('position.message.checkPositionReport3');
-                            _self.show.modal = true;
+                            _self.$refs.showDelTips.open();
                         }
                     }
                 });
@@ -392,9 +393,9 @@ export default {
                         type: 'success',
                         message: this.$t('common.deleteSuccess')
                     });
-                    this.$broadcast('vuetable:refresh'); //刷新表格
+                    this.$refs.protable.reloadData(); //刷新表格
                 });
-                _self.show.modal = false;
+                _self.close('showDelTips');
             },
             edit() {
                 let _self = this;
@@ -402,7 +403,7 @@ export default {
                 let orgShortName = _self.orgGroup.orgShortName;
                 if (_self.selectedRow.length === 1) {
                     // window.open(`${location.href}/edit/${positionId}/${orgShortName}`);
-                    _self.$router.go({
+                    _self.$router.push({
                         name: 'editPosition',
                         params: {
                             positionId: _self.selectedRow[0], //组织id
@@ -435,24 +436,9 @@ export default {
             downloadTemplate() {
                 downloadFile('/pos/positions/dowloadPositionInfo');
             },
-            //上传职位模版
-            // uploadExcel(e) {
-            //     var srcElement__src = e.srcElement.files;
-            //     var files = Array.prototype.slice.call(srcElement__src, 0);
-            //     var formData = new FormData();
-            //     files.forEach(function(file) {
-            //         formData.append('file', file);
-            //     });
-            //     e.srcElement.value = '';
-            //     this.$http.post('pos/positions/importPositionInfo', formData).then(function(res) {
-            //         Message({
-            //             type: 'success',
-            //             message: this.$t('staff.message.importSuccess')
-            //         });
-            //     });
-            // },
+
             goPositionDetail(value, data) {
-                return `<a href="/#!/ihr/position/positionSetting/positionDetails/${data.positionId}/${this.orgGroup.orgId}" >${value}</a>`;
+                return `<a href="${location.href}/positionDetails/${data.positionId}/${this.orgGroup.orgId}" >${value}</a>`;
             },
             search() {
                 let unitId = this.orgGroup.orgId || '';

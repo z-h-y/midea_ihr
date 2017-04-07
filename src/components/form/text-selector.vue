@@ -1,31 +1,40 @@
 <style lang="css">
-   span.item{
-		margin-right: -3px;
-		display: inline-block;
-	}
-	 .selector{
-		 margin-left: 5px;
-	 }
-  span.item:after,span.item.before{
-		display: table;
-     content: "";
-	}
-	span.item:after{
-		clear: both;
-	}
 
+span.item {
+    margin-right: -3px;
+    display: inline-block;
+}
+
+.selector {
+    margin-left: 5px;
+}
+
+span.item:after,
+span.item.before {
+    display: table;
+    content: "";
+}
+
+span.item:after {
+    clear: both;
+}
 
 </style>
 
 <template lang="html">
 
-<span class="item">
-	  <input @focus="handleFocus" @blur="handleBlur" lazy @change="handleChange($event)" type="{{editorType}}" v-model="visualValue" placeholder="{{placeholder}}" readonly="{{readonly}}" :style="{height: height ? height + 'px' : ''}"/>
+<div>
+    <span class="item">
+	  <input @focus="handleFocus" @blur="handleBlur" lazy @change="handleChange($event)" v-if="editorType" type="password" v-model="visualValue" :placeholder="placeholder" :readonly="readonly" :style="{height: height ? height + 'px' : ''}"/>
+      <input @focus="handleFocus" @blur="handleBlur" lazy @change="handleChange($event)" v-if="!editorType" type="text" v-model="visualValue" :placeholder="placeholder" :readonly="readonly" :style="{height: height ? height + 'px' : ''}"/>
 	</span>
-<span class="item">
-		<input class="selector" @focus="handleFocus" @blur="handleBlur" lazy @change="handleChange($event)" type="{{editorType}}" v-model="visualValue" placeholder="{{placeholder}}" readonly="{{readonly}}" :style="{ height:height ?height + 'px' : '' }"/>
-		<span @click="toggleSelector()" v-if="haveSelector"></span>
-</span>
+    <span class="item">
+		<input class="selector" @focus="handleFocus" @blur="handleBlur" lazy @change="handleChange($event)" v-if="editorType" type="password" v-model="visualValue" :placeholder="placeholder" :readonly="readonly" :style="{ height:height ?height + 'px' : '' }"/>
+        <input class="selector" @focus="handleFocus" @blur="handleBlur" lazy @change="handleChange($event)" v-if="!editorType" type="text" v-model="visualValue" :placeholder="placeholder" :readonly="readonly" :style="{ height:height ?height + 'px' : '' }"/>
+
+    	<span @click="toggleSelector()" v-if="haveSelector"></span>
+    </span>
+</div>
 
 </template>
 
@@ -71,7 +80,6 @@ export default {
     },
     computed: {
         selectorClass() {
-                // debugger;
                 // let cols = this.cols;
                 // if (cols >= 1 && cols <= 6) {
                 //     return `cell-1-${cols}`;
@@ -79,7 +87,7 @@ export default {
                 // return '';
             },
             haveSelector() {
-                return this.$parent.ype === 'selector' || this.type === 'select';
+                return this.$parent.type === 'selector' || this.type === 'select';
             },
 
             visualValue: {
@@ -93,7 +101,7 @@ export default {
             },
 
             editorType() {
-                return this.type === 'password' ? 'password' : 'text';
+                return this.type === 'password';
             }
     },
 

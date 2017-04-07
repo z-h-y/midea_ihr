@@ -16,10 +16,8 @@
 <script type="text/ecmascript-6">
   var idSeed = 1;
   const prefix = 'radio-group-';
-
   var syncValue = (group, value) => {
     var children = group.$children;
-
     children.forEach(function(child) {
       if (child.value !== undefined && child.value == value) { // eslint-disable-line eqeqeq
         if (child.$els.editor) {
@@ -50,7 +48,7 @@
       this.$radioName = prefix + idSeed++;
     },
 
-    ready() {
+    mounted() {
       var value = this.value;
       if (typeof value !== 'undefined') {
         syncValue(this, value);

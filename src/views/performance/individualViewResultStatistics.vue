@@ -39,6 +39,7 @@
 </style>
 
 <template lang="html">
+<div>
   <div class="content-wrap bg-w ihr-staff-resultState">
     <panel :title="panelTitle" class=" panel-b mt20 mb20 pb30" header="panel-header">
       <div class="mb16 pt16">
@@ -49,41 +50,38 @@
             </v-form>
             <!-- <ui-icon-button class="expend-btn" :class="{expended: expended}" :icon="expendIcon" @click="expendSearch"></ui-icon-button> -->
             <div class="query-btn">
-                <ui-button class="query-btn-search mr10" color="primary" @click="searchTable">Search</ui-button>
-                <ui-button class="query-btn-reset btn-default-bd" type="flat" @click="resetTable">Reset</ui-button>
+                <ui-button class="query-btn-search mr10" color="primary" @click="searchTable">{{$t('button.search')}}</ui-button>
+                <ui-button class="query-btn-reset btn-default-bd" type="flat" @click="resetTable">{{$t('button.reset')}}</ui-button>
             </div>
         </div>
         <div class="group">
-            <ui-button class="mr10 dis-tc btn-primary-bd" @click="releaseResult" color="primary" icon="fa-plus" text="Release Result" button-type="button"></ui-button>
-            <ui-button class="mr10 dis-tc btn-default-bd" @click="showEditScoreModal" icon="fa-pencil-square-o" type="flat" text="Edit Score" button-type="button"></ui-button>
+            <ui-button class="mr10 dis-tc btn-primary-bd" @click="releaseResult" color="primary" icon="fa-plus" button-type="button">{{$t('performance.button.releaseResult')}}</ui-button>
+            <ui-button class="mr10 dis-tc btn-default-bd" @click="showEditScoreModal" icon="fa-pencil-square-o" type="flat" button-type="button">{{$t('performance.button.editScore')}}</ui-button>
         </div>
         <div>
-          <vuetable :api-url="tableUrl" v-ref:scoretable :selected-to="selectedRow" :append-params="queryParams"  :fields="columns"  pagination-path = "" table-wrapper=".vuetable-wrapper" :sort-order="sortOrder" per-page="10">
+          <vuetable ref="vuetable" @action="action" :api-url="tableUrl" :selected-to="selectedRow" :append-params="queryParams"  :fields="columns"  pagination-path = "" table-wrapper=".vuetable-wrapper" :sort-order="sortOrder" per-page="10">
           </vuetable>
         </div>
       </div>
     </panel>
     <div class="btn-group">
-        <ui-button @click="goCancel" class="btn-default-bd">Back</ui-button>
+        <ui-button @click="goCancel" class="btn-default-bd">{{$t('button.back')}}</ui-button>
     </div>
   </div>
-  <ui-modal id="edit-score" :show.sync="show.scoreView" type="small" header="Edit Score">
-    <v-form v-ref:scoreform :model="scoreModel" :schema="scoreSchema" label-width="150" label-suffix="" :cols="1" form-style="">
+  <ui-modal id="edit-score" :show="show.scoreView" type="small" :title="$t('performance.button.editScore')">
+    <v-form ref="scoreform" :model="scoreModel" :schema="scoreSchema" label-width="150" label-suffix="" :cols="1" form-style="">
       <text-field property='adjustScore' editor-width="100"></text-field>
     </v-form>
     <div slot="footer">
-        <ui-button color="primary mr10" @click = "saveEditScore">Submit</ui-button>
-        <ui-button class="btn-default-bd" type="flat" @click = "show.scoreView = false">Cancel</ui-button>
+        <ui-button color="primary mr10" @click = "saveEditScore">{{$t('button.submit')}}</ui-button>
+        <ui-button class="btn-default-bd" type="flat" @click = "show.scoreView = false">{{$t('button.cancel')}}</ui-button>
     </div>
   </ui-modal>
-  <!-- <ui-confirm
-    @confirmed="releaseResult" :show.sync="show.relConfirm" close-on-confirm>
-    Do you want to release result?
-  </ui-confirm> -->
-  <ui-confirm @confirmed="confirmedFunc" :show.sync="show.relConfirm" :header="confirm.confirmTitle" close-on-confirm>
+
+  <ui-confirm ref="relconfirm" @confirm="confirmedFunc" :show="show.relConfirm" :title="confirm.confirmTitle" close-on-confirm>
       {{confirm.confirmText}}
   </ui-confirm>
-
+</div>
 </template>
 
 <script>
@@ -92,29 +90,31 @@ import {default as Schema} from '../../schema/index';
 
 import {default as Message} from '../../components/basic/message';
 
-let resultStateSchema = new Schema({
-    employeesName: {
-        label: ' Employee Name'
-    },
-    employeesCode: {
-        label: ' Employee ID'
-    }
-});
-
-let scoreSchema = new Schema({
-  adjustScore: {
-        label: 'Adjusted Score',
-        required: true,
-        type: 'integer'
-    }
-});
 
 export default {
     data() {
+      let self = this;
+      let resultStateSchema = new Schema({
+          employeesName: {
+              label: self.$t('staff.employeeName')
+          },
+          employeesCode: {
+              label: self.$t('staff.employeeId')
+          }
+      });
+
+      let scoreSchema = new Schema({
+        adjustScore: {
+              label: self.$t('performance.adjustedScore'),
+              required: true,
+              type: 'integer'
+          }
+      });
+
           return {
               scoreResultName: [],
               releaseName: [],
-              panelTitle : 'View Result Statistics',
+              panelTitle: this.$t('performance.viewResultStatistics'),
               tableUrl:'/performance/schemeInfos/scoreResultList',
               resultStateSchema:resultStateSchema,
               resultState:resultStateSchema.newModel(),
@@ -124,8 +124,8 @@ export default {
               selectedRow:[],
               scoreViewParam:{},
               confirm: {
-                  confirmTitle: 'Important Tip',
-                  confirmText: 'Once scores have been released, they could not be modified. Are you sure to release the scores?',
+                  confirmTitle: this.$t('performance.header.importantTip'),
+                  confirmText: this.$t('performance.message.releasedScoresConfirm'),
               },
               show: {
                 scoreView:false,
@@ -139,24 +139,24 @@ export default {
                   },
                   {
                     name: 'employeeName',
-                    title: 'Employee Name'
+                    title: this.$t('staff.employeeName')
                   },
                   {
                     name: 'employeeCode',
                     dataClass: 'tr',
-                    title: 'Employee ID'
+                    title: this.$t('staff.employeeId')
                   },
                   {
                     name: 'positionName',
-                    title: 'Position'
+                    title: this.$t('performance.position')
                   },
                   {
                     name: 'selfEvaluationScore',
-                    title: 'Self EvaluationScore'
+                    title: this.$t('performance.selfEvaluationScore')
                   },
                   {
                     name: 'mutualScores',
-                    title: 'Mutual Score',
+                    title: this.$t('performance.mutualScore'),
                     callback: function (value) {
                       let resultArray = [];
                       if(value instanceof Array) {
@@ -170,20 +170,20 @@ export default {
                   {
                     name: 'finalScore',
                     dataClass: 'tr',
-                    title: 'Final Score'
+                    title: this.$t('performance.finalScore')
                   },
                   {
                     name: 'adjustScore',
                     dataClass: 'tr',
-                    title: 'Adjusted Score'
+                    title: this.$t('performance.adjustedScore')
                   },
                   {
                     name: 'rank',
-                    title: 'Rank'
+                    title: this.$t('performance.rank')
                   },
                   {
                     name: 'releaseStatusName',
-                    title: 'Status'
+                    title: this.$t('performance.status')
                   }
               ],
             }
@@ -204,7 +204,7 @@ export default {
             return this.$route.params.id ? this.$route.params.id : 0;
           },
           checkedRows() {
-            let tableData = this.$refs.scoretable.tableData;
+            let tableData = this.$refs.vuetable.tableData;
             let result = [];
             for(let item of this.selectedRow) {
               result.push(tableData[item]);
@@ -229,21 +229,17 @@ export default {
             return true;
           }
         },
-        events: {
-          'vuetable:action': function(action, data) {
+        methods: {
+          action(action, data) {
 
               this.empOperaterow =  data;
               if (action == 'edit-item') {
                 this.scoreViewParam.employeeId = data.employeeId;
                 this.show.scoreView= true;
               }
-          }
-        },
-        ready() {
-        },
-        methods: {
+          },
           searchTable() {
-            this.$broadcast('vuetable:refresh');
+            this.$refs.vuetable.reloadData();
           },
           goCancel() {
             this.forwardUrl("individualScheme");
@@ -252,21 +248,21 @@ export default {
             this.resultState.employeesName = '';
             this.resultState.employeesCode = '';
             this.$nextTick(()=>{
-              this.$broadcast('vuetable:refresh');
+              this.$refs.vuetable.reloadData();
             })
           },
           expendSearch() {
             this.expended = !this.expended;
             this.expendIcon = this.expended ? 'fa-angle-double-up' : 'fa-angle-double-down';
-            this.$broadcast('vuetable:refresh');
+            this.$refs.vuetable.reloadData();
           },
           forwardUrl(pathName, params) {
               params = params || {};
-              this.$router.go({
+              this.$router.push({
                   name: pathName,
                   params: params
               });
-              this.$router.go({name:pathName,params:params});
+              this.$router.push({name:pathName,params:params});
           },
           releaseResult(){
             this.scoreResultName = [];
@@ -302,7 +298,7 @@ export default {
               })
               return;
             }
-            this.show.relConfirm = true;
+            this.$refs.relconfirm.open();
           },
           confirmedFunc() {
             this.$http.put('/performance/scoreResults/releaseResults',{scoreResultIds:this.checkedScoreIds}, {
@@ -312,18 +308,18 @@ export default {
                 type: 'success',
                 message: this.$t('performance.message.viewResultReleaseResultSuccess')
               })
-                this.$broadcast('vuetable:refresh');
+                this.$refs.vuetable.reloadData();
             });
           },
           showEditScoreModal() {
             if(!this.checkSelected('editScore')) return;
 
-            let item = this.$refs.scoretable.tableData[this.selectedRow[0]];
+            let item = this.$refs.vuetable.tableData[this.selectedRow[0]];
             this.show.scoreView = true;
             this.scoreModel.adjustScore = item.adjustScore;
           },
           saveEditScore(){
-            let pass = this.scoreModel.$schema.isFormValidate(this.$refs.scoreform);
+            let pass = this.$refs.scoreform.isFormValidate();
             if(!pass) return;
             let param = {
               scoreResultId:this.checkedScoreIds[0],
@@ -332,7 +328,7 @@ export default {
             this.$http.put('/performance/schemeInfo/editScore',param, {
                 emulateJSON: true
             }).then((response) => {
-                this.$broadcast('vuetable:refresh');
+                this.$refs.vuetable.reloadData();
                 this.show.scoreView = false;
             });
           },
@@ -413,31 +409,7 @@ export default {
                 }
               }
             return true;
-          },
-          // checkSelected(actionCode) {
-          //   let codes = ['editScore'];
-          //   if (this.selectedRow.length == 0) {
-          //     Message({
-          //         type: 'error',
-          //         message: 'please choose one result!'
-          //     });
-          //     return false;
-          //   }
-          //   if(codes.indexOf(actionCode) != -1) {
-          //     if(this.selectedRow.length > 1) {
-          //       Message({
-          //           type: 'error',
-          //           message: 'please choose only one result!'
-          //       });
-          //       return false;
-          //     }
-          //   }
-          //   return true;
-          // },
-          // releaseConfirmed() {
-          //   if(!this.checkSelected('releaseResult')) return;
-          //   this.show.relConfirm = true;
-          // }
+          }
         },
         components: {
           Panel: require('../../components/basic/panel.vue')

@@ -14,8 +14,8 @@
 
     <div class="content-wrap bg-w ihr-staff-interns">
       <panel :title="titleName" class="panel-b mb-suitable" header="panel-header">
-        <employee-common-info :employee-id="employeeId" :employee-info.sync="employeeInfo"></employee-common-info>
-        <v-form v-ref:empResignForm :model="empResign" :schema="empResignSchema" label-width="200" label-suffix="" :cols="1" form-style="int-join-com-form">
+        <employee-common-info :employee-id="employeeId" :employee-info="employeeInfo"></employee-common-info>
+        <v-form ref="empresignform" :model="empResign" :schema="empResignSchema" label-width="200" label-suffix="" :cols="1" form-style="int-join-com-form">
             <text-increment property="category" editor-width="400"></text-increment>
             <select-field property="terminationType" :mapping="terminationType" editor-width="400"></select-field>
             <select-field property="terminationReason" :mapping="terminationReason" editor-width="400"></select-field>
@@ -23,7 +23,7 @@
             <radiogroup-field property="inBlackList" v-if="isEmployee" :mapping="whetherType"></radiogroup-field>
             <radiogroup-field property="contractTermination" :mapping="whetherType"></radiogroup-field>
         </v-form>
-        <employee-submit v-ref:employeesubmit :form-confirmed="confirmed" :form-cancel="cancel" :is-form-validate="isFormValidate"></employee-submit>
+        <employee-submit ref="employeesubmit" :form-confirmed="confirmed" :form-cancel="cancel" :is-form-validate="isFormValidate"></employee-submit>
       </panel>
     </div>
 
@@ -139,9 +139,9 @@ export default {
         this.fixDist(newVal);
       }
     },
-    ready() {
+    mounted() {
         this.empResign = this.empResignSchema.newModel()
-        switch (this.$route.extra) {
+        switch (this.$route.meta.extra) {
             case '/ihr/staff/outsource':
                 this.extraInfo = {
                     url: '/employee/outsource/employees/' + this.employeeId + '/dimission',
@@ -162,7 +162,7 @@ export default {
                 break;
         }
     },
-    attached() {},
+
     methods: {
         fixDist(value) {
           var dist = this.employementCategory;
@@ -175,7 +175,7 @@ export default {
           this.empResign.category = value;
         },
         isFormValidate() {
-          var passed = this.empResign.$schema.isFormValidate(this.$refs.empresignform);
+          var passed = this.$refs.empresignform.isFormValidate();
           if (!passed) {
             return;
           }
@@ -200,7 +200,7 @@ export default {
                   type: 'success',
                   message: this.$t('staff.message.resignSuccess')
               });
-                this.$route.router.go({
+                this.$router.push({
                     name: this.extraInfo.backLink
                 });
             },function(response) {
@@ -208,7 +208,7 @@ export default {
             });
         },
         cancel() {
-            this.$route.router.go({
+            this.$router.push({
                 name: this.extraInfo.backLink
             });
         }

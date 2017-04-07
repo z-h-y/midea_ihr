@@ -103,7 +103,7 @@
 
 <template lang="html">
 
-<ui-modal class="indTable-selector" :show.sync="show.modal" type="large" header="Select Indicators" body="" :backdrop-dismissible="false">
+<ui-modal ref="modal" class="indTable-selector" :show.sync="show.modal" type="large" :title="$t('selectors.selectIndicators')" body="" :backdrop-dismissible="false">
     <div class="leftRight-panel bg-f5f5f5 fix">
         <div class="right-panel">
             <div class="fix">
@@ -114,27 +114,27 @@
                 <div class="search-ctx">
                     <div class="search-pos">
                         <span class="search-bg">
-                         <input @keydown="goSearch($event)" class="search-input" placeholder="Search" type="text" v-model="searchTxt" />
+                         <input @keydown="goSearch($event)" class="search-input" :placeholder="$t('button.search')" type="text" v-model="searchTxt" />
                          <span @click="search" class="search-btn"><i class="fa fa-search"></i></span>
                         </span>
                     </div>
                 </div>
             </div>
             <div class="vuetable-wrapper l">
-                <vuetable v-ref:vuetable :api-url="selectedTableUrl" :append-params="queryParams" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="tableColumns" per-page="10" :load-success-callback="loadSuccessCallback">
+                <vuetable ref="vuetable" :api-url="selectedTableUrl" :append-params="queryParams" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="tableColumns" per-page="10" :load-success-callback="loadSuccessCallback">
                 </vuetable>
             </div>
         </div>
     </div>
     <div class="bottom-panel">
-        <span class="all-selected-person" v-for="item in allSelectedPer" track-by="$index">
+        <span class="all-selected-person" v-for="(item, index) in allSelectedPer" track-by="index">
         {{item.indicatorName}}
-        <i class="rm-btn fa fa-times" aria-hidden="true" @click="delPer($index)"></i>
+        <i class="rm-btn fa fa-times" aria-hidden="true" @click="delPer(index)"></i>
       </span>
     </div>
     <div slot="footer">
-        <ui-button @click="yes" color="primary">Confirm</ui-button>
-        <ui-button @click="show.modal = false">Cancel</ui-button>
+        <ui-button @click="yes" color="primary">{{$t('button.confirm')}}</ui-button>
+        <ui-button @click="close">{{$t('button.cancel')}}</ui-button>
     </div>
 </ui-modal>
 
@@ -154,20 +154,7 @@ import {
     convert, getDictMapping, formatDate
 }
 from '../../util/assist.js';
-let searchSchema = new Schema({
-    indicatorFunction: {
-        label: 'Function',
-        mapping: function() {
-            return getDictMapping('INDICATOR_FUNCTION');
-        }
-    },
-    subFunction: {
-        label: 'Sub-Function',
-        mapping: function() {
-            return getDictMapping('SUB_FUNCTION');
-        }
-    }
-});
+
 
 export default {
     props: {
@@ -193,21 +180,35 @@ export default {
     },
     data() {
         let _self = this;
+        let searchSchema = new Schema({
+            indicatorFunction: {
+                label: _self.$t('performance.function'),
+                mapping: function() {
+                    return getDictMapping('INDICATOR_FUNCTION');
+                }
+            },
+            subFunction: {
+                label: _self.$t('performance.subFunction'),
+                mapping: function() {
+                    return getDictMapping('SUB_FUNCTION');
+                }
+            }
+        });
         let tableColumns = [{
             name: '__radio:',
             title: ''
         }, {
             name: 'indicatorName',
-            title: 'Indicator Name'
+            title: this.$t('performance.indicatorName')
         }, {
             name: 'indicatorCategoryName',
-            title: 'Indicator Category'
+            title: this.$t('performance.indicatorCategory')
         }, {
             name: 'indicatorFunctionName',
-            title: 'Indicator Function'
+            title: this.$t('selectors.indicatorFunction')
         }, {
             name: 'dataSources',
-            title: 'DataSources'
+            title: this.$t('performance.dataSources')
         }];
         if (this.multiSelected) {
             tableColumns[0].name = '__checkbox:';
@@ -270,20 +271,21 @@ export default {
             return result;
         }
     },
-    ready() {
-
-
-    },
     methods: {
+      open() {
+          this.$refs['modal'].open();
+        },
+        close() {
+          this.$refs['modal'].close()
+        },
         yes() {
                 if (this.allSelectedPer.length > 0) {
-                    this.show.modal = false;
+                    this.close()
                     this.handleComfirmed(this.allSelectedPer, this.orgGroup);
-                    // this.$dispatch('selected-person', this.allSelectedPer);
                 } else {
                     Message({
                         type: 'error',
-                        message: 'Please select a valid node.'
+                        message: this.$t("performance.message.reportManage")
                     })
                 }
             },
@@ -295,7 +297,7 @@ export default {
             search() {
 
 
-                this.$broadcast('vuetable:refresh');
+                this.$refs.vuetable.reloadData();
             },
             // 删除人员
             delPer(index) {

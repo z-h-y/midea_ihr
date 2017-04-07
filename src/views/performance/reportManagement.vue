@@ -131,18 +131,18 @@
 </style>
 
 <template lang="html">
-
+<div>
 <div class="content-wrap ihr-org-operate ihr-performance-reporting">
     <!-- 查询 -->
     <div class="mb16">
         <div class="group" id="group" style="height:40px;">
-            <ui-button class="mr10 dis-tc btn-default-bd" @click="handleEdit" color="white" icon="fa-pencil-square-o" text="Edit" button-type="button"></ui-button>
+            <ui-button class="mr10 dis-tc btn-default-bd" @click="handleEdit" color="white" icon="fa-pencil-square-o" button-type="button">{{$t('button.edit')}}</ui-button>
         </div>
     </div>
     <div class="content-main fix">
         <div class="tree-panel fix">
             <div class="treelist" id="treePanel">
-                <tree :data="trees" :level-config="levelConfig" :show-checkbox="showCheckbox" v-ref:tree :click-node="loadNodeDetail"></tree>
+                <tree :data="trees" :level-config="levelConfig" :show-checkbox="showCheckbox" ref="tree" :click-node="loadNodeDetail"></tree>
             </div>
 
             <div id="treelistDetail" class="help-desk treelist-detail">
@@ -153,31 +153,31 @@
                 <div class="help-desk-cnt desk-bord">
                     <ul class="regular fix">
                         <li>
-                            <span class="prop-name">Effective Date</span>
+                            <span class="prop-name">{{$t('staff.effectiveDate')}}</span>
                             <span class="prop-val">{{orgNodeDetail.beginDate}}</span>
                         </li>
                         <li>
-                            <span class="prop-name">Organization ID</span>
+                            <span class="prop-name">{{$t('performance.organizationID')}}</span>
                             <span class="prop-val">{{orgNodeDetail.unitCode}}</span>
                         </li>
                         <li>
-                            <span class="prop-name">Head Of Organization</span>
+                            <span class="prop-name">{{$t('performance.headOfOrganization')}}</span>
                             <span class="prop-val">{{orgNodeDetail.unitLeaderName}}</span>
                         </li>
                         <li>
-                            <span class="prop-name">Superior Organization</span>
-                            <span class="prop-val" title="{{orgNodeDetail.parentUnitName}}">{{orgNodeDetail.parentUnitName}}</span>
+                            <span class="prop-name">{{$t('performance.superiorOrganization')}}</span>
+                            <span class="prop-val" :title="orgNodeDetail.parentUnitName">{{orgNodeDetail.parentUnitName}}</span>
                         </li>
                     </ul>
                 </div>
                 <div>
-                    <v-form v-show="!readonlyFlag" v-ref:relation :model="reportManageModel" :schema="reportManageScheme" label-width="300" label-suffix="" :cols="1" form-style="report-form">
+                    <v-form v-show="!readonlyFlag" ref="relation" :model="reportManageModel" :schema="reportManageScheme" label-width="300" label-suffix="" :cols="1" form-style="report-form">
                         <select-field property="orgType" editor-width="300" :readonly="readonlyFlag"></select-field>
-                        <text-field property='responsibleName' type="selector" :readonly="readonlyFlag" :show.sync="show" editor-width="300"></text-field>
+                        <text-field property='responsibleName' @open-selector="openSelector('perselect')" type="selector" :readonly="readonlyFlag" :show="show" editor-width="300"></text-field>
                     </v-form>
-                    <v-form v-show="readonlyFlag" v-ref:relationr :model="reportManageModelR" :schema="reportManageSchemeR" label-width="300" label-suffix="" :cols="1" form-style="report-form">
+                    <v-form v-show="readonlyFlag" ref="relationr" :model="reportManageModelR" :schema="reportManageSchemeR" label-width="300" label-suffix="" :cols="1" form-style="report-form">
                         <select-field property="orgTypeR" editor-width="300" :readonly="readonlyFlag"></select-field>
-                        <text-field property='responsibleNameR' type="selector" :readonly="readonlyFlag" :show.sync="show" editor-width="300"></text-field>
+                        <text-field property='responsibleNameR' @open-selector="openSelector('perselect')" type="selector" :readonly="readonlyFlag" :show="show" editor-width="300"></text-field>
                     </v-form>
 
                 </div>
@@ -185,12 +185,12 @@
         </div>
     </div>
     <div class="btn-group" v-show="readonlyFlag == false">
-        <ui-button @click="saveReport" color="primary mr10">Submit</ui-button>
-        <ui-button @click="handleCancel" class="btn-default-bd" type="flat">Cancel</ui-button>
+        <ui-button @click="saveReport" color="primary mr10">{{$t('button.submit')}}</ui-button>
+        <ui-button @click="handleCancel" class="btn-default-bd" type="flat">{{$t('button.cancel')}}</ui-button>
     </div>
 </div>
-<person-selector :show.sync="show" multi-selected="false" v-if="!readonlyFlag"></person-selector>
-
+<person-selector ref="perselect" :show="show" multi-selected="false" v-if="!readonlyFlag" :handle-comfirmed="handleComfirmed"></person-selector>
+</div>
 </template>
 
 <script>
@@ -213,28 +213,28 @@ export default {
             let _self = this;
             let reportManageScheme = new Schema({
                 orgType: {
-                    label: 'Organization Type',
+                    label: _self.$t('performance.organizationType'),
                     required: true,
                     mapping: function() {
                         return getDictMapping('SCHEME_CATEGORY');
                     }
                 },
                 responsibleName: {
-                    label: 'Responsible for Performance',
+                    label: _self.$t('performance.responsibleforPerformance'),
                     required: true
                 }
             });
 
             let reportManageSchemeR = new Schema({
                 orgTypeR: {
-                    label: 'Organization Type',
+                    label: _self.$t('performance.organizationType'),
                     required: false,
                     mapping: function() {
                         return getDictMapping('SCHEME_CATEGORY');
                     }
                 },
                 responsibleNameR: {
-                    label: 'Responsible for Performance',
+                    label: _self.$t('performance.responsibleforPerformance'),
                     required: false
                 }
             });
@@ -283,7 +283,7 @@ export default {
                 return false;
             }
         },
-        ready() {
+        mounted() {
             let _self = this;
             _self.initHeight();
             window.addEventListener('resize', function() {
@@ -291,7 +291,6 @@ export default {
             })
         },
         created() {
-            // debugger;
             this.fetchTree();
             this.$http.get('/org/area/0/child').then(function(res) {
                 this.area = res.data;
@@ -305,8 +304,8 @@ export default {
             })
 
         },
-        events: {
-            'selected-person': function(selectedData) {
+        methods: {
+            handleComfirmed(selectedData) {
                 let containArray1 = [],
                     containArray2 = [];
                 for (let i = 0; i < selectedData.length; i++) {
@@ -315,9 +314,10 @@ export default {
                 }
                 this.reportManageModel.responsibleName = containArray1.join(',');
                 this.reportManageModel.responsibleId = containArray2.join(',');
-            }
-        },
-        methods: {
+            },
+            openSelector(selector) {
+              this.$refs[selector].open();
+            },
             handleCancel() {
                     this.readonlyFlag = true;
                 },
@@ -327,7 +327,6 @@ export default {
 
                 fetchTree() {
                     const currentNode = this.currentNode;
-                    // debugger;
                     //TODO Initialize root node
                     this.$http.get(`/org/orgs/parent`).then((response) => {
                         this.trees = response.data;
@@ -350,7 +349,6 @@ export default {
                  */
 
                 loadNodeDetail(node) {
-                    // debugger;
                     if (node && node instanceof Object) {
 
                         this.currentOrg = Object.assign({}, node);
@@ -358,7 +356,8 @@ export default {
                     }
                     // 更改组织时刷新表格的值
                     if (this.curTab !== 'org-details') {
-                        this.$dispatch('active-tab-changed', this.curTab);
+                        // unknow 暂时还不知道这一项的作用，这里先注释掉
+                        // this. $dispatch('active-tab-changed', this.curTab);
                     }
 
                     let data;
@@ -393,7 +392,6 @@ export default {
                         }
                     }).then((response) => {
                         let data = response.data;
-                        // debugger;
                         // this.$refs.relationForm.reset();
                         this.reportManageModel.reset();
                         this.reportManageModel.schemeUnitLeaderId = data.schemeUnitLeaderId;
@@ -411,7 +409,7 @@ export default {
                 },
 
                 saveReport() {
-                    let passed = this.reportManageModel.$schema.isFormValidate(this.$refs.relation);
+                    let passed = this.$refs.relation.isFormValidate();
                     if (!passed) return;
 
                     let dto = {
@@ -450,12 +448,12 @@ export default {
                     params = params || {
                         'oid': this.currentOrg.orgId
                     };
-                    this.$router.go({
+                    this.$router.push({
                         name: pathName,
                         params: params
                     });
 
-                    this.$router.go({
+                    this.$router.push({
                         name: pathName,
                         params: params
                     });

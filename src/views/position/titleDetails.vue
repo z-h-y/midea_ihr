@@ -36,32 +36,32 @@
             <div class="help-desk-cnt">
                 <ul class="regular fix">
                     <li>
-                        <span class="prop-name">Effective Date</span>
+                        <span class="prop-name">{{ $t('position.label.titleEffectiveDate') }}</span>
                         <span class="prop-val">{{basicinfo.createDate | formatDate }}</span>
                     </li>
                     <li>
-                        <span class="prop-name">Title ID</span>
+                        <span class="prop-name">{{ $t('position.label.titleTitleID') }}</span>
                         <span class="prop-val">{{basicinfo.standardJobCode}}</span>
                     </li>
                     <li>
-                        <span class="prop-name">Family</span>
+                        <span class="prop-name">{{ $t('position.label.titleFamily') }}</span>
                         <span class="prop-val">{{basicinfo.jobFamilyName}}</span>
                     </li>
                     <li>
-                        <span class="prop-name">MIB Grade</span>
+                        <span class="prop-name">{{ $t('position.label.titleMIBGrade') }}</span>
                         <span class="prop-val">{{basicinfo.mibGrade}}</span>
                     </li>
                 </ul>
             </div>
             <div class="tabs">
                 <ui-tabs type="text" background-color="clear" text-color="gray" text-color-active="primary">
-                    <ui-tab header="Positions">
+                    <ui-tab :title="$t('position.titlePositions')">
                         <div class="vuetable-wrapper">
                             <vuetable :api-url="positionsUrl" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="positionsColumns" :sort-order="sortOrder" :item-actions="itemActions" per-page="10">
                             </vuetable>
                         </div>
                     </ui-tab>
-                    <ui-tab header="Members">
+                    <ui-tab :title="$t('position.titleMembers')">
                         <vuetable :api-url="membersUrl" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="membersColumns" :sort-order="sortOrder" :item-actions="itemActions" per-page="10">
                         </vuetable>
                     </ui-tab>
@@ -70,7 +70,7 @@
         </div>
     </div>
     <div class="btn-group">
-        <ui-button class="btn-default-bd" type="flat" @click="back">Cancel</ui-button>
+        <ui-button class="btn-default-bd" type="flat" @click="back">{{$t('button.cancel')}}</ui-button>
     </div>
 </div>
 </div>
@@ -99,80 +99,81 @@ export default {
                 basicinfo: {},
                 membersColumns: [{
                     name: 'employeeName',
-                    title: 'Employee Name'
+                    title: this.$t('position.columns.titEmployeeName')
                 }, {
                     name: 'employeeCode',
                     dataClass: 'tr',
-                    title: 'Employee ID'
+                    title: this.$t('position.columns.titEmployeeID')
                 }, {
                     name: 'positionName',
-                    title: 'MIB Position'
+                    title: this.$t('position.columns.titMIBPosition')
                 }, {
                     name: 'officePhone',
                     dataClass: 'tr',
-                    title: 'Phone'
+                    title: this.$t('position.columns.titPhone')
                 }, {
                     name: 'email',
-                    title: 'Email'
+                    title: this.$t('position.columns.titEmail')
                 }, {
                     name: 'officeAddress',
-                    title: 'Location'
+                    title: this.$t('position.columns.titLocation')
                 }],
                 positionsColumns: [{
                     name: 'positionName',
-                    title: 'MIB Position'
+                    title: this.$t('position.columns.titMIBPosition')
                 }, {
                     name: 'positionCode',
-                    title: 'Position ID'
+                    title: this.$t('position.columns.titPositionID')
                 }, {
                     name: 'mibGrade',
-                    title: 'MIB Grade'
+                    title: this.$t('position.columns.titMIBGrade')
                 }, {
                     name: 'localGrade',
-                    title: 'Job Grade'
+                    title: this.$t('position.columns.titJobGrade')
                 }, {
                     name: 'businessCardTitle',
-                    title: 'Position'
+                    title: this.$t('position.columns.titPosition')
                 }, {
                     name: 'effectiveDate',
                     dataClass: 'tr',
                     titleClass: 'mw80',
-                    title: 'Effective Date'
+                    title: this.$t('position.columns.titEffectiveDate')
                 }]
             }
         },
-        computed: {},
-        ready() {},
-        methods: {
-          back() {
-            var jobFamilyId = this.jobFamilyId;
-            var backName = this.backName;
-            this.$router.go({
-                name: backName,
-                query: {
-                  jobFamilyId: jobFamilyId
-                }
-            });
-          }
+        created() {
+            this.fetchData();
         },
-        components: {},
-        route: {
-            data(transition) {
-                let _self = this;
-                let id = transition.to.params.id;
-                _self.backName = transition.to.query.backName;
-                _self.jobFamilyId = transition.to.query.jobFamilyId;
-                _self.membersUrl = "/pos/standardJobs/" + id + "/members";
-                _self.positionsUrl = "/pos/standardJobs/" + id + "/positions";
-                _self.$http.get("/pos/standardJobs/" + id + "/basicInfo").then((response) => {
-                    _self.basicinfo = response.data;
-                }, (response) => {
-                    Message({
-                        type: 'error',
-                        message: response.statusText
+        methods: {
+            back() {
+                    var jobFamilyId = this.jobFamilyId;
+                    var backName = this.backName;
+                    this.$router.push({
+                        name: backName,
+                        query: {
+                            jobFamilyId: jobFamilyId
+                        }
                     });
-                });
-            }
+                },
+                fetchData() {
+                    let id = this.$route.params.id;
+                    this.backName = this.$route.query.backName;
+                    this.jobFamilyId = this.$route.query.jobFamilyId;
+                    this.membersUrl = "/pos/standardJobs/" + id + "/members";
+                    this.positionsUrl = "/pos/standardJobs/" + id + "/positions";
+                    this.$http.get("/pos/standardJobs/" + id + "/basicInfo").then((response) => {
+                        this.basicinfo = response.data;
+                    }, (response) => {
+                        Message({
+                            type: 'error',
+                            message: response.statusText
+                        });
+                    });
+                }
+        },
+        watch: {
+            // 如果路由有变化，会再次执行该方法
+            '$route': 'fetchData'
         }
 };
 

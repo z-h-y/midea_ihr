@@ -52,6 +52,15 @@ export default {
             default: false
         }
     }, common.props),
+    data() {
+        return {
+          form: {},
+          model: {},
+          labelWidth: 120,
+          label: '',
+          hintMessage: ''
+      };
+    },
     events: common.events,
     components: {
         increment: {
@@ -71,7 +80,7 @@ export default {
 
     destroyed: common.onDestroyed,
 
-    compiled: common.onCompiled,
+    mounted: common.onMounted,
 
     methods: common.methods
 };

@@ -1,11 +1,11 @@
 <template lang="html">
-  <ui-modal id="select-menu " :show.sync="show.modal" transition="ui-modal-fade" header="Select Menu">
+  <ui-modal ref="modal" id="select-menu" :show.sync="show.modal" transition="ui-modal-fade" title="Select Menu">
       <div class="select-cnt">
-          <tree :data="regions" :level-config="levelConfig" :show-checkbox="showCheckbox" v-ref:tree :click-node="clickNode" :dblclick-node="dblclickNode"></tree>
+          <tree :data="regions" :level-config="levelConfig" :show-checkbox="showCheckbox" ref="tree" :click-node="clickNode" :dblclick-node="dblclickNode"></tree>
       </div>
       <div slot="footer">
-          <ui-button color="primary" @click="yes">Confirm</ui-button>
-          <ui-button @click="show.modal = false">Cancel</ui-button>
+          <ui-button color="primary" @click="yes">{{$t('button.confirm')}}</ui-button>
+          <ui-button @click="close">{{$t('button.cancel')}}</ui-button>
       </div>
   </ui-modal>
 </template>
@@ -17,7 +17,13 @@ import {
 from '../../util/assist.js';
 export default {
     props: {
-        show: {}
+        show: {},
+        handleComfirmed: {
+            type: Function,
+            default () {
+                return function() {};
+            }
+        },
     },
     data() {
         let _self = this;
@@ -34,7 +40,7 @@ export default {
             }
         }
     },
-    ready() {
+    mounted() {
         this.$http.post('/system/menu/list').then((response) => {
             this.regions = Datashaping(response.json(), {
                 orderBy: 'order_no',
@@ -44,10 +50,15 @@ export default {
         });
     },
     methods: {
+      open() {
+          this.$refs['modal'].open();
+        },
+        close() {
+          this.$refs['modal'].close()
+        },
         yes() {
-            let _self = this;
-            _self.show.modal = false;
-            _self.$dispatch('menuselector', _self.selData);
+            this.close();
+            this.handleComfirmed(this.selData)
         },
         dblclickNode() {
             this.yes();

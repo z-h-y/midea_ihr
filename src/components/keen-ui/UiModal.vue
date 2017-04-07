@@ -1,213 +1,95 @@
-<style lang="stylus">
-
-@import './styles/imports';
-$transition-duration=0.2s;
-.ui-modal {
-    font-family: $font-stack;
-    font-size: 14px;
-    &.ui-modal-large {
-        .ui-modal-container {
-            width: 848px;
-            height: 500px;
-        }
-    }
-    &.ui-modal-small {
-        .ui-modal-container {
-            width: 320px;
-        }
-    }
-}
-
-body.ui-modal-open {
-    overflow: hidden;
-}
-
-.ui-modal-mask {
-    position: fixed;
-    z-index: $z-index-modal;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: alpha(black, 0.5);
-    display: table;
-    transition: opacity $transition-duration ease;
-}
-
-.ui-modal-wrapper {
-    display: table-cell;
-    vertical-align: middle;
-}
-
-
-/*.ui-modal-wrapper *{
-   box-sizing:border-box;
-}*/
-
-.ui-modal-container {
-    position: relative;
-    outline: none;
-    width: 528px;
-    margin: 0px auto;
-    padding: 0;
-    background-color: white;
-    border-radius: 2px;
-    box-shadow: 0 2px 8px alpha(black, 0.33);
-    transition: all $transition-duration ease;
-    max-height: 100vh;
-    max-width: 100vw;
-    overflow-x: hidden;
-    overflow-y: auto;
-}
-
-.ui-modal-header {
-    padding: 10px 16px;
-    .ui-modal-header-text {
-        color: #222;
-        font-family: Helvetica, Arial;
-        flex-grow: 1;
-        font-size: 18px;
-        margin: 0;
-        font-weight: bold;
-        float: left;
-    }
-    .ui-modal-close-button {
-        margin-top: 0px;
-        margin-right: -3px;
-        margin-left: auto;
-        &:hover:not([disabled]),
-        body[modality="keyboard"] &:focus {
-            .fa-close {
-                color: alpha(black, 0.8);
-            }
-        }
-        .fa-close {
-            font-size: 16px;
-            color: alpha(black, 0.4);
-        }
-        &[disabled] {
-            opacity: 0.5;
-        }
-    }
-}
-
-.ui-modal-body {
-    padding: 0px 16px 16px 16px
-}
-
-.ui-modal-footer {
-    margin-top: -8px;
-    padding: 16px;
-    text-align: right;
-    .ui-modal-footer-left,
-    [slot].ui-modal-footer-left {
-        justify-content: flex-start;
-    }
-    .ui-button {
-        float: left;
-        margin-left: 10px;
-        &:first-child {
-            margin-left: 0;
-        }
-    }
-    [slot] {
-        display: inline-block;
-    }
-}
-
-.ui-modal-fade-enter,
-.ui-modal-fade-leave {
-    opacity: 0;
-}
-
-.ui-modal-scale-enter,
-.ui-modal-scale-leave {
-    opacity: 0;
-}
-
-.ui-modal-scale-enter .ui-modal-container,
-.ui-modal-scale-leave .ui-modal-container {
-    transform: scale(1.1);
-}
-
-</style>
-
 <template>
+    <transition :name="toggleTransition" @after-enter="onEnter" @after-leave="onLeave">
+        <div
+            class="ui-modal ui-modal-mask"
 
-<div class="ui-modal ui-modal-mask" v-show="show" :transition="transition" :class="[type]" :role="role" @transitionend="transitionEnd | debounce 100">
-    <div class="ui-modal-wrapper" @click="close" v-el:modal-mask>
-        <div class="ui-modal-container" tabindex="-1" @keydown.esc="close" v-el:modal-container>
-            <div class="ui-modal-header fix" v-el:header>
-                <slot name="header">
-                    <h1 v-text="header" class="ui-modal-header-text"></h1>
-                </slot>
+            :class="classes"
+            :role="role"
 
-                <ui-icon-button type="clear" icon="fa fa-close" class="ui-modal-close-button" @click="close" :disabled="!dismissible" v-if="showCloseButton" v-el:close-button></ui-icon-button>
+            v-show="isOpen"
+        >
+            <div
+                class="ui-modal-wrapper"
+                ref="backdrop"
+
+                :class="{ 'has-dummy-scrollbar': preventShift }"
+
+                @click="dismissOnBackdrop && closeModal($event)"
+            >
+                <div
+                    class="ui-modal-container"
+                    ref="container"
+                    tabindex="-1"
+
+                    @keydown.esc="dismissOnEsc && closeModal($event)"
+                >
+                    <div class="ui-modal-header" v-if="!removeHeader">
+                        <slot name="header">
+                            <h1 class="ui-modal-header-text">{{ title }}</h1>
+                        </slot>
+
+                        <div class="ui-modal-close-button">
+                            <ui-close-button
+                                @click="closeModal"
+                                v-if="dismissOnCloseButton && !removeCloseButton && dismissible"
+                            ></ui-close-button>
+                        </div>
+                    </div>
+
+                    <div class="ui-modal-body">
+                        <slot></slot>
+                    </div>
+
+                    <div class="ui-modal-footer" v-if="hasFooter">
+                        <slot name="footer"></slot>
+                    </div>
+
+                    <div
+                        class="ui-modal-focus-redirect"
+                        tabindex="0"
+
+                        @focus.stop="redirectFocus"
+                    ></div>
+                </div>
             </div>
-
-            <div class="ui-modal-body">
-                <slot>
-                    <div v-text="body"></div>
-                </slot>
-            </div>
-
-            <div class="ui-modal-footer" v-if="!hideFooter">
-                <slot name="footer">
-                    <ui-button @click="close" v-if="dismissible">Close</ui-button>
-                </slot>
-            </div>
-
-            <div class="focus-redirector" @focus="redirectFocus" tabindex="0"></div>
         </div>
-    </div>
-</div>
-
+    </transition>
 </template>
 
 <script>
+import UiCloseButton from './UiCloseButton.vue';
 
 import classlist from './helpers/classlist';
-
-import UiIconButton from './UiIconButton.vue';
-import UiButton from './UiButton.vue';
 
 export default {
     name: 'ui-modal',
 
     props: {
-        show: {
-            type: Boolean,
-            required: true,
-            twoWay: true
-        },
-        type: {
+        title: {
             type: String,
-            default: 'normal', // 'small', 'normal', or 'large'
-            coerce(type) {
-                return 'ui-modal-' + type;
-            }
+            default: 'UiModal title'
         },
-        header: {
+        size: {
             type: String,
-            default: 'UiModal Header'
-        },
-        body: {
-            type: String,
-            default: 'UiModal body'
+            default: 'normal' // 'small', 'normal', or 'large'
         },
         role: {
             type: String,
-            default: 'dialog', // 'dialog' or 'alertdialog'
+            default: 'dialog' // 'dialog' or 'alertdialog'
         },
         transition: {
             type: String,
-            default: 'ui-modal-scale', // 'ui-modal-scale', or 'ui-modal-fade'
+            default: 'scale' // 'scale', or 'fade'
         },
-        showCloseButton: {
+        removeHeader: {
             type: Boolean,
-            default: true
+            default: false
         },
-        hideFooter: {
+        removeCloseButton: {
+            type: Boolean,
+            default: false
+        },
+        preventShift: {
             type: Boolean,
             default: false
         },
@@ -215,141 +97,285 @@ export default {
             type: Boolean,
             default: true
         },
-        backdropDismissible: {
-            type: Boolean,
-            default: false
+        dismissOn: {
+            type: String,
+            default: 'backdrop esc close-button'
         }
     },
 
     data() {
         return {
-            lastFocussedElement: null
+            isOpen: false,
+            lastfocusedElement: null
         };
     },
 
+    computed: {
+        classes() {
+            return [
+                `ui-modal-size-${this.size}`,
+                { 'has-footer': this.hasFooter },
+                { 'is-open': this.isOpen }
+            ];
+        },
+
+        hasFooter() {
+            return Boolean(this.$slots.footer);
+        },
+
+        toggleTransition() {
+            return `ui-modal-transition-${this.transition}`;
+        },
+
+        dismissOnBackdrop() {
+            return this.dismissOn.indexOf('backdrop') > -1;
+        },
+
+        dismissOnCloseButton() {
+            return this.dismissOn.indexOf('close-button') > -1;
+        },
+
+        dismissOnEsc() {
+            return this.dismissOn.indexOf('esc') > -1;
+        }
+    },
+
     watch: {
-        show() {
+        isOpen() {
             this.$nextTick(() => {
-                if (this.show) {
-                    this.opened();
-                    this.init();
-                } else {
-                    this.closed();
-                }
+                this[this.isOpen ? 'onOpen' : 'onClose']();
             });
         }
     },
 
     beforeDestroy() {
-        if (this.show) {
-            this.tearDown();
+        if (this.isOpen) {
+            this.teardownModal();
         }
     },
 
     methods: {
-        init() {
-                let element = this.$els.modalMask;
-                let elementheader = this.$els.header;
-                var startX = 0,
-                    startY = 0,
-                    x = 0,
-                    y = 0;
-                element.style.position = 'relative';
-                elementheader.style.cursor = 'move';
-                let _self = this;
-                let doc = window.document;
-                elementheader.addEventListener('mousedown', function(event) {
-                    event.preventDefault();
-                    startX = event.pageX - x;
-                    startY = event.pageY - y;
-                    doc.addEventListener('mousemove', mousemove, false);
-                    doc.addEventListener('mouseup', mouseup, false);
-                })
+        open() {
+            this.isOpen = true;
+        },
 
-                function mousemove(event) {
-                    y = event.pageY - startY;
-                    x = event.pageX - startX;
-                    element.style.top = y + 'px';
-                    element.style.left = x + 'px';
-                }
+        close() {
+            this.isOpen = false;
+        },
 
-                function mouseup() {
-                    doc.removeEventListener('mousemove', mousemove, false);
-                    doc.removeEventListener('mouseup', mouseup, false);
-                }
-            },
-            close(e) {
-                if (!this.dismissible) {
-                    return;
-                }
-
-                // Make sure the element clicked was the modal mask and not a child
-                // whose click event has bubbled up
-                if (e.currentTarget === this.$els.modalMask && e.target !== e.currentTarget) {
-                    return;
-                }
-
-                // Don't close if this event was triggered by the modal mask
-                // and this.backdropDismissible is false
-                if (e.currentTarget === this.$els.modalMask && !this.backdropDismissible) {
-                    return;
-                }
-
-                this.show = false;
-            },
-
-            opened() {
-                this.lastFocussedElement = document.activeElement;
-                this.$els.modalContainer.focus();
-
-                classlist.add(document.body, 'ui-modal-open');
-
-                document.addEventListener('focus', this.restrictFocus, true);
-
-                this.$dispatch('opened');
-            },
-
-            closed() {
-                this.tearDown();
-                this.$dispatch('closed');
-            },
-
-            redirectFocus(e) {
-                e.stopPropagation();
-
-                this.$els.modalContainer.focus();
-            },
-
-            restrictFocus(e) {
-                if (!this.$els.modalContainer.contains(e.target)) {
-                    e.stopPropagation();
-                    this.$els.modalContainer.focus();
-                }
-            },
-
-            tearDown() {
-                classlist.remove(document.body, 'ui-modal-open');
-
-                document.removeEventListener('focus', this.restrictFocus, true);
-
-                if (this.lastFocussedElement) {
-                    this.lastFocussedElement.focus();
-                }
-            },
-
-            transitionEnd() {
-                if (this.show) {
-                    this.$dispatch('revealed');
-                } else {
-                    this.$dispatch('hidden');
-                }
+        closeModal(e) {
+            if (!this.dismissible) {
+                return;
             }
+
+            // Make sure the element clicked was the backdrop and not a child whose click
+            // event has bubbled up
+            if (e.currentTarget === this.$refs.backdrop && e.target !== e.currentTarget) {
+                return;
+            }
+
+            this.isOpen = false;
+        },
+
+        onOpen() {
+            this.lastfocusedElement = document.activeElement;
+            this.$refs.container.focus();
+
+            classlist.add(document.body, 'ui-modal-is-open');
+            document.addEventListener('focus', this.restrictFocus, true);
+
+            this.$emit('open');
+        },
+
+        onClose() {
+            this.teardownModal();
+            this.$emit('close');
+        },
+
+        redirectFocus() {
+            this.$refs.container.focus();
+        },
+
+        restrictFocus(e) {
+            if (!this.$refs.container.contains(e.target)) {
+                e.stopPropagation();
+                this.$refs.container.focus();
+            }
+        },
+
+        teardownModal() {
+            // classlist.remove(document.body, 'ui-modal-is-open');
+            document.removeEventListener('focus', this.restrictFocus, true);
+
+            if (this.lastfocusedElement) {
+                this.lastfocusedElement.focus();
+            }
+        },
+
+        onEnter() {
+            this.$emit('reveal');
+        },
+
+        onLeave() {
+            this.$emit('hide');
+
+            classlist.remove(document.body, 'ui-modal-is-open');
+        }
     },
 
     components: {
-        UiIconButton,
-        UiButton
+        UiCloseButton
     }
 };
-
 </script>
+
+<style lang="scss">
+@import './styles/imports';
+
+$ui-modal-transition-duration   : 0.3s !default;
+$ui-modal-mask-background       : rgba(black, 0.5) !default;
+$ui-modal-header-height         : rem-calc(56px);
+$ui-modal-footer-height         : rem-calc(70px);
+
+$ui-modal-font-size             : rem-calc(14px);
+$ui-modal-header-font-size      : rem-calc(18px);
+
+.ui-modal {
+    font-family: $font-stack;
+    font-size: $ui-modal-font-size;
+
+    &.has-footer {
+        .ui-modal-body {
+            max-height: calc(100vh - #{$ui-modal-header-height + $ui-modal-footer-height});
+        }
+    }
+
+    &:not(.has-footer) {
+        .ui-modal-body {
+            padding: rem-calc(16px 24px 24px);
+        }
+    }
+}
+
+.ui-modal-is-open {
+    overflow: hidden;
+}
+
+.ui-modal-mask {
+    background-color: $ui-modal-mask-background;
+    display: table;
+    height: 100%;
+    left: 0;
+    position: fixed;
+    top: 0;
+    transition: opacity $ui-modal-transition-duration ease;
+    width: 100%;
+    z-index: $z-index-modal;
+}
+
+.ui-modal-wrapper {
+    display: table-cell;
+    vertical-align: middle;
+    overflow-x: hidden;
+
+    &.has-dummy-scrollbar {
+        overflow-y: scroll;
+    }
+}
+
+.ui-modal-container {
+    position: relative;
+    background-color: white;
+    border-radius: $ui-default-border-radius;
+    box-shadow: 0 2px 8px rgba(black, 0.33);
+    margin: 0 auto;
+    max-height: 100vh;
+    max-width: 100vw;
+    outline: none;
+    overflow: hidden;
+    padding: 0;
+    transition: all $ui-modal-transition-duration ease;
+    width: rem-calc(528px);
+}
+
+.ui-modal-header {
+    align-items: center;
+    background-color: #F5F5F5;
+    box-shadow: 0 1px 1px rgba(black, 0.16);
+    display: flex;
+    height: $ui-modal-header-height;
+    padding: rem-calc(0 24px);
+    position: relative;
+    z-index: 1;
+}
+
+.ui-modal-header-text {
+    align-items: center;
+    display: flex;
+    flex-grow: 1;
+    font-size: $ui-modal-header-font-size;
+    font-weight: normal;
+    margin: 0;
+}
+
+.ui-modal-close-button {
+    margin-left: auto;
+    margin-right: rem-calc(-8px);
+}
+
+.ui-modal-body {
+    max-height: calc(100vh - #{$ui-modal-header-height});
+    overflow-y: auto;
+    padding: rem-calc(16px 24px);
+}
+
+.ui-modal-footer {
+    align-items: center;
+    display: flex;
+    height: $ui-modal-footer-height;
+    justify-content: flex-end;
+    padding: rem-calc(0 24px);
+
+    .ui-button {
+        margin-left: rem-calc(8px);
+
+        &:first-child {
+            margin-left: 0;
+        }
+    }
+}
+
+// ================================================
+// Sizes
+// ================================================
+
+.ui-modal-size-large {
+    .ui-modal-container {
+        width: rem-calc(848px);
+    }
+}
+
+.ui-modal-size-small {
+    .ui-modal-container {
+        width: rem-calc(320px);
+    }
+}
+
+// ================================================
+// Transitions
+// ================================================
+
+.ui-modal-transition-fade-enter,
+.ui-modal-transition-fade-leave-active {
+    opacity: 0;
+}
+
+.ui-modal-transition-scale-enter,
+.ui-modal-transition-scale-leave-active {
+    opacity: 0;
+
+    .ui-modal-container {
+        transform: scale(1.1);
+    }
+}
+</style>

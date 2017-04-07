@@ -1,11 +1,12 @@
 // let  APIURL = "http://10.16.80.167:8071";  //后端-SIT环境
 // let  APIURL = "http://10.16.80.167:8073";  //后端-dev环境 开发时使用这个,不要提交这个配置
 //let  APIURL = "http://xxx:8080";  //后端-UAT环境
+// let  APIURL = "http://www.ihr.com/backend";  //后端-UAT环境
 let  APIURL = "http://www.ihr.com/backend";  //后端-UAT环境
 
 
 // 公共css
-import {css} from './static/styles/common/index.less'
+import {css} from './assets/styles/common/index.less'
 
 import NavMenu from './components/basic/nav-menu.vue';
 import NavMenuItem from './components/basic/nav-menu-item.vue';
@@ -16,6 +17,17 @@ import UiRippleInk from './components/keen-ui/UiRippleInk.vue';
 import UiConfirm from './components/keen-ui/UiConfirm.vue';
 import UiModal from './components/keen-ui/UiModal.vue';
 import UiProgressLinear from './components/keen-ui/UiProgressLinear.vue';
+
+/**********************ElementUI******************************/
+// import './vendor/element-ui/lib/theme-default/index.css';
+// import { Button, Select,Form } from './vendor/element-ui';
+
+// Vue.use(Select);
+// Vue.use(Button);
+// Vue.use(Form);
+
+
+/*********************************************************/
 
 export let Components = {
     NavMenu,
@@ -43,7 +55,8 @@ let initComponents = (Vue, components) => {
 // import VueResource from 'vue-resource';
 // import VueRouter from 'vue-router';
 
-let language = 'en';
+let language = localStorage.getItem('lang') || 'en_US';
+document.cookie = 'language=' + language;
 
 window.Vue = Vue || {};
 
@@ -51,29 +64,13 @@ Vue.config.debug = true; //开启错误提示
 Vue.config.APIURL = APIURL; //接口url
 
 // import { default as locales } from './locales/index';
-import { default as routerMap } from './index';
+import { default as routerMap } from './router/index';
 import { filter } from './util/filter';
 import {default as Message} from './components/basic/message';
 import store from './store';
 
 Vue.use(VueI18n);
 Vue.config.lang = '';
-var curLang = localStorage.getItem('language');
-if (curLang) {
-  curLang = JSON.parse(curLang);
-}
-if (curLang && curLang.version === '1.0.0') {
-  Vue.locale(language, curLang);
-} else {
-  Vue.locale(language, function () {
-    return Vue.http.get('/data/' + language + '.json').then(function(res) {
-      localStorage.setItem('language', JSON.stringify(res.data));
-      return res.json();
-    })
-  }, function () {
-    Vue.config.lang = language
-  })
-}
 
 Vue.use(VueResource);
 Vue.use(VueRouter);
@@ -87,6 +84,19 @@ let router = new VueRouter({
 //   '*': '/error'
 // });
 initComponents(Vue);
+
+Vue.locale(language, function () {
+  return Vue.http.get('/lang/' + language + '.json').then(function(res) {
+    localStorage.setItem('language', JSON.stringify(res.data));
+    return res.json();
+  })
+}, function () {
+  Vue.config.lang = language
+  const app = new Vue({
+    router,
+    store
+  }).$mount('#app')
+})
 
 
 Vue.http.interceptors.push((request,next) => {
@@ -138,8 +148,3 @@ Vue.http.interceptors.push((request,next) => {
     }
   })
 });
-
-const app = new Vue({
-  router,
-  store
-}).$mount('#app')

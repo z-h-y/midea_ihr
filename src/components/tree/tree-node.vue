@@ -7,19 +7,37 @@
              <i class="fa tree-icon" :class="{ loading: loading, leafnode: !hasChild, 'fa-plus-square-o': !(hasChild && expanded) && !loading, 'fa-minus-square-o': hasChild && expanded && !loading }" @click="handleExpandIconClick" aria-hidden="true"></i>
              <!-- <span class="expand-icon" :class="{ leafnode: !hasChild, expanded: hasChild && expanded }" @click="handleExpandIconClick"></span> -->
              <input type="checkbox" v-if="showCheckbox" v-model="isChecked" @change="handleCheckChange()" v-el:input />
-             <span class="icon {{icon}}" v-if="icon"></span>
+             <span :class="['icon', icon]" v-if="icon"></span>
              <span class="text" @click="getClickNode" @dblclick="dblclick($event)">{{ label }}</span>
            </div>
          </div>
       </div>
     </div>
-    <div class="tree-node-children" v-if="!lazyRenderChildren || (lazyRenderChildren && childrenRendered)" v-show="expanded" transition="collapse">
-      <tree-node v-for="child in children || childrenData" :data="child"></tree-node>
-    </div>
+    <transition name="tree-node-fade">
+      <div class="tree-node-fade" v-if="!lazyRenderChildren || (lazyRenderChildren && childrenRendered)" v-show="expanded" >
+        <tree-node ref="treenode" v-for="child of children || childrenData" :key="child.id" :data="child"></tree-node>
+      </div>
+    </transition>
   </div>
 </template>
 
 <style lang="less">
+  .test{
+
+  }
+  .tree-node-fade{
+      background-color: transparent;
+      padding-left: 16px;
+      transition: all 0.2s ease-in-out;
+      overflow: hidden;
+      max-height: 500px;
+    }
+    .tree-node-fade-enter,
+    .tree-node-fade-leave-active {
+        max-height:0;
+    }
+
+
   .tree-node {
     white-space: nowrap;
   }
@@ -264,6 +282,26 @@
     },
 
     methods: {
+      treeDelNode(id, key) {
+        if(this.data[key] === id) {
+          this.$el.style.display = 'none';
+        } else {
+          var treenode = this.$refs.treenode || [];
+          for (let i = 0, len = treenode.length; i < len; i++) {
+            this.$refs.treenode[i].treeDelNode(id, key);
+          }
+        }
+      },
+      setNodeActive(id, key) {
+        if(String(this.data[key]) === id) {
+          this.active = true;
+        } else {
+          var treenode = this.$refs.treenode || [];
+          for (let i = 0, len = treenode.length; i < len; i++) {
+            this.$refs.treenode[i].setNodeActive(id, key);
+          }
+        }
+      },
       dblclick(e) {
         this.$tree.dblclickNode(this.data, this);
       },
@@ -464,7 +502,7 @@
       }
     },
 
-    ready() {
+    mounted() {
       if (this.levelConfig) {
         var lazy = this.levelConfig.lazy;
         if (lazy === false && this.loadFn) {
@@ -498,25 +536,6 @@
         childrenRendered: false,
         showCheckbox: true
       };
-    },
-    events: {
-      treeDelNode(id, key) {
-        if(this.data[key] === id) {
-          this.$el.style.display = 'none';
-        } else {
-          this.$broadcast('treeDelNode', id, key);
-        }
-      },
-      setNodeActive(id, key) {
-        if(String(this.data[key]) === id) {
-          this.active = true;
-        } else {
-          this.$broadcast('setNodeActive', id, key);
-        }
-      }
-    },
-    transitions: {
-      collapse: require('../../util/collapse-transition.js').default
     }
   };
 </script>

@@ -33,12 +33,12 @@
 
 <div class="content-wrap bg-w ihr-staff-interns">
     <div class="mb20 pt20">
-        <!-- <organization-selector :show.sync="org"></organization-selector>
+        <organization-selector ref="orgselect" :show="org" :handel-select="selectOrg"></organization-selector>
         <div class="search-area">
             <v-form :class="{expended: expended}" :model="interns" :schema="internsSchema" label-width="170" label-suffix="" :cols="3" form-style="interns-form">
                 <text-field property="fullName" editor-width="150"></text-field>
                 <text-field property="employeeCode" editor-width="150"></text-field>
-                <text-field type="selector" :readonly="true" :show.sync="org" property="orgUnitName" editor-width="150"></text-field>
+                <text-field type="selector" :readonly="true" @open-selector="openSelector" :show="org" property="orgUnitName" editor-width="150"></text-field>
                 <text-field v-show="expended" property="positionName" editor-width="150"></text-field>
             </v-form>
             <ui-icon-button :class="[{expended: expended},'expend-btn']" :icon="expendIcon" @click="expendSearch"></ui-icon-button>
@@ -46,12 +46,23 @@
                 <ui-button class="query-btn-search mr10" color="primary" @click="search">{{ $t('button.search') }}</ui-button>
                 <ui-button class="query-btn-reset btn-default-bd" @click="reset" type="flat">{{ $t('button.reset') }}</ui-button>
             </div>
-        </div> -->
+        </div>
         <div class="group">
-            <ui-button class="mr10 dis-tc btn-primary-bd" @click.native="goAdd" color="primary" icon="fa-plus" :text="$t('button.add')" button-type="button"></ui-button>
-            <ui-button class="mr10 dis-tc btn-default-bd" @click.native="goEdit" icon="fa-pencil-square-o" type="flat" :text="$t('button.edit')" button-type="button"></ui-button>
-            <ui-button class="dis-tc-t btn-default-bd" type="flat" @opened="openMenu" show-menu-icons has-dropdown-menu :menu-options="shareMenuOptions" button-type="button" icon="fa-caret-down" :icon-right="true" open-dropdown-on="click" @menu-option-selected="menuOptionSelected" :text="$t('button.more')"></ui-button>
-            <file-upload title="upload" id="excelFile" class="menu-option-upload file-upload" name="internEmployeeFile" :post-action="files.url" :extensions="files.extensions" :accept="files.accept" :multiple="files.multiple" :size="files.size" ref="upload" :drop="files.drop"></file-upload>
+            <ui-button class="mr10 dis-tc btn-primary-bd" @click="goAdd" color="primary" icon="fa-plus" button-type="button">{{$t('button.add')}}</ui-button>
+            <ui-button class="mr10 dis-tc btn-default-bd" @click="goEdit" icon="fa-pencil-square-o" type="flat" button-type="button">{{$t('button.edit')}}</ui-button>
+            <ui-button class="dis-tc-t btn-default-bd" icon="fa-caret-down" @dropdown-open="openMenu"  has-dropdown ref="dropdownButton" size="normal" iconPosition="right">
+                    <ui-menu
+                        contain-focus
+                        has-icons
+                        has-secondary-text
+                        slot="dropdown"
+                        :options="shareMenuOptions"
+                        @select="menuOptionSelected"
+                        @close="$refs.dropdownButton.closeDropdown()"
+                    ></ui-menu>
+                    {{$t('button.more')}}
+                </ui-button>
+            <file-upload @addFileUpload="addFileUpload" @afterFileUpload="afterFileUpload" :title="$t('button.upload')" id="excelFile" class="menu-option-upload file-upload" name="internEmployeeFile" :post-action="files.url" :extensions="files.extensions" :accept="files.accept" :multiple="files.multiple" :size="files.size" ref="upload" :drop="files.drop"></file-upload>
             <!-- <input id="excelFile" type="file" name="file" v-on:change="uploadExcel($event)"> -->
         </div>
         <div class="vuetable-wrapper">
@@ -61,21 +72,21 @@
     </div>
 
 
-    <!-- <ui-modal :show.sync="task.modal" header="Feedback" :body="taskShowText">
+    <ui-modal ref="modal" :show="task.modal" title="Feedback" :body="taskShowText">
         <div slot="footer">
-            <ui-button v-show=" importStatus == '2'" @click="downloadTaskFile" color="primary">Download feedback</ui-button>
-            <ui-button @click="canDownloadTask">Close</ui-button>
+            <ui-button v-show=" importStatus == '2'" @click="downloadTaskFile" color="primary">{{$t('staff.downloadfeedback')}}</ui-button>
+            <ui-button @click="canDownloadTask">{{$t('button.close')}}</ui-button>
         </div>
     </ui-modal>
 
 
-    <ui-modal :show.sync="task.loading" header="">
+    <ui-modal ref="loading" :show="task.loading" header="">
         <div class="tc">
-            <img src="../../static/images/public/gears.gif" alt="">
-            <div class="loading-txt">Data processing</div>
+            <img src="assets/images/public/gears.gif" alt="">
+            <div class="loading-txt">{{$t('staff.dataprocessing')}}</div>
         </div>
         <div slot="footer"></div>
-    </ui-modal> -->
+    </ui-modal>
 
 </div>
 </template>
@@ -102,7 +113,7 @@ export default {
               label: this.$t('staff.organization')
             },
             positionName: {
-                label: this.$t('staff.position')
+                label: this.$t('staff.mibPostion')
             }
         };
             return {
@@ -157,7 +168,7 @@ export default {
                     },
                     {
                       name: 'positionName',
-                      title: this.$t('staff.position')
+                      title: this.$t('staff.mibPostion')
                     },
                     {
                       name: 'unitShortName',
@@ -173,19 +184,19 @@ export default {
                 shareMenuOptions: [
                   {
                       id: 'join',
-                      text: this.$t('staff.joinCompany')
+                      label: this.$t('staff.joinCompany')
                   }, {
                       id: 'terminatep',
-                      text: this.$t('staff.terminateInternship')
+                      label: this.$t('staff.terminateInternship')
                   }, {
                       id: 'template',
-                      text: this.$t('staff.downloadTemplate')
+                      label: this.$t('staff.downloadTemplate')
                   }, {
                       id: 'import',
-                      text: this.$t('button.batchImport')
+                      label: this.$t('button.batchImport')
                   }, {
                       id: 'download',
-                      text: this.$t('button.download')
+                      label: this.$t('button.download')
                   }
               ]
             };
@@ -198,39 +209,17 @@ export default {
         },
         computed: {},
         mounted() {
-          this.$nextTick(function() {
-            this.interns = this.internsSchema.newModel();
-          })
+          this.interns = this.internsSchema.newModel();
         },
         methods: {
+            openSelector() {
+              this.$refs['orgselect'].open();
+            },
             openMenu() {
               var el = document.getElementById('excelFile');
               el.style.display = "block";
               document.getElementsByClassName('ui-menu-option')[3].appendChild(el);
             },
-            // uploadExcel(e) {
-            //   var srcElement__src = e.srcElement.files;
-            //   var files = Array.prototype.slice.call(srcElement__src, 0);
-            //   var formData = new FormData();
-            //   files.forEach(function(file) {
-            //       formData.append('file', file);
-            //   });
-            //   e.srcElement.value = '';
-            //   this.$http.post('/employee/employees/importInternsEmployeeFile', formData).then(function(res) {
-            //     if (res.body === 'true' || res.body === true) {
-            //       Message({
-            //           type: 'success',
-            //           message: this.$t('staff.message.importSuccess')
-            //       });
-            //     } else {
-            //       downloadFile('/system/attachment/downloadFile', {attachmentId: res.body});
-            //       Message({
-            //           type: 'error',
-            //           message: this.$t('staff.message.importFail')
-            //       });
-            //     }
-            //   });
-            // },
             search() {
               this.moreParams = ['employementCategory=7'];
               for (let i = 0, len = this.moreParamsKeys.length; i < len; i++) {
@@ -241,7 +230,7 @@ export default {
                 }
               }
               this.$nextTick(function() {
-                this.$broadcast('vuetable:refresh')
+                this.$refs.vuetable.reloadData();
               })
             },
             reset() {
@@ -249,11 +238,11 @@ export default {
               this.interns.unitId = '';
             },
             goAdd() {
-              this.$router.push({ name: 'internsAdd'});
+              this.$router.push({ name: 'internsAdd'})
             },
             goEdit() {
               if (this.selectedRow.length === 1) {
-                this.$router.go({ name: 'internsView', params: { employeeId: this.selectedRow[0] }});
+                this.$router.push({ name: 'internsView', params: { employeeId: this.selectedRow[0] }})
               } else {
                 Message({
                     type: 'error',
@@ -265,7 +254,7 @@ export default {
               switch(option.id) {
                 case 'join':
                   if (this.selectedRow.length === 1) {
-                    this.$route.router.go({ name: 'internsJoinCompany', params: { employeeId: this.selectedRow[0] }});
+                    this.$router.push({ name: 'internsJoinCompany', params: { employeeId: this.selectedRow[0] }});
                   } else {
                     Message({
                         type: 'error',
@@ -275,7 +264,7 @@ export default {
                   break;
                 case 'terminatep':
                   if (this.selectedRow.length === 1) {
-                    this.$route.router.go({ name: 'internsResign', params: { employeeId: this.selectedRow[0] }});
+                    this.$router.push({ name: 'internsResign', params: { employeeId: this.selectedRow[0] }});
                   } else {
                     Message({
                         type: 'error',
@@ -315,7 +304,7 @@ export default {
               this.expendIcon = this.expended ? 'fa-angle-double-up' : 'fa-angle-double-down';
             },
             cname(value, data) {
-              return `<a href="${location.href}/${data.employeeId}">${value}</a>`;
+              return `<a href="${location.href}/view/${data.employeeId}">${value}</a>`;
             },
             checkTask() {
                 let _self = this;
@@ -338,12 +327,14 @@ export default {
                         }, 3000);
 
                         if (this.task.loading === false && this.task.close === false) {
+                            this.$refs.loading.open()
                             this.task.loading = true;
                             this.task.close = true;
                         }
                     }
                     if (res.data.importStatus === '2') {
                         if (this.task.loading === true) {
+                            this.$refs.loading.close()
                             this.task.loading = false;
                         }
                         _self.taskAttachmentId = res.data.businessId;
@@ -352,6 +343,7 @@ export default {
                     if (res.data.importStatus === '3') {
                         if (this.task.loading === true) {
                             this.task.loading = false;
+                            this.$refs.loading.close()
                         }
                         Message({
                             type: 'error',
@@ -362,6 +354,7 @@ export default {
                     if (res.data.importStatus === '4') {
                         if (this.task.loading === true) {
                             this.task.loading = false;
+                            this.$refs.loading.close()
                         }
                         Message({
                             type: 'success',
@@ -374,7 +367,7 @@ export default {
                         }, 3000);
                     }
                     if (res.data.importStatus === '2') {
-                        _self.task.modal = true;
+                        _self.$refs.modal.open();
                     }
 
                 })
@@ -382,7 +375,7 @@ export default {
             downloadTaskFile() {
                 if (this.taskAttachmentId) {
                     var attachmentId = this.taskAttachmentId;
-                    this.task.modal = false;
+                    this.$refs.modal.close();
                     this.$http.get(`/employee/employees/import/getUploadStatus?businessType=emp_interns&&importStatus=-2`).then(function(res) {
                         downloadFile('/system/attachment/downloadFile', {
                             attachmentId: attachmentId
@@ -399,12 +392,10 @@ export default {
             canDownloadTask() {
                 let _self = this;
                 _self.$http.get(`/employee/employees/import/getUploadStatus?businessType=emp_interns&&importStatus=-2`).then(function(res) {
-                    this.task.modal = false;
+                    this.$refs.modal.close();
                 })
-            }
-        },
-        events: {
-            'organization-selector:selected': function(value) {
+            },
+            selectOrg(value) {
                 if (value) {
                     this.interns.orgUnitName = value.orgShortName;
                     this.interns.unitId = value.orgId;
@@ -431,7 +422,6 @@ export default {
             }
         },
         components: {
-          SelectTemplate: require('./selectTemplate.vue'),
           FileUpload: require('../../components/basic/FileUpload.vue')
         }
 };

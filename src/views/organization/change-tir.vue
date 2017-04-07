@@ -20,7 +20,7 @@
 
 <div class="content-wrap ihr-org-changeTir">
     <panel :title="panelTitle" class=" panel-b  mb-suitable" header="panel-header">
-        <v-form v-ref:changetirform :model="changeTir" :schema="changeTirSchema" label-width="200" label-suffix="" :cols="1" form-style="org-form">
+        <v-form ref="changetirform" :model="changeTir" :schema="changeTirSchema" label-width="200" label-suffix="" :cols="1" form-style="org-form">
             <text-increment :title="changeTir.fullUnitName" property='fullUnitName' editor-width="400"></text-increment>
             <text-increment property='abbreviation' editor-width="400"></text-increment>
             <text-increment property="unitCode" editor-width="400"></text-increment>
@@ -33,7 +33,7 @@
             <text-field property="parentUnitName" type="selector" :readonly="true" :show.sync="show" editor-width="400">
                 <input type="hidden" v-model="changeTir.parentUnitId">
             </text-field>
-            <text-field type="selector" property="unitLeaderName" type="selector" :readonly="true" :show.sync="person" editor-width="400"></text-field>
+            <text-field type="selector" property="unitLeaderName" :readonly="true" :show.sync="person" editor-width="400"></text-field>
             <text-increment property="unitTier" editor-width="400"></text-increment>
             <text-increment property="unitScale" editor-width="400"></text-increment>
             <text-increment class="textarea" type="textarea" editor-width="400" property="unitResponsibility"></text-increment>
@@ -42,8 +42,8 @@
     </panel>
 
     <div class="btn-group">
-        <ui-button color="primary mr10" @click="handleSubmit" :loading="submitLoading">Submit</ui-button>
-        <ui-button class="btn-default-bd" @click="handleCancel" type="flat">Cancel</ui-button>
+        <ui-button color="primary mr10" @click="handleSubmit" :loading="submitLoading">{{$t('button.submit')}}</ui-button>
+        <ui-button class="btn-default-bd" @click="handleCancel" type="flat">{{$t('button.cancel')}}</ui-button>
     </div>
 
     <organization-selector :disable-value="disableValue" :show.sync="show"></organization-selector>
@@ -70,66 +70,70 @@ from '../../util/assist';
 
 
 
-let changeTirSchema = new Schema({
-    fullUnitName: {
-        label: 'Organization Name',
-    },
-    abbreviation: {
-        label: 'Abbreviation'
-    },
-    unitCode: {
-        label: 'TypeOrganization Code'
-    },
-    city: {},
-    state: {},
-    country: {},
-    location: {
-        label: 'Location',
-    },
-    countryScope: {
-        label: 'Country Scope',
-    },
-    legalentity: {
-        label: 'Legal Entity'
-    },
-    corporation: {
-        label: 'Legal Representative'
-    },
-    beginDate: {
-        label: 'Effective Date',
-        required: true,
-        type: 'date'
-    },
-    unitSize: {
-        label: 'Organization Size'
-    },
-    parentUnitName: {
-        label: 'Superior Organization',
-    },
 
-    unitLeaderName: {
-        label: 'Head of Organization'
-    },
-    unitTier: {
-        label: 'Organization Tier',
-    },
-    attachmentId: {
-        label: 'Company License'
-    },
-    unitScale: {
-        label: 'Head Count'
-    },
-    unitResponsibility: {
-        label: 'Organization Responsibility',
-    },
-    remark: {
-        label: 'Additional Info'
-    }
-});
 
 
 export default {
     data() {
+        let changeTirSchema = new Schema({
+            fullUnitName: {
+                label: this.$t('organization.historyRecord.orgName')
+            },
+            abbreviation: {
+                label: this.$t('organization.orgDetails.abbreviation')
+            },
+            unitCode: {
+                label: this.$t('organization.orgDetails.orgTypeCode')
+            },
+            city: {},
+            state: {},
+            country: {},
+            location: {
+                label: this.$t('organization.orgDetails.location')
+            },
+            countryScope: {
+                label: this.$t('organization.orgDetails.countryScope')
+            },
+            legalentity: {
+                label: this.$t('organization.orgDetails.legalEntity')
+            },
+            corporation: {
+                label: this.$t('organization.orgDetails.legalRepresentative')
+            },
+            beginDate: {
+                label: this.$t('organization.orgInfo.effectDate'),
+                required: true,
+                type: 'date'
+            },
+            unitSize: {
+                label: this.$t('organization.orgDetails.orgSize')
+            },
+            parentUnitName: {
+                label: this.$t('organization.orgInfo.superiorOrg')
+            },
+
+            unitLeaderName: {
+                label: this.$t('organization.orgInfo.headOfOrg')
+            },
+            unitTier: {
+                label: this.$t('organization.orgDetails.orgTier')
+            },
+            attachmentId: {
+                label: this.$t('organization.orgDetails.companyLicense')
+            },
+            unitScale: {
+                label: this.$t('organization.orgDetails.headCount')
+            },
+            unitResponsibility: {
+                label: this.$t('organization.orgDetails.orgResponsibility')
+            },
+            remark: {
+                label: this.$t('organization.orgDetails.additionalInfo')
+            }
+        });
+
+
+
             return {
                 changeTirSchema: changeTirSchema,
                 changeTir: changeTirSchema.newModel(),
@@ -153,7 +157,7 @@ export default {
                     return this.$route.name;
                 },
                 panelTitle() {
-                    if (this.routeName === 'change_tir') return 'Change Tier';
+                    if (this.routeName === 'change_tir') return this.$t('organization.modifyOrg.changeTierTitle');
                 }
         },
         created() {
@@ -258,7 +262,7 @@ export default {
                             };
                             walk(treeData, orgId, 'del');
                             walk(treeData, String(this.changeTir.parentUnitId), 'add');
-                            this.$route.router.go({
+                            this.$router.push({
                                 name: 'organizationSetting',
                                 query: {orgId: this.$route.params.oid}
                             });
@@ -268,7 +272,7 @@ export default {
                     });
                 },
                 handleCancel() {
-                    this.$router.go({
+                    this.$router.push({
                         name: 'organizationSetting',
                         query: {orgId: this.$route.params.oid}
                     });

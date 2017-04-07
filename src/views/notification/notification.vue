@@ -22,7 +22,7 @@
     <!-- <div class="group mb16">
         <ui-button class="mr10 dis-tc btn-primary-bd" icon="fa-plus" color="primary" text="Add" @click="add"></ui-button>
         <ui-button class="mr10 dis-tc btn-default-bd" icon="fa-pencil-square-o" type="flat" text="Edit" @click="edit"></ui-button>
-        <ui-button class="mr10 dis-tc btn-default-bd" icon="fa-remove" type="flat" text="Delete" @click="delete"></ui-button>
+        <ui-button class="mr10 dis-tc btn-default-bd" icon="fa-remove" type="flat" text="Delete" @click="deleteBtn"></ui-button>
     </div> -->
     <div class="vuetable-wrapper bg-w p16 bd-e8e8e8">
         <vuetable :api-url="receiverUrl" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="receiverColumns" :sort-order="sortOrder" :item-actions="itemActions" per-page="10">
@@ -50,12 +50,12 @@ export default {
                 selectedRow: [],
                 receiverColumns: [{
                     name: 'messageTitle',
-                    title: 'Subject',
+                    title: this.$t('notification.columns.subject'),
                     sortField: 'messageTitle',
                     callback: 'goDetail'
                 }, {
                     name: 'createDate',
-                    title: 'Creation Time',
+                    title: this.$t('notification.columns.creationTime'),
                     dataClass: 'tr',
                     titleClass: 'mw80',
                     sortField: 'createDate',
@@ -64,7 +64,7 @@ export default {
                     }
                 }, {
                     name: 'sendUser',
-                    title: 'Issuer',
+                    title: this.$t('notification.columns.issuer'),
                     sortField: 'sendUser'
                 }]
             }
@@ -81,7 +81,7 @@ export default {
                         name: ''
                     });
                 },
-                delete() {
+                deleteBtn() {
                     let _self = this;
                     let rows = _self.selectedRow;
                     if (rows.length === 1) {
@@ -95,7 +95,7 @@ export default {
                     } else {
                         Message({
                             type: 'error',
-                            message: 'Please select a valid node.'
+                            message: this.$t('notification.message.selectNode')
                         })
                     }
                 },

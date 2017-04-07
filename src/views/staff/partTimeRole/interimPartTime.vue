@@ -12,11 +12,11 @@
   <div class="ihr-staff-interns content-wrap">
 
     <panel :title="$t('staff.interimPartTimeRole')" class="panel-b mb-suitable" header="panel-header">
-      <v-form v-ref:myForm :model="interim" :schema="interimSchema" label-width="250" label-suffix="" :cols="1" form-style="org-form">
-          <text-field type="selector" :readonly="true" :show.sync="person" property="employeeName" editor-width="400"></text-field>
+      <v-form ref="myform" :model="interim" :schema="interimSchema" label-width="250" label-suffix="" :cols="1" form-style="org-form">
+          <text-field @open-selector="openSelector('perselect')" type="selector" :readonly="true" :show="person" property="employeeName" editor-width="400"></text-field>
           <text-increment property="orgName" editor-width="400"></text-increment>
           <text-increment property="hostPosition" editor-width="400"></text-increment>
-          <text-field type="selector" :readonly="true" :show.sync="position" property="positionName" editor-width="400"></text-field>
+          <text-field @open-selector="openSelector('posselect')" type="selector" :readonly="true" :show="position" property="positionName" editor-width="400"></text-field>
           <select-field :mapping="mibGradeMapping" property="mibGrade" editor-width="400"></select-field>
           <text-increment property="unitName" editor-width="400"></text-increment>
           <text-increment :title="interim.reportLine" property="reportLine" editor-width="400"></text-increment>
@@ -25,9 +25,9 @@
           <text-field :min-date="interim.effectiveDate" property="expectedEndDate" editor-width="400"></text-field>
       </v-form>
     </panel>
-    <person-selector :show.sync="person" :handle-comfirmed="selectPerson" :handle-before-comfirmed="beforeSelectPerson" :multi-selected="false"  :limit="false" ></person-selector>
-    <position-selector :show.sync="position" :handle-comfirmed="selectPosition"></position-selector>
-    <employee-submit v-ref:employeesubmit :form-confirmed="confirmed" :form-cancel="cancel" :is-form-validate="isFormValidate"></employee-submit>
+    <person-selector ref="perselect" :show="person" :handle-comfirmed="selectPerson" :handle-before-comfirmed="beforeSelectPerson" :multi-selected="false"  :limit="false" ></person-selector>
+    <position-selector ref="posselect" :show="position" :handle-comfirmed="selectPosition"></position-selector>
+    <employee-submit ref="employeesubmit" :form-confirmed="confirmed" :form-cancel="cancel" :is-form-validate="isFormValidate"></employee-submit>
   </div>
 </template>
 
@@ -101,11 +101,14 @@ export default {
       }
     },
     computed: {},
-    ready() {},
-    attached() {},
+    mounted() {},
+    
     methods: {
+        openSelector(selector) {
+          this.$refs[selector].open();
+        },
         isFormValidate() {
-          var passed = this.interim.$schema.isFormValidate(this.$refs.myform);
+          var passed = this.$refs.myform.isFormValidate();
           return passed;
         },
         confirmed() {
@@ -132,7 +135,7 @@ export default {
                     type: 'success',
                     message: this.$t('staff.message.success')
                 });
-                  this.$route.router.go({
+                  this.$router.push({
                       name: 'staffPartTimeRole'
                   });
               },(response) => {
@@ -197,7 +200,7 @@ export default {
           return false;
         },
         cancel() {
-            this.$route.router.go({
+            this.$router.push({
                 name: 'staffPartTimeRole'
             });
         }

@@ -1,82 +1,43 @@
-<style lang="stylus">
-
-@import './styles/imports';
-.tab-num {
-    width: 20px;
-    height: 20px;
-    line-height: 20px;
-    text-align: center;
-    background: #ff0000;
-    font-size: 12px;
-    color: #fff;
-    border-radius: 50%;
-    position: absolute;
-    top: 3px;
-    right: -5px;
-}
-
-.ui-tab-header-item {
-    font-family: $font-stack;
-    display:inline-block;
-    position: relative;
-    font-size: 16px;
-    height: 48px;
-    line-height:48px;
-    padding: 0 12px;
-    color: #545454;
-    cursor: pointer;
-    min-width: 80px;
-    border-bottom: 2px solid transparent;
-    &.type-icon-and-text {
-        display: flex;
-        flex-direction: column;
-        height: 72px;
-        .ui-tab-header-item-icon {
-            margin-bottom: 4px;
-            margin-bottom: 4px;
-        }
-    }
-    &.disabled {
-        opacity: 0.4;
-        cursor: default;
-    }
-}
-
-.ui-tab-header-item-text {
-    @extends $truncate-text;
-}
-
-.ui-tab-header-item-icon {
-    width: 24px;
-    height: 24px;
-    .ui-icon {
-        cursor: inherit;
-    }
-}
-
-</style>
-
 <template>
+    <li
+        class="ui-tab-header-item"
+        ref="headerItem"
+        role="tab"
 
-<li class="ui-tab-header-item" role="tab" :class="['type-' + type, { 'active': active, 'disabled': disabled }]" :tabindex="active ? 0 : -1" :aria-controls="id" :aria-selected="active ? 'true' : null" v-disabled="disabled" v-el:item>
-    <div class="ui-tab-header-item-icon" v-if="type === 'icon' || type === 'icon-and-text'">
-        <ui-icon :icon="icon"></ui-icon>
-    </div>
+        :aria-controls="id"
+        :aria-selected="active ? 'true' : null"
+        :class="classes"
+        :disabled="disabled"
+        :tabindex="active ? 0 : -1"
+    >
+        <div
+            class="ui-tab-header-item-icon"
+            v-if="type === 'icon' || type === 'icon-and-text'"
+        >
+            <slot name="icon">
+                <ui-icon
+                    :icon-set="iconProps.iconSet"
+                    :icon="icon"
+                    :remove-text="iconProps.removeText"
+                    :use-svg="iconProps.useSvg"
+                ></ui-icon>
+            </slot>
+        </div>
 
-    <div class="ui-tab-header-item-text" v-text="text" v-if="type === 'text' || type === 'icon-and-text'"></div>
+        <div
+            class="ui-tab-header-item-text"
+            v-if="type === 'text' || type === 'icon-and-text'"
+        >{{ title }}</div>
 
-    <ui-ripple-ink :trigger="$els.item" v-if="!hideRippleInk && !disabled"></ui-ripple-ink>
-    <div class="tab-num" v-text="num" v-if="num && num!=0"></div>
-</li>
-
+        <ui-ripple-ink trigger="headerItem" v-if="!disableRipple && !disabled"></ui-ripple-ink>
+    </li>
 </template>
 
 <script>
-
 import UiIcon from './UiIcon.vue';
+import UiRippleInk from './UiRippleInk.vue';
 
-import disabled from './directives/disabled';
-import ShowsRippleInk from './mixins/ShowsRippleInk';
+import config from './config';
 
 export default {
     name: 'ui-tab-header-item',
@@ -85,32 +46,99 @@ export default {
         id: String,
         type: {
             type: String,
-            default: 'text', // 'text', 'icon', or 'icon-and-text'
+            default: 'text' // 'text', 'icon', or 'icon-and-text'
         },
-        text: String,
+        title: String,
         icon: String,
+        iconProps: {
+            type: Object,
+            default() {
+                return {};
+            }
+        },
         active: {
             type: Boolean,
             default: false
         },
+        show: {
+            type: Boolean,
+            default: true
+        },
+        disableRipple: {
+            type: Boolean,
+            default: config.data.disableRipple
+        },
         disabled: {
             type: Boolean,
             default: false
-        },
-        num: {}
+        }
+    },
+
+    computed: {
+        classes() {
+            return [
+                `ui-tab-header-item-type-${this.type}`,
+                { 'is-active': this.active },
+                { 'is-disabled': this.disabled }
+            ];
+        }
     },
 
     components: {
-        UiIcon
-    },
-
-    mixins: [
-        ShowsRippleInk
-    ],
-
-    directives: {
-        disabled
+        UiIcon,
+        UiRippleInk
     }
 };
-
 </script>
+
+<style lang="scss">
+@import './styles/imports';
+
+.ui-tab-header-item {
+    align-items: center;
+    cursor: pointer;
+    display: flex;
+    font-family: $font-stack;
+    height: rem-calc(48px);
+    justify-content: center;
+    min-width: rem-calc(80px);
+    padding: rem-calc(0 12px);
+    position: relative;
+
+    &:hover {
+        background-color: rgba(black, 0.05);
+    }
+
+    &.is-disabled {
+        background-color: transparent;
+        cursor: default;
+        opacity: 0.4;
+        user-select: none;
+    }
+}
+
+.ui-tab-header-item-type-icon-and-text {
+    display: flex;
+    flex-direction: column;
+    height: rem-calc(72px);
+
+    .ui-tab-header-item-icon {
+        margin-bottom: rem-calc(4px);
+    }
+}
+
+.ui-tab-header-item-text {
+    @include text-truncation;
+    font-size: rem-calc(15px);
+    font-weight: 500;
+}
+
+.ui-tab-header-item-icon {
+    height: rem-calc(24px);
+    width: rem-calc(24px);
+
+    .ui-icon {
+        cursor: inherit;
+    }
+}
+</style>

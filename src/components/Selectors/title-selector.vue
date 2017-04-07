@@ -1,114 +1,34 @@
 <style lang="less">
 
-.title-select {
-    * {
-        box-sizing: border-box;
-    }
-    .vuetable th{
-        padding: 6px 10px;
-    }
-    .ui-modal-footer {
-        position: absolute;
-        bottom: 0;
-        width: 100%;
-    }
-    .tree-panel {
-        height: 383px;
-    }
-    .treelist {
-        height: 380px;
-    }
-    .ui-modal-wrapper .ui-modal-container {
-        height: 505px;
-    }
-    .vuetable-pagination {
-        margin-top: 32px;
-        padding-right: 0px;
-    }
-    .vuetable-wrapper {
-        width: auto;
-        height: 329px;
-        overflow: auto;
-    }
-    .help-desk {
-        height: auto;
-    }
-    .treelist {
-        overflow-x: auto;
-    }
-    .search-ctx {
-        position: relative;
-        height: 48px;
-    }
-    .search-pos {
-        position: absolute;
-        right: 16px;
-        top: 8px;
-    }
-    .search-pos .search-bg {
-        display: inline-block;
-        border: 1px solid #e8e8e8;
-        height: 100%;
-        background: #fff;
-        padding: 2px 16px 2px 10px;
-        border-radius: 16px;
-    }
-    .search-pos .search-input {
-        border: none;
-        background: transparent;
-        width: 202px;
-        height: 26px;
-        line-height: 26px;
-    }
-    .search-pos .search-input::placeholder {
-        color: #a5acbe;
-        font-size: 12px;
-    }
-    .search-pos .search-input:focus {
-        outline: none;
-        border: none;
-    }
-    .search-btn {
-        cursor: pointer;
-    }
-    .treelist-detail {
-        padding-top: 0px;
-        padding-right: 0px;
-        padding-bottom: 0px;
-    }
-    .vuetable-area {
-        margin-bottom: 0px;
-        padding-bottom: 0px;
-    }
-}
+@import "style/select-common.less";
 
 </style>
 
 <template lang="html">
 
-<ui-modal class="title-select" :show.sync="show.modal" type="large" header="Select Title" body="" :backdrop-dismissible="false">
+<ui-modal ref="posselect" class="title-select select-common" type="large" :title="$t('selectors.selectTitle')" body="" :backdrop-dismissible="false">
     <div class="tree-panel fix">
         <div class="treelist p10">
-            <tree :data="regions" :level-config="levelConfig" :show-checkbox="showCheckbox" v-ref:tree :click-node="clickNode"></tree>
+            <tree :data="regions" :level-config="levelConfig" :show-checkbox="showCheckbox" ref="tree" :click-node="clickNode"></tree>
         </div>
         <div class="help-desk treelist-detail">
             <div class="search-ctx">
                 <div class="search-pos">
                     <span class="search-bg">
-             <input @keydown="goSearch($event)" class="search-input" placeholder="Search" type="text" v-model="searchTxt" />
+             <input @keydown="goSearch($event)" class="search-input" :placeholder="$t('button.search')" type="text" v-model="searchTxt" />
              <span @click="search" class="search-btn"><i class="fa fa-search"></i></span>
                     </span>
                 </div>
             </div>
             <div class="vuetable-wrapper">
-                <vuetable :api-url="selectedTableUrl" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="titlesColumns" per-page="10" load-on-start="false">
+                <vuetable :api-url="selectedTableUrl" :load-success-callback="tableSuccess" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="titlesColumns" per-page="10" load-on-start="false">
                 </vuetable>
             </div>
         </div>
     </div>
     <div slot="footer">
-        <ui-button @click="yes" color="primary">Confirm</ui-button>
-        <ui-button @click="show.modal = false">Cancel</ui-button>
+        <ui-button @click="yes" color="primary">{{$t('button.confirm')}}</ui-button>
+        <ui-button @click="close">{{$t('button.cancel')}}</ui-button>
     </div>
 </ui-modal>
 
@@ -144,16 +64,16 @@ export default {
                 title: ''
             }, {
                 name: 'standardJobName',
-                title: 'Title Name',
+                title: this.$t('position.label.titleName'),
                 sortField: 'standardJobName'
             }, {
                 name: 'standardJobCode',
-                title: 'Title ID',
+                title: this.$t('position.label.titleTitleID'),
                 dataClass: 'tr',
                 sortField: 'standardJobCode'
             }, {
                 name: 'mibGrade',
-                title: 'MIB Grade',
+                title: this.$t('position.label.mibGrade'),
                 sortField: 'mibGrade'
             }],
             levelConfig: {
@@ -193,60 +113,61 @@ export default {
             }
         }
     },
-    watch: {
-      'show.modal': function(newVal) {
-        if (newVal === true) {
-          this.getTreeData();
-          this.$broadcast("vuetable:refresh");
-        }
-      }
+    created() {
+        this.$http.get('/pos/jobFamilys/0/children', {}, {}).then((response) => {
+            let Items = [];
+            Items.push(response.data);
+            this.regions = Items;
+            this.selectedTableUrl = `/pos/standardJobs?jobFamilyId=${response.data.jobFamilyId}`;
+        }, (response) => {
+            Message({
+                type: 'error',
+                message: response.statusText
+            });
+        });
+
     },
-    // ready() {
-    //     this.$http.get('/pos/jobFamilys/0/children', {}, {}).then((response) => {
-    //         let Items = [];
-    //         Items.push(response.data);
-    //         this.regions = Items;
-    //         this.selectedTableUrl = `/pos/standardJobs?jobFamilyId=${response.data.jobFamilyId}`;
-    //     }, (response) => {
-    //         Message({
-    //             type: 'error',
-    //             message: response.statusText
-    //         });
-    //     });
-    //
-    // },
     methods: {
-        getTreeData() {
-          this.$http.get('/pos/jobFamilys/0/children', {}, {}).then((response) => {
-              let Items = [];
-              Items.push(response.data);
-              this.regions = Items;
-              this.selectedTableUrl = `/pos/standardJobs?jobFamilyId=${response.data.jobFamilyId}`;
-          }, (response) => {
-              Message({
-                  type: 'error',
-                  message: response.statusText
-              });
-          });
-        },
-        yes() {
+        open() {
+                this.$refs['posselect'].open();
+            },
+            close() {
+                this.$refs['posselect'].close()
+            },
+            getTreeData() {
+                this.$http.get('/pos/jobFamilys/0/children', {}, {}).then((response) => {
+                    let Items = [];
+                    Items.push(response.data);
+                    this.regions = Items;
+                    this.selectedTableUrl = `/pos/standardJobs?jobFamilyId=${response.data.jobFamilyId}`;
+                }, (response) => {
+                    Message({
+                        type: 'error',
+                        message: response.statusText
+                    });
+                });
+            },
+            tableSuccess(data) {
+                this.tableData = data.data;
+            },
+            yes() {
                 let _self = this;
                 let rows = _self.selectedRow;
+                _self.close();
                 if (rows.length === 1) {
-                    _self.show.modal = false;
                     _self.tableData.forEach((item, i) => {
                         if (i === rows[0]) {
                             _self.selData = item;
                             _self.handleComfirmed(_self.selData, _self.jobGroup);
-                            _self.$dispatch('titleselector', _self.selData, _self.jobGroup)
                         }
                     })
                 } else {
                     Message({
                         type: 'error',
-                        message: 'Please select a valid node.'
+                        message: 'this.$t("performance.message.reportManage")'
                     })
                 }
+
             },
             search() {
                 if (this.jobGroup.jobFamilyId === undefined || this.jobGroup.jobFamilyId === null) {
@@ -262,13 +183,8 @@ export default {
                 }
             }
     },
-    events: {
-        'vuetable:load-success': function(response) {
-            this.tableData = response.data.data;
-        }
-    },
     components: {
-      Tree: require('../tree/tree.vue')
+        Tree: require('../tree/tree.vue')
     }
 }
 

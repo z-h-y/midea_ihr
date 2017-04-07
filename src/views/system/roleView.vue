@@ -41,9 +41,7 @@
             <span class="c-2a3c59 f18">Fuctions Permission</span>
         </div>
         <div class="panel-content">
-
-
-            <ui-collapsible :open="true" v-for="menu in parentMenus" :header="menu.menuName">
+            <ui-collapsible :open="true" v-for="menu of parentMenus" :key="menu.id" :header="menu.menuName">
                 <table class="panel-content-table">
                     <tr v-for="m in getChildNodes(menu)">
                         <td style="width:155px;" class="f14 c-72777c">
@@ -58,7 +56,7 @@
         </div>
     </div>
     <div class="btn-group">
-        <ui-button @click="cancel" class="btn-default-bd" type="flat">Back</ui-button>
+        <ui-button @click="cancel" class="btn-default-bd" type="flat">{{$t('button.back')}}</ui-button>
     </div>
 </div>
 

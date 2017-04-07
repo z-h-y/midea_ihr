@@ -30,135 +30,137 @@
 
 <template lang="html">
 
-<div class="content-wrap ihr-annualPerformance ihr-evaluate">
-    <panel :title="panelTitle" class=" panel-b" header="panel-header">
-        <div id="ind-per" class="help-desk ind-per">
-            <div class="help-desk-ctn">
-                <ul class="regular fix">
-                    <li>
-                        <span class="prop-name">Employee Name</span>
-                        <span class="prop-val">{{basicInfo.employeeName}}</span>
-                    </li>
-                    <li v-if="basicInfo.pfmType==='1'">
-                        <span class="prop-name">Unit Name</span>
-                        <span class="prop-val">{{basicInfo.unitName}}</span>
-                    </li>
-                    <li>
-                        <span class="prop-name">Position</span>
-                        <span class="prop-val">{{basicInfo.positionName}}</span>
-                    </li>
-                    <li>
-                        <span class="prop-name">Restrict To Year</span>
-                        <span class="prop-val">{{basicInfo.restrictYear}}</span>
-                    </li>
-                    <li>
-                        <span class="prop-name">Evaluation Location</span>
-                        <span class="prop-val">{{basicInfo.startDate | formatDate }} To {{basicInfo.endDate | formatDate}}</span>
-                    </li>
-                </ul>
+<div>
+    <div class="content-wrap ihr-annualPerformance ihr-evaluate">
+        <panel :title="panelTitle" class=" panel-b" header="panel-header">
+            <div id="ind-per" class="help-desk ind-per">
+                <div class="help-desk-ctn">
+                    <ul class="regular fix">
+                        <li>
+                            <span class="prop-name"> {{$t('myperformance.selfEvaluate.employeeName')}}</span>
+                            <span class="prop-val">{{basicInfo.employeeName}}</span>
+                        </li>
+                        <li v-if="basicInfo.pfmType==='1'">
+                            <span class="prop-name"> {{$t('myperformance.selfEvaluate.unitName')}}</span>
+                            <span class="prop-val">{{basicInfo.unitName}}</span>
+                        </li>
+                        <li>
+                            <span class="prop-name"> {{$t('myperformance.selfEvaluate.position')}} </span>
+                            <span class="prop-val">{{basicInfo.positionName}}</span>
+                        </li>
+                        <li>
+                            <span class="prop-name">{{ $t('myperformance.selfEvaluate.restricttoYear') }}</span>
+                            <span class="prop-val">{{basicInfo.restrictYear}}</span>
+                        </li>
+                        <li>
+                            <span class="prop-name">{{ $t('myperformance.selfEvaluate.evaluationLocation') }}</span>
+                            <span class="prop-val">{{basicInfo.startDate | formatDate }} To {{basicInfo.endDate | formatDate}}</span>
+                        </li>
+                    </ul>
+                </div>
             </div>
-        </div>
-        <div id="total-indicators" class="total-indicators-head">
-            <div class="bte bg">
-                <h3 class="head-title"> Indicators（Weight 100%）</h3>
+            <div id="total-indicators" class="total-indicators-head">
+                <div class="bte bg">
+                    <h3 class="head-title">{{$t('myperformance.indicatorsWeight')}}</h3>
+                </div>
             </div>
-        </div>
-        <div id="indicators-ctn-wrap" class="indicators-ctn-wrap">
-            <self-indicator v-ref:indicators :data.sync="indicatorList"></self-indicator>
-            <div class="loadding" v-show="loadding"><i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i></div>
-            <!-- <div class="alert" v-show="isHasIndicator">
+            <div id="indicators-ctn-wrap" class="indicators-ctn-wrap">
+                <self-indicator ref="indicators" :data.sync="indicatorList"></self-indicator>
+                <div class="loadding" v-show="loadding"><i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i></div>
+                <!-- <div class="alert" v-show="isHasIndicator">
                 <div class="alert-ctn">
                     <i class="fa fa-exclamation-triangle warning-Icon" aria-hidden="true"></i>
                     <span>No Data</span>
                 </div>
             </div> -->
-        </div>
-        <ui-collapsible :open="true" id="coll-process-history" header="Process History">
-            <div id="process-history" class="process-history">
-                <div class="process-history-ctn">
-                    <ul class="fix cell-g ">
-                        <template v-for="(index,item) in processHistory">
-                            <li class="process-history-item cell-1-6">
-                                <div class="img-wrap rel">
-                                    <div class="valign">
-                                        <div v-bind:class="{'valign-ctn active':item.nowNode,'valign-ctn': !item.nowNode}">
-                                            <img class="valign-inner" :src='photoUrl(item.nodeUserDetailList[0].photoId)' />
+            </div>
+            <ui-collapsible :open="true" id="coll-process-history" :header="$t('myperformance.viewprocess.processHistory')">
+                <div id="process-history" class="process-history">
+                    <div class="process-history-ctn">
+                        <ul class="fix cell-g ">
+                            <template v-for="(index,item) in processHistory">
+                                <li class="process-history-item cell-1-6">
+                                    <div class="img-wrap rel">
+                                        <div class="valign">
+                                            <div v-bind:class="{'valign-ctn active':item.nowNode,'valign-ctn': !item.nowNode}">
+                                                <img class="valign-inner" :src='photoUrl(item.nodeUserDetailList[0].photoId)' />
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="person-ico" v-if="item.templateRoleId && item.nodeUserDetailList.length > 1">
-                                        <i class="fa fa-users" aria-hidden="true"></i>
-                                        <div class="user-area">
-                                            <div class="tc l user-msg" v-for="(index,u) in item.nodeUserDetailList">
-                                                <img class="user-valign-inner-img" :src='photoUrl(u.photoId)' />
-                                                <div class="mt5 mb16 c-c6a707d">
-                                                    <p class="f12">{{u.employeeName}}</p>
-                                                    <p class="f12">{{u.nodeName}}</p>
+                                        <div class="person-ico" v-if="item.templateRoleId && item.nodeUserDetailList.length > 1">
+                                            <i class="fa fa-users" aria-hidden="true"></i>
+                                            <div class="user-area">
+                                                <div class="tc l user-msg" v-for="(index,u) in item.nodeUserDetailList">
+                                                    <img class="user-valign-inner-img" :src='photoUrl(u.photoId)' />
+                                                    <div class="mt5 mb16 c-c6a707d">
+                                                        <p class="f12">{{u.employeeName}}</p>
+                                                        <p class="f12">{{u.nodeName}}</p>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="text">
-                                    <p class="employee-name">{{item.nodeUserDetailList[0].employeeName}}</p>
-                                    <div class="role">
-                                        <p>{{item.nodeUserDetailList[0].nodeName}}</p>
+                                    <div class="text">
+                                        <p class="employee-name">{{item.nodeUserDetailList[0].employeeName}}</p>
+                                        <div class="role">
+                                            <p>{{item.nodeUserDetailList[0].nodeName}}</p>
+                                        </div>
                                     </div>
-                                </div>
-                            </li>
-                        </template>
-                    </ul>
+                                </li>
+                            </template>
+                        </ul>
+                    </div>
                 </div>
-            </div>
-        </ui-collapsible>
-        <ui-collapsible class="mt16" :open="true" id="coll-memo" header="Process Record">
-            <div id="process-history-list">
-                <div class="process-history-ctn">
-                    <table class="vuetable ui blue striped selectable celled stackable attached table">
-                        <thead>
-                            <tr>
-                                <th>Stage</th>
-                                <th>Role</th>
-                                <th>Recipient</th>
-                                <th>Operation</th>
-                                <th>Suggestion</th>
-                                <!-- <th></th> -->
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="m in memolist">
-                                <td>
-                                    <span class="num">{{$index+1}}</span>
-                                </td>
-                                <td>{{m.roleName}}</td>
-                                <td>
-                                    <div class="lh">{{m.employeeName}}</div>
-                                </td>
-                                <td>
-                                    <div class="lh">{{m.operation}}</div>
-                                </td>
-                                <td>{{m.suggestion}}</td>
-                                <!-- <td> -->
-                                <!-- <div class="lh">10/02/2016</div> -->
-                                <!-- <div class="lh c-3aa2eb">11/02/2016</div> -->
-                                <!-- </td> -->
-                                <td>
-                                    <div class="lh">{{m.createTime | formatDate }}</div>
-                                    <!-- <div class="lh c-3aa2eb">10:02</div> -->
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+            </ui-collapsible>
+            <ui-collapsible class="mt16" :open="true" id="coll-memo" :header="$t('myperformance.viewprocess.processRecord')">
+                <div id="process-history-list">
+                    <div class="process-history-ctn">
+                        <table class="vuetable ui blue striped selectable celled stackable attached table">
+                            <thead>
+                                <tr>
+                                    <th>{{$t('myperformance.stage')}}</th>
+                                    <th>{{$t('myperformance.role')}}</th>
+                                    <th>{{$t('myperformance.recipient')}}</th>
+                                    <th>{{$t('myperformance.operation')}}</th>
+                                    <th>{{$t('myperformance.suggestion')}}</th>
+                                    <!-- <th></th> -->
+                                    <th>{{$t('myperformance.date')}}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="m in memolist">
+                                    <td>
+                                        <span class="num">{{$index+1}}</span>
+                                    </td>
+                                    <td>{{m.roleName}}</td>
+                                    <td>
+                                        <div class="lh">{{m.employeeName}}</div>
+                                    </td>
+                                    <td>
+                                        <div class="lh">{{m.operation}}</div>
+                                    </td>
+                                    <td>{{m.suggestion}}</td>
+                                    <!-- <td> -->
+                                    <!-- <div class="lh">10/02/2016</div> -->
+                                    <!-- <div class="lh c-3aa2eb">11/02/2016</div> -->
+                                    <!-- </td> -->
+                                    <td>
+                                        <div class="lh">{{m.createTime | formatDate }}</div>
+                                        <!-- <div class="lh c-3aa2eb">10:02</div> -->
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
-        </ui-collapsible>
-    </panel>
-    <div class="btn-group">
-        <ui-button color="primary mr16" @click="handleSubmit">Submit</ui-button>
-        <ui-button class="btn-default-bd ml-4" @click="handleCancel" type="flat">Cancel</ui-button>
+            </ui-collapsible>
+        </panel>
+        <div class="btn-group">
+            <ui-button color="primary mr16" @click="handleSubmit">{{$t('myperformance.selfEvaluate.submit')}}</ui-button>
+            <ui-button class="btn-default-bd ml-4" @click="handleCancel" type="flat">{{$t('myperformance.selfEvaluate.cancel')}}</ui-button>
+        </div>
     </div>
+    <person-selector :show.sync="showModel"></person-selector>
 </div>
-<person-selector :show.sync="showModel"></person-selector>
 
 </template>
 
@@ -178,37 +180,37 @@ import {
 from '../../util/assist';
 
 
-let indicatorSchema = new Schema({
-    employeeSelfScore: {
-        label: 'Employee self Score',
-        required: true,
-        whitespace: false,
-        rules: {
-            type: 'custom',
-            message: 'Please enter a 1~999 positive integer!',
-            validate() {
-                var isValidate = true;
-                if (this.employeeSelfScore < 0 || this.employeeSelfScore > 999) {
-                    isValidate = false;
-                } else {
-                    if (this.employeeSelfScore % 1 !== 0) {
-                        isValidate = false;
-                    }
-                }
-                return isValidate;
-            }
-        }
-    },
-    comment: {
-        label: 'Employee Self Comment',
-        required: true,
-        whitespace: false
-    }
-});
+
 
 export default {
     data() {
-
+            let indicatorSchema = new Schema({
+                employeeSelfScore: {
+                    label: this.$t('myperformance.selfEvaluate.employeeSelfScore'),
+                    required: true,
+                    whitespace: false,
+                    rules: {
+                        type: 'custom',
+                        message: 'Please enter a 1~999 positive integer!',
+                        validate() {
+                            var isValidate = true;
+                            if (this.employeeSelfScore < 0 || this.employeeSelfScore > 999) {
+                                isValidate = false;
+                            } else {
+                                if (this.employeeSelfScore % 1 !== 0) {
+                                    isValidate = false;
+                                }
+                            }
+                            return isValidate;
+                        }
+                    }
+                },
+                comment: {
+                    label: this.$t('myperformance.selfEvaluate.employeeSelfComment'),
+                    required: true,
+                    whitespace: false
+                }
+            });
             return {
                 show: {
                     deleteConfirm: false
@@ -255,7 +257,7 @@ export default {
                     if (photoId)
                         return Vue.config.APIURL + `/system/attachment/downloadImg/${photoId}`;
                     else
-                        return `/static/images/public/xwz.png`;
+                        return `/assets/images/public/xwz.png`;
                 },
                 memoList() {
                     this.$http.get(`/process/performanceApproval/procInst/${this.$route.params.procInstId}/node/memo`).then(response => {
@@ -396,7 +398,7 @@ export default {
                             });
                         }
                         _self.submitLoading = false;
-                    },(response) => {
+                    }, (response) => {
                         _self.submitLoading = false;
                     });
                 },

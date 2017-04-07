@@ -16,25 +16,25 @@
 <div class="content-wrap ihr-orgPerformance">
     <panel :title="panelTitle" class=" panel-b" header="panel-header" id="org-perfor">
         <ui-tabs type="text" background-color="clear" text-color="gray" text-color-active="primary" :active-tab="openId">
-            <ui-tab header="My Scheme" :num="mySchemeNum" id="myscheme">
+            <ui-tab :header="$t('myperformance.tabText.myScheme')" :num="mySchemeNum" id="myscheme">
                 <div class="vuetable-wrapper">
                     <vuetable api-url="/performance/schemeEmployees/myScheme" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="myScheme" :sort-order="sortOrder" :item-actions="itemActions" per-page="10">
                     </vuetable>
                 </div>
             </ui-tab>
-            <ui-tab header="My Performance History" :num="historyNum" id="myhistory">
+            <ui-tab :header="$t('myperformance.tabText.myPerformanceHistory')" :num="historyNum" id="myhistory">
                 <div class="vuetable-wrapper">
                     <vuetable api-url="/performance/schemeEmployees/myPerformaceHistory" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="myHistory" :sort-order="sortOrder" per-page="10">
                     </vuetable>
                 </div>
             </ui-tab>
-            <ui-tab header="Under Evaluation" :num="underNum" id="under">
+            <ui-tab :header="$t('myperformance.tabText.underEvaluation')" :num="underNum" id="under">
                 <div class="vuetable-wrapper">
                     <vuetable api-url="/performance/schemeEmployees/underEvaluation" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="evaluation" :sort-order="sortOrder" per-page="10">
                     </vuetable>
                 </div>
             </ui-tab>
-            <ui-tab header="Evaluation History" id="evaluation">
+            <ui-tab :header="$t('myperformance.tabText.evaluationHistory')" id="evaluation">
                 <div class="vuetable-wrapper">
                     <vuetable api-url="/performance/schemeEmployees/mySubordinateScheme" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="mySubordinate" :sort-order="sortOrder" per-page="10">
                     </vuetable>
@@ -69,26 +69,26 @@ export default {
             },
             myScheme: [{
                 name: 'schemeName',
-                title: 'Scheme Name'
+                title: this.$t('myperformance.performance.schemeName')
             }, {
                 name: 'schemeCategory',
-                title: 'Scheme Category',
+                title: this.$t('myperformance.performance.schemeCategory') ,
                 callback: function(value, data) {
                     return _self.fixScheme(value, data);
                 }
             }, {
                 name: 'restrictYear',
-                title: 'Year',
+                title: this.$t('myperformance.performance.restrictYear'),
                 dataClass:'tr'
             }, {
                 name: 'frequency',
-                title: 'Frequency',
+                title: this.$t('myperformance.performance.frequency'),
                 callback: function(value, data) {
                     return _self.fixCYCLE(value, data);
                 }
             }, {
                 name: 'startDate',
-                title: 'Start Date',
+                title: this.$t('myperformance.performance.startDate'),
                 dataClass:'tr',
                 callback: function(value) {
                     return _self.handleFormatDate(value);
@@ -96,46 +96,46 @@ export default {
 
             }, {
                 name: 'endDate',
-                title: 'End Date',
+                title: this.$t('myperformance.performance.endDate'),
                 dataClass:'tr',
                 callback: function(value) {
                     return _self.handleFormatDate(value);
                 }
             }, {
                 name: 'processStatus',
-                title: 'Status'
+                title: this.$t('myperformance.performance.processStatus')
             }, {
                 name: 'processStatusValue',
-                title: 'Operate',
+                title: this.$t('myperformance.performance.processStatusValue'),
                 callback: function(value, data) {
                     return _self.getUrl(value, data);
                 }
             }],
             myHistory: [{
                 name: 'schemeName',
-                title: 'Scheme Name'
+                title: this.$t('myperformance.performance.schemeName')
             }, {
                 name: 'schemeCategory',
-                title: 'Scheme Category',
+                title: this.$t('myperformance.performance.schemeCategory'),
                 callback: function(value, data) {
                     return _self.fixScheme(value, data);
                 }
             }, {
                 name: 'restrictYear',
                 dataClass: 'tr',
-                title: 'Year'
+                title: this.$t('myperformance.performance.restrictYear')
             }, {
                 name: 'frequency',
-                title: 'Frequency',
+                title: this.$t('myperformance.performance.frequency'),
                 callback: function(value, data) {
                     return _self.fixCYCLE(value, data);
                 }
             }, {
                 name: 'processStatus',
-                title: 'Status'
+                title: this.$t('myperformance.performance.processStatus')
             }, {
                 name: 'processStatusValue',
-                title: 'Operate',
+                title: this.$t('myperformance.performance.processStatusValue'),
                 callback: function(value, data) {
                     return _self.viewUrl(value, data);
                 }
@@ -143,74 +143,74 @@ export default {
             }],
             evaluation: [{
                 name: 'employeeName',
-                title: 'Employee Name'
+                title: this.$t('myperformance.performance.employeeName')
             }, {
                 name: 'schemeName',
-                title: 'Scheme Name'
+                title: this.$t('myperformance.performance.schemeName')
             }, {
                 name: 'schemeCategory',
-                title: 'Scheme Category',
+                title: this.$t('myperformance.performance.schemeCategory'),
                 callback: function(value, data) {
                     return _self.fixScheme(value, data);
                 }
             }, {
                 name: 'restrictYear',
                 dataClass: 'tr',
-                title: 'Year'
+                title: this.$t('myperformance.performance.restrictYear')
             }, {
                 name: 'frequency',
-                title: 'Frequency',
+                title: this.$t('myperformance.performance.frequency'),
                 callback: function(value, data) {
                     return _self.fixCYCLE(value, data);
                 }
             }, {
                 name: 'schemePeriod',
-                title: 'Restrict To',
+                title: this.$t('myperformance.performance.schemePeriod'),
                 callback: function(value, data) {
                     return _self.showTo(value, data);
                 }
             }, {
                 name: 'processStatus',
-                title: 'Status'
+                title: this.$t('myperformance.performance.processStatus')
             }, {
                 name: 'processStatusValue',
-                title: 'Operate',
+                title: this.$t('myperformance.performance.processStatusValue'),
                 callback: function(value, data) {
                     return _self.getApproveUrl(value, data);
                 }
             }],
             mySubordinate: [{
                 name: 'employeeName',
-                title: 'Employee Name'
+                title: this.$t('myperformance.tabText.employeeName')
             }, {
                 name: 'schemeName',
-                title: 'Scheme Name'
+                title: this.$t('myperformance.tabText.schemeName')
             }, {
                 name: 'schemeCategory',
-                title: 'Scheme Category',
+                title: this.$t('myperformance.tabText.schemeCategory'),
                 callback: function(value, data) {
                     return _self.fixScheme(value, data);
                 }
             }, {
                 name: 'restrictYear',
                 dataClass: 'tr',
-                title: 'Year'
+                title: this.$t('myperformance.tabText.year')
             }, {
                 name: 'frequency',
-                title: 'Frequency',
+                title: this.$t('myperformance.tabText.frequency'),
                 callback: function(value, data) {
                     return _self.fixCYCLE(value, data);
                 }
             }, {
                 name: 'processStatus',
-                title: 'Status'
+                title: this.$t('myperformance.tabText.status')
             }, {
                 name: 'adjustScore',
                 dataClass: 'tr',
-                title: 'Score'
+                title: this.$t('myperformance.tabText.score')
             }, {
                 name: 'processStatusValue',
-                title: 'Operate',
+                title: this.$t('myperformance.tabText.operate'),
                 callback: function(value, data) {
                     return _self.viewUrl(value, data);
                 }
@@ -219,7 +219,7 @@ export default {
     },
     computed: {
         panelTitle() {
-            return 'My Performance';
+            return this.$t('myperformance.tabText.myPerformance');
         }
     },
     created() {
@@ -274,13 +274,13 @@ export default {
             },
             fixScheme(value, data) {
                 if (data.pfmType === '0') {
-                    return "Individual";
+                    return  this.$t('myperformance.performance.Individual') ;
                 }
                 return this.fixDist(value, 'SCHEME_CATEGORY');
             },
             fixCYCLE(value, data) {
                 if ((data.schemeCategory === '0' || data.schemeCategory === '1') && !value) {
-                    return "Annual";
+                    return  this.$t('myperformance.performance.Annual') ;
                 }
                 return this.fixDist(value, 'SCHEME_CYCLE');
             },
@@ -294,16 +294,16 @@ export default {
                         procInstId = data.procInstId;
                     }
                     if (value === '1') {
-                        return `<a class="operate" href="/#!/ihr/myPerformance/furnish/${this.openId}/${data.schemeId}/${data.processTemplateId}/${data.indicatorsSetting}/${data.schemeEmployeeId}/${procInstId}/${data.employeeId}">Edit</a>`;
+                        return `<a class="operate" href="/#!/ihr/myPerformance/furnish/${this.openId}/${data.schemeId}/${data.processTemplateId}/${data.indicatorsSetting}/${data.schemeEmployeeId}/${procInstId}/${data.employeeId}">${this.$t('button.edit')}</a>`;
                     }
                     if (value === '3') {
-                        return `<a class="operate" href="/#!/ihr/myPerformance/self_evaluate/${this.openId}/${data.schemeId}/${data.procInstId}/${data.schemeEmployeeId}">Self Evaluate</a>`;
+                        return `<a class="operate" href="/#!/ihr/myPerformance/self_evaluate/${this.openId}/${data.schemeId}/${data.procInstId}/${data.schemeEmployeeId}">${this.$t('button.selfEvaluate')}</a>`;
                     }
                     if (value === '5') {
-                        return `<a class="operate" href="/#!/ihr/myPerformance/view/${this.openId}/${data.schemeId}/${data.processTemplateId}/${data.procInstId}/${data.schemeEmployeeId}/0/0/0">View</a>`;
+                        return `<a class="operate" href="/#!/ihr/myPerformance/view/${this.openId}/${data.schemeId}/${data.processTemplateId}/${data.procInstId}/${data.schemeEmployeeId}/0/0/0">${this.$t('button.view')}</a>`;
                     }
                     if (value === '2' || value === '4') {
-                        return `<a class="operate" href="/#!/ihr/myPerformance/process/view/${this.openId}/${data.schemeId}/${data.processTemplateId}/${procInstId}/${data.schemeEmployeeId}">View</a>`;
+                        return `<a class="operate" href="/#!/ihr/myPerformance/process/view/${this.openId}/${data.schemeId}/${data.processTemplateId}/${procInstId}/${data.schemeEmployeeId}">${this.$t('button.view')}</a>`;
                     }
                 }
             },
@@ -314,16 +314,16 @@ export default {
                         procInstId = data.procInstId;
                     }
                     if (value === '2') {
-                        return `<a class="operate" href="/#!/ihr/myPerformance/approve/${this.openId}/${data.schemeId}/${data.procInstId}/${data.schemeEmployeeId}/${data.employeeId}">Approve</a>`;
+                        return `<a class="operate" href="/#!/ihr/myPerformance/approve/${this.openId}/${data.schemeId}/${data.procInstId}/${data.schemeEmployeeId}/${data.employeeId}">${this.$t('button.approve')}</a>`;
                     }
                     if (value === '4') {
-                        return `<a class="operate" href="/#!/ihr/myPerformance/evaluate/${this.openId}/${data.schemeId}/${data.procInstId}/${data.schemeEmployeeId}/${data.employeeId}">Evaluate</a>`;
+                        return `<a class="operate" href="/#!/ihr/myPerformance/evaluate/${this.openId}/${data.schemeId}/${data.procInstId}/${data.schemeEmployeeId}/${data.employeeId}">${this.$t('button.evaluate')}</a>`;
                     }
                     if (value === '5') {
-                        return `<a class="operate" href="/#!/ihr/myPerformance/view/${this.openId}/${data.schemeId}/${data.processTemplateId}/${procInstId}/${data.schemeEmployeeId}/0/0/0">View</a>`;
+                        return `<a class="operate" href="/#!/ihr/myPerformance/view/${this.openId}/${data.schemeId}/${data.processTemplateId}/${procInstId}/${data.schemeEmployeeId}/0/0/0">${this.$t('button.view')}</a>`;
                     }
                     if (value === '1' || value === '3') {
-                        return `<a class="operate" href="/#!/ihr/myPerformance/view/${this.openId}/${data.schemeId}/${data.processTemplateId}/${procInstId}/${data.schemeEmployeeId}/0/0/0">View</a>`;
+                        return `<a class="operate" href="/#!/ihr/myPerformance/view/${this.openId}/${data.schemeId}/${data.processTemplateId}/${procInstId}/${data.schemeEmployeeId}/0/0/0">${this.$t('button.view')}</a>`;
                     }
                 }
             },
@@ -334,9 +334,9 @@ export default {
                         procInstId = data.procInstId;
                     }
                     if (value === '1' || value === '3') {
-                        return `<a class="operate" href="/#!/ihr/myPerformance/view/${this.openId}/${data.schemeId}/${data.processTemplateId}/${procInstId}/${data.schemeEmployeeId}/${data.employeeId}/0/0">View</a>`;
+                        return `<a class="operate" href="/#!/ihr/myPerformance/view/${this.openId}/${data.schemeId}/${data.processTemplateId}/${procInstId}/${data.schemeEmployeeId}/${data.employeeId}/0/0">${this.$t('button.view')}</a>`;
                     }
-                    return `<a class="operate" href="/#!/ihr/myPerformance/view/${this.openId}/${data.schemeId}/${data.processTemplateId}/${procInstId}/${data.schemeEmployeeId}/0/0/0">View</a>`;
+                    return `<a class="operate" href="/#!/ihr/myPerformance/view/${this.openId}/${data.schemeId}/${data.processTemplateId}/${procInstId}/${data.schemeEmployeeId}/0/0/0">${this.$t('button.view')}</a>`;
                 }
             }
     },

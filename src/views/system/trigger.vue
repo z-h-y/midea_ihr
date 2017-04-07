@@ -25,7 +25,7 @@
         <vuetable :api-url="schedulerUrl" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="schedulerColumns" :sort-order="sortOrder" :item-actions="itemActions" per-page="10">
         </vuetable>
     </div>
-    <ui-confirm header="Delete" @confirmed="delete" :show.sync="showdel" close-on-confirm autofocus="confirm-button">
+    <ui-confirm header="Delete" @confirmed="deleteBtn" :show.sync="showdel" close-on-confirm autofocus="confirm-button">
         Do you want to delete this? May prevent the system from running!
     </ui-confirm>
 </div>
@@ -90,7 +90,7 @@ export default {
                 beforeDel: function() {
                     this.showdel = true;
                 },
-                delete() {
+                deleteBtn() {
                     let _self = this;
                     let rows = _self.selectedRow;
                     if (rows.length === 1) {
@@ -104,7 +104,7 @@ export default {
                     } else {
                         Message({
                             type: 'error',
-                            message: 'Please select a valid node.'
+                            message: _self.$t('system.message.selectNode')
                         })
                     }
                 },
@@ -121,7 +121,7 @@ export default {
                     } else {
                         Message({
                             type: 'error',
-                            message: 'Please select a valid node.'
+                            message: _self.$t('system.message.selectNode')
                         })
                     }
                 }

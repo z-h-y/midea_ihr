@@ -6,37 +6,37 @@
 </style>
 
 <template lang="html">
-<position-selector :show.sync="position" :handle-comfirmed="selectPosition"></position-selector>
-<div class="content-wrap ihr-staff-interns">
-  <panel :title="$t('staff.internsJoinCompany')" class="panel-b mb-suitable" header="panel-header">
-    <employee-common-info :employee-id="employeeId" :edit-able="false"></employee-common-info>
-    <v-form v-ref:myform :model="intJoinCom" :schema="intJoinComSchema" label-width="200" label-suffix="" :cols="1" form-style="int-join-com-form">
-        <text-increment property="source" editor-width="400"></text-increment>
-        <text-increment property="employeeCode" editor-width="400"></text-increment>
-        <text-field property="localEmployeeCode" editor-width="400"></text-field>
-        <text-field property="hireDate" editor-width="400" :min-date="format(registerDate)"></text-field>
-        <select-field property="hireDateRules" :mapping="workingAge" editor-width="400"></select-field>
-        <text-field property="hireBeginDate" editor-width="400" v-show="intJoinCom.hireDateRules === '3'"></text-field>
-        <text-field property="preferredName" editor-width="400"></text-field>
-        <text-field type="selector" :readonly="true" :show.sync="position" property="positionName" editor-width="400"></text-field>
-        <text-field property="businessCardTitle" editor-width="400"></text-field>
-        <text-field :placeholder="$t('staff.selectPosition')" :readonly="true" property="unitName" editor-width="400"></text-field>
-        <select-field property="mibGrade" editor-width="400" :mapping="mibGradeMapping"></select-field>
-        <text-field :readonly="true" property="localJobGrade" editor-width="400"></text-field>
-        <!-- <select-field property="employementCategory" editor-width="400"></select-field> -->
-        <text-field property="officeAddress" editor-width="400"></text-field>
-        <radiogroup-field :mapping="whetherType" property="isProbation"></radiogroup-field>
-        <select-field editor-width="400" property='probationType' :mapping="probationType" v-show="intJoinCom.isProbation === '1'"></select-field>
-        <select-field editor-width="400" :select-change="changeProbationDay" property='probationDay' :mapping="duration" v-show="intJoinCom.isProbation === '1' && intJoinCom.probationType === '1'"></select-field>
-        <text-field v-show="intJoinCom.isProbation === '1'" property="beginDate" :min-date="format(intJoinCom.hireDate)" :max-date="format(intJoinCom.endDate)" editor-width="400"></text-field>
-        <text-field v-show="intJoinCom.isProbation === '1'" property="endDate" :min-date="format(intJoinCom.beginDate)" editor-width="400"></text-field>
-        <!-- <select-field property="employeeStatus" editor-width="400" :mapping="employeeStatus"></select-field> -->
-    </v-form>
-    <employee-submit v-ref:employeesubmit :form-confirmed="confirmed" :form-cancel="cancel" :is-form-validate="isFormValidate"></employee-submit>
-  </panel>
+<div>
+    <position-selector :show="position" :handle-comfirmed="selectPosition"></position-selector>
+    <div class="content-wrap ihr-staff-interns">
+      <panel :title="$t('staff.internsJoinCompany')" class="panel-b mb-suitable" header="panel-header">
+        <employee-common-info :employee-id="employeeId" :edit-able="false"></employee-common-info>
+        <v-form ref="myform" :model="intJoinCom" :schema="intJoinComSchema" label-width="200" label-suffix="" :cols="1" form-style="int-join-com-form">
+            <text-increment property="source" editor-width="400"></text-increment>
+            <text-increment property="employeeCode" editor-width="400"></text-increment>
+            <text-field property="localEmployeeCode" editor-width="400"></text-field>
+            <text-field property="hireDate" editor-width="400" :min-date="format(registerDate)"></text-field>
+            <select-field property="hireDateRules" :mapping="workingAge" editor-width="400"></select-field>
+            <text-field property="hireBeginDate" editor-width="400" v-show="intJoinCom.hireDateRules === '3'"></text-field>
+            <text-field property="preferredName" editor-width="400"></text-field>
+            <text-field type="selector" :readonly="true" :show="position" property="positionName" editor-width="400"></text-field>
+            <text-field property="businessCardTitle" editor-width="400"></text-field>
+            <text-field :placeholder="$t('staff.selectPosition')" :readonly="true" property="unitName" editor-width="400"></text-field>
+            <select-field property="mibGrade" editor-width="400" :mapping="mibGradeMapping"></select-field>
+            <text-field :readonly="true" property="localJobGrade" editor-width="400"></text-field>
+            <!-- <select-field property="employementCategory" editor-width="400"></select-field> -->
+            <text-field property="officeAddress" editor-width="400"></text-field>
+            <radiogroup-field :mapping="whetherType" property="isProbation"></radiogroup-field>
+            <select-field editor-width="400" property='probationType' :mapping="probationType" v-show="intJoinCom.isProbation === '1'"></select-field>
+            <select-field editor-width="400" :select-change="changeProbationDay" property='probationDay' :mapping="duration" v-show="intJoinCom.isProbation === '1' && intJoinCom.probationType === '1'"></select-field>
+            <text-field v-show="intJoinCom.isProbation === '1'" property="beginDate" :min-date="format(intJoinCom.hireDate)" :max-date="format(intJoinCom.endDate)" editor-width="400"></text-field>
+            <text-field v-show="intJoinCom.isProbation === '1'" property="endDate" :min-date="format(intJoinCom.beginDate)" editor-width="400"></text-field>
+            <!-- <select-field property="employeeStatus" editor-width="400" :mapping="employeeStatus"></select-field> -->
+        </v-form>
+        <employee-submit ref="employeesubmit" :form-confirmed="confirmed" :form-cancel="cancel" :is-form-validate="isFormValidate"></employee-submit>
+      </panel>
+    </div>
 </div>
-
-
 </template>
 
 <script type="text/ecmascript-6">
@@ -229,10 +229,10 @@ export default {
              }
           }
         },
-        ready() {
+        mounted() {
           this.intJoinCom = this.intJoinComSchema.newModel();
         },
-        attached() {},
+        
         methods: {
           changeProbationDay(value) {
             if (!this.intJoinCom.beginDate) {
@@ -263,7 +263,7 @@ export default {
             if (this.intJoinCom.hireDateRules !== '3') {
               this.intJoinCom.hireBeginDate = this.intJoinCom.hireBeginDate || new Date();
             }
-            var passed = this.intJoinCom.$schema.isFormValidate(this.$refs.myform);
+            var passed = this.$refs.myform.isFormValidate();
             if (this.intJoinCom.hireDateRules !== '3') {
               this.intJoinCom.hireBeginDate = '';
             }
@@ -273,7 +273,7 @@ export default {
             return passed;
           },
           cancel() {
-            this.$route.router.go({name: 'interns'});
+            this.$router.push({name: 'interns'});
           },
           confirmed() {
               var data = Object.assign({}, this.intJoinCom);
@@ -295,7 +295,7 @@ export default {
                     type: 'success',
                     message: this.$t('staff.message.internsJoinSuccess')
                 });
-                this.$route.router.go({name: 'interns'});
+                this.$router.push({name: 'interns'});
               },function(response) {
                   this.$refs.employeesubmit.loading = false;
               });

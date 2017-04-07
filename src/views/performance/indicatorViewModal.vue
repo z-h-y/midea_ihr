@@ -4,13 +4,13 @@
 }
 </style>
 <template>
-<ui-modal id="select-indicator" :show.sync="show" type="large" header="Indicators Settings">
-  <vuetable :api-url="tableUrl" :selected-to="selectedRow" :append-params="tableParams"  :fields="columns"  pagination-path = "" table-wrapper=".vuetable-wrapper pl16 pr16 pb16" :sort-order="sortOrder" per-page="10">
+<ui-modal ref="modal" id="select-indicator" :show="show" type="large" :title="$t('performance.indicatorSetting')">
+  <vuetable ref="vuetable" :api-url="tableUrl" :selected-to="selectedRow" :append-params="tableParams"  :fields="columns"  pagination-path = "" table-wrapper=".vuetable-wrapper pl16 pr16 pb16" :sort-order="sortOrder" per-page="10">
   </vuetable>
  </ui-modal>
  </template>
 
-<script type="text/ecmascript6">
+<script>
 import {
     removeClass, addClass
 }
@@ -54,6 +54,7 @@ export default {
     }
   },
   data() {
+    var self = this;
     return {
       tableUrl:'/performance/schemeInfos/indicatorList',
       tableData:[],
@@ -62,51 +63,48 @@ export default {
       columns:[
         {
           name: 'indicatorName',
-          title: 'Indicator Name'
+          title: this.$t('performance.indicatorName')
         },
         {
           name: 'unit',
-          title: 'Unit'
+          title: this.$t('performance.unit')
         },
         {
           name: 'target',
           dataClass: 'tr',
-          title: 'Target'
+          title: this.$t('performance.target')
         },
         {
           name: 'weight',
           dataClass: 'tr',
-          title: 'Weight(%)'
+          title: this.$t('performance.weight') + '(%)'
         },
         {
           name: 'criteria',
-          title: 'Criteria'
+          title: this.$t('performance.criteria')
         },
         {
           name: 'mandatory',
-          title: 'Mandatory',
+          title: this.$t('performance.mandatory'),
           callback: function(value) {
-              return value == '1' ? "YES" : "NO"
+              return value == 1 ? self.$t('common.yes') : self.$t('common.no')
           }
         },
       ]
     };
   },
-  events: {
-    'indModal:refresh': function(params) {
-
-        this.initTable(params);
-    },
-  },
-  ready() {
-    // this.initTable();
-  },
   methods: {
+    open() {
+      this.$refs.modal.open()
+    },
+    close() {
+      this.$refs.modal.close()
+    },
     initTable(params) {
         this.params = params;
         this.tableUrl = this.type == "organization" ? "/performance/schemeInfos/department/indicatorList" : "/performance/schemeInfos/indicatorList";
         this.$nextTick(()=>{
-          this.$broadcast('vuetable:refresh');
+          this.$refs.vuetable.reloadData();
         })
     }
   }

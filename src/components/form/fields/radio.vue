@@ -2,7 +2,7 @@
   <div class='field d-radiogroupfield' :class="{ 'validate-error': hintType === 'error', require: isRequired, 'field-hashint': !hideHint }">
     <label :style="{ width: labelWidth != null ? labelWidth + 'px' : '' }" v-show="!hideLabel">{{ labelText }}</label>
     <div class="field-content" :style="{ marginLeft: labelWidth != null ? labelWidth + 'px' : '' }">
-      <radio-group :value.sync="editorValue" v-ref:group><radio v-for="(key, val) in mapping" :value="val" @click="selectRadio">{{key}}</radio><slot></slot></radio-group>
+      <radio-group :value.sync="editorValue" ref="group"><radio v-for="(val, key) in actualMapping" :key="key.id" :value="val" @click="selectRadio">{{key}}</radio><slot></slot></radio-group>
       <div class="field-hint" v-if="!hideHint">
         <i class='icon' :class="{ 'icon-error': hintType === 'error', 'icon-warning': hintType === 'warning' }"></i>{{ hintMessage || '' }}
       </div>
@@ -31,7 +31,17 @@
 
   export default {
     props: merge({}, common.props),
-
+    data() {
+      return {
+        form: {},
+        model: {},
+        editorFocused: true,
+        labelWidth: 120,
+        label: '',
+        hintMessage: '',
+        actualMapping: {}
+      };
+    },
     computed: merge({
       $radioName() {
         return this.$refs.group.$radioName;
@@ -59,7 +69,7 @@
     },
 
     watch: {
-      mapping() {
+      actualMapping() {
         let oldValue = this.$refs.group.value;
         this.$refs.group.value = null;
         Vue.nextTick(() => {
@@ -74,7 +84,7 @@
 
     destroyed: common.onDestroyed,
 
-    compiled: common.onCompiled,
+    mounted: common.onMounted,
 
     methods: merge({
       selectRadio() {

@@ -102,35 +102,35 @@
 
 <template lang="html">
 
-<ui-modal class="person-select" :show.sync="show.modal" type="large" header="Select Organization" body="" :backdrop-dismissible="false">
+<ui-modal ref="modal" class="person-select" :show.sync="show.modal" type="large" :title="$t('selectors.selectOrganization')" body="" :backdrop-dismissible="false">
     <div class="leftRight-panel bg-f5f5f5 fix">
         <div class="left-panel p10">
-            <tree :data="regions" :level-config="levelConfig" :show-checkbox="showCheckbox" v-ref:tree :click-node="clickNode"></tree>
+            <tree :data="regions" :level-config="levelConfig" :show-checkbox="showCheckbox" ref="tree" :click-node="clickNode"></tree>
         </div>
         <div class="right-panel">
             <div class="search-ctx">
                 <div class="search-pos">
                     <span class="search-bg">
-                 <input @keydown="goSearch($event)" class="search-input" placeholder="Search" type="text" v-model="searchTxt" />
+                 <input @keydown="goSearch($event)" class="search-input" :placeholder="$t('button.search')" type="text" v-model="searchTxt" />
                  <span @click="search" class="search-btn"><i class="fa fa-search"></i></span>
                     </span>
                 </div>
             </div>
             <div class="vuetable-wrapper">
-                <vuetable v-ref:vuetable :api-url="selectedTableUrl" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="tableColumns" per-page="10" :load-success-callback="loadSuccessCallback" load-on-start="false">
+                <vuetable ref="vuetable" :api-url="selectedTableUrl" :selected-to="selectedRow" pagination-path="" table-wrapper=".vuetable-wrapper" :fields="tableColumns" per-page="10" :load-success-callback="loadSuccessCallback" load-on-start="false">
                 </vuetable>
             </div>
         </div>
     </div>
     <div class="bottom-panel">
-      <span class="all-selected-person" v-for="item in allSelectedPer" track-by="$index">
+      <span class="all-selected-person" v-for="(item, index) in allSelectedPer" track-by="index">
         {{item.unitShortName}}
-        <i class="rm-btn fa fa-times" aria-hidden="true" @click="delPer($index)"></i>
+        <i class="rm-btn fa fa-times" aria-hidden="true" @click="delPer(index)"></i>
       </span>
     </div>
     <div slot="footer">
-        <ui-button @click="yes" color="primary">Confirm</ui-button>
-        <ui-button @click="show.modal = false">Cancel</ui-button>
+        <ui-button @click="yes" color="primary">{{$t('button.confirm')}}</ui-button>
+        <ui-button @click="close">{{$t('button.cancel')}}</ui-button>
     </div>
 </ui-modal>
 
@@ -167,13 +167,13 @@ export default {
           title: ''
         }, {
             name: 'unitShortName',
-            title: 'Organization Name'
+            title: this.$t('organization.orgDetails.orgName')
         },{
             name: 'employeeName',
-            title: 'Responsible for Performace'
+            title: this.$t('selectors.responsibleforPerformace')
         }, {
             name: 'schemeCategory',
-            title: 'Organization Type',
+            title: this.$t('performance.organizationType'),
             callback(value) {
               return _self.fixCategory(value);
             }
@@ -236,29 +236,26 @@ export default {
       'show.modal': function(newVal) {
         if (newVal === true) {
           this.getTreeData();
-          this.$broadcast("vuetable:refresh");
+          this.$refs.vuetable.reloadData()
         }
       }
     },
-    computed: {},
+    computed: {
+    },
     created() {
       var self = this;
       getDictMapping('SCHEME_CATEGORY').then(function(res) {
         self.categoryDist = res;
       })
     },
-    // ready() {
-    //     this.$http.get('/org/orgs/parent').then((response) => {
-    //         // this.orgGroup = response.data;
-    //         this.regions = response.data;
-    //     }, (response) => {
-    //         Message({
-    //             type: 'error',
-    //             message: response.statusText
-    //         });
-    //     });
-    // },
+
     methods: {
+      open() {
+          this.$refs['modal'].open();
+        },
+        close() {
+          this.$refs['modal'].close()
+        },
         getTreeData() {
           this.$http.get('/org/orgs/parent').then((response) => {
               // this.orgGroup = response.data;
@@ -283,13 +280,12 @@ export default {
         },
         yes() {
             if (this.allSelectedPer.length > 0) {
-                this.show.modal = false;
+                this.close();
                 this.handleComfirmed(this.allSelectedPer, this.orgGroup);
-                this.$dispatch('selected-org', this.allSelectedPer);
             } else {
                 Message({
                     type: 'error',
-                    message: 'Please select a valid node.'
+                    message: this.$t("performance.message.reportManage")
                 })
             }
         },

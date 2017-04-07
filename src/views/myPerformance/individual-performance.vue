@@ -301,7 +301,7 @@
     </div>
     <div class="total-indicators-head">
         <div class="bte bg">
-            <h3 class="head-title"> Indicators（Weight 100%）</h3>
+            <h3 class="head-title"> {{$t('myperformance.indicatorsWeight')}}</h3>
         </div>
     </div>
     <div id="indicators-ctn-wrap" class="indicators-ctn-wrap">
@@ -343,8 +343,8 @@
                 <text-field property='dataSources' editor-width="400"></text-field>
                 <div class='field'>
                     <div class="btn-wrap">
-                        <ui-button color="primary mr10" @click="handleItemSubmit(item.model,index,item)">Submit</ui-button>
-                        <ui-button class="btn-default-bd" @click="handleCancelEdit(index,item)" type="flat">Cancel</ui-button>
+                        <ui-button color="primary mr10" @click="handleItemSubmit(item.model,index,item)">{{$t('button.submit')}}</ui-button>
+                        <ui-button class="btn-default-bd" @click="handleCancelEdit(index,item)" type="flat">{{$t('button.cancel')}}</ui-button>
                     </div>
                 </div>
             </v-form>
@@ -359,8 +359,8 @@
                 <text-field property='dataSources' editor-width="400"></text-field>
                 <div class='field'>
                     <div class="btn-wrap">
-                        <ui-button color="primary mr10" @click="handleAddSubmit(item)">Submit</ui-button>
-                        <ui-button class="btn-default-bd" @click="handleCancelAdd()" type="flat">Cancel</ui-button>
+                        <ui-button color="primary mr10" @click="handleAddSubmit(item)">{{$t('button.submit')}}</ui-button>
+                        <ui-button class="btn-default-bd" @click="handleCancelAdd()" type="flat">{{$t('button.cancel')}}</ui-button>
                     </div>
                 </div>
             </v-form>
@@ -374,14 +374,14 @@
         </div>
         <div class="indicators-item">
             <div class="add-indicators">
-                <i class="fa fa-plus-circle" aria-hidden="true" @click="handleAdd"></i><span class="add-txt">Add New Indicator</span>
+                <i class="fa fa-plus-circle" aria-hidden="true" @click="handleAdd"></i><span class="add-txt">{{$t('performance.addNewIndicator')}}</span>
             </div>
         </div>
     </div>
     <div id="process-history" class="process-history">
         <div class="process-history-head">
             <div class="bte bg">
-                <h3 class="head-title">Process History</h3>
+                <h3 class="head-title">{{$t('myperformance.viewprocess.processHistory')}}</h3>
             </div>
         </div>
         <div class="process-history-ctn">
@@ -390,7 +390,7 @@
                     <div class="img-wrap">
                         <div class="valign">
                             <div class="valign-ctn">
-                                <img class="valign-inner" src='/static/images/public/xwz.png'>
+                                <img class="valign-inner" src='/assets/images/public/xwz.png'>
                             </div>
                         </div>
                     </div>
@@ -403,56 +403,56 @@
                     <div class="img-wrap">
                         <div class="valign">
                             <div class="valign-ctn">
-                                <img class="valign-inner" src='/static/images/public/xwz1.png'>
+                                <img class="valign-inner" src='/assets/images/public/xwz1.png'>
                             </div>
                         </div>
                     </div>
                     <div class="text">
                         <p class="one">Tom</p>
                         <p>Applicant</p>
-                        <ui-button class="btn-default-bd modify" @click="handleCancel" type="flat">Modify Approval</ui-button>
+                        <ui-button class="btn-default-bd modify" @click="handleCancel" type="flat">{{$t('myperformance.furnish.modifyApproval')}}</ui-button>
                     </div>
                 </li>
                 <li class="process-history-item">
                     <div class="img-wrap">
                         <div class="valign">
                             <div class="valign-ctn">
-                                <img class="valign-inner" src='/static/images/public/xwz2.png'>
+                                <img class="valign-inner" src='/assets/images/public/xwz2.png'>
                             </div>
                         </div>
                     </div>
                     <div class="text">
                         <p class="one">Tom</p>
                         <p>Applicant</p>
-                        <ui-button class="btn-default-bd modify" @click="handleCancel" type="flat">Modify Approval</ui-button>
+                        <ui-button class="btn-default-bd modify" @click="handleCancel" type="flat">{{$t('myperformance.furnish.modifyApproval')}}</ui-button>
                     </div>
                 </li>
                 <li class="process-history-item">
                     <div class="img-wrap">
                         <div class="valign">
                             <div class="valign-ctn">
-                                <img class="valign-inner" src='/static/images/public/xwz3.png'>
+                                <img class="valign-inner" src='/assets/images/public/xwz3.png'>
                             </div>
                         </div>
                     </div>
                     <div class="text">
                         <p class="one">Tom</p>
                         <p>Applicant</p>
-                        <ui-button class="btn-default-bd modify" @click="handleCancel" type="flat">Modify Approval</ui-button>
+                        <ui-button class="btn-default-bd modify" @click="handleCancel" type="flat">{{$t('myperformance.furnish.modifyApproval')}}</ui-button>
                     </div>
                 </li>
                 <li class="process-history-item">
                     <div class="img-wrap">
                         <div class="valign">
                             <div class="valign-ctn">
-                                <img class="valign-inner" src='/static/images/public/xwz3.png'>
+                                <img class="valign-inner" src='/assets/images/public/xwz3.png'>
                             </div>
                         </div>
                     </div>
                     <div class="text">
                         <p class="one">Tom</p>
                         <p>Applicant</p>
-                        <ui-button class="btn-default-bd modify" @click="handleCancel" type="flat">Modify Approval</ui-button>
+                        <ui-button class="btn-default-bd modify" @click="handleCancel" type="flat">{{$t('myperformance.furnish.modifyApproval')}}</ui-button>
                     </div>
                 </li>
             </ul>
@@ -461,7 +461,7 @@
     <div id="process-history-list">
         <div class="process-history-head">
             <div class="bte bg">
-                <h3 class="head-title">Click Here To Hide Process Record</h3>
+                <h3 class="head-title">{{$t('myperformance.viewprocess.hideProcessRecord')}}</h3>
             </div>
         </div>
         <div class="process-history-ctn">
@@ -471,10 +471,10 @@
     </div>
 
 </panel>
-<ui-confirm header="Delete" type="danger" confirm-button-text="Delete" confirm-button-icon="delete" deny-button-text="Cancel" @confirmed="deleteConfirmed" @denied="deleteDenied" :show.sync="show.deleteConfirm" close-on-confirm>
-    Are you sure you want to delete this?
+<ui-confirm :header="$t('button.delete')" type="danger" :confirm-button-text="$t('button.delete')" confirm-button-icon="delete" :deny-button-text="$t('button.cancel')" @confirmed="deleteConfirmed" @denied="deleteDenied" :show.sync="show.deleteConfirm" close-on-confirm>
+    {{$t('common.deleteConfirm')}}
 </ui-confirm>
-<indicator-selector v-ref:indicatorselector :show.sync="showModel" :multiple="false" :handle-comfirmed.sync="indicatorCallBack">
+<indicator-selector ref="indicators"elector :show.sync="showModel" :multiple="false" :handle-comfirmed.sync="indicatorCallBack">
 
 </indicator-selector>
 

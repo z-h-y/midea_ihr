@@ -145,8 +145,8 @@
 <template lang="html">
 <div class="content-wrap ihr-performance-orgSchemeView">
   <panel :title="panelTitle" class="panel-b" header="panel-header">
-      <ui-tabs type="text" background-color="clear" text-color="gray" text-color-active="primary" :active-tab = "activeTab">
-          <ui-tab header="Basic Information" id = 'basic'>
+      <ui-tabs ref="uitabs" type="text" background-color="clear" text-color="gray" text-color-active="primary" @tab-change="activeTabChanged">
+          <ui-tab :title="$t('performance.basicInformation')" id='basic'>
             <v-form :model="basicModel" :schema="basicSchema" label-width="150" label-suffix="" :cols="1" form-style="org-form">
               <text-increment property='schemeName' editor-width="400"></text-increment>
               <text-increment property="restrictYear" editor-width="400"></text-increment>
@@ -158,40 +158,35 @@
             </v-form>
             <div class="btn-group">
                 <!-- <ui-button @click="basicNext" color="primary mr10">Next</ui-button> -->
-                <ui-button @click="cancel" class="btn-default-bd" type="flat">Cancel</ui-button>
+                <ui-button @click="cancel" class="btn-default-bd" type="flat">{{$t('button.cancel')}}</ui-button>
             </div>
           </ui-tab>
 
-          <ui-tab header="Employees" id = 'employees'>
-            <!-- <div class = "field">
-                <label class="prop_name">Select Employee(s)</label><ui-button @click = "empShow.modal = true" class="query-btn-reset btn-default-bd" type="flat">select</ui-button>
-            </div> -->
+          <ui-tab :title="$t('performance.employees')" id='employees'>
             <div class="vuetable-wrapper">
-              <vuetable v-ref:aEmployeesTable :api-url="tableUrl" :selected-to="selectedRow" :append-params="empParams"  :fields="columns"  pagination-path = "" table-wrapper=".vuetable-wrapper pl16 pr16 pb16" :sort-order="sortOrder" :item-actions="itemActions" per-page="10">
+              <vuetable ref="aemployeestable" :api-url="tableUrl" :selected-to="selectedRow" :append-params="empParams" @action="action" :fields="columns"  pagination-path = "" table-wrapper=".vuetable-wrapper pl16 pr16 pb16" :sort-order="sortOrder" :item-actions="itemActions" per-page="10">
               </vuetable>
             </div>
             <div class="btn-group">
-                <!-- <ui-button @click="toProcess" color="primary mr10">Next</ui-button>
-                <ui-button @click="tabChange('basic')" class="btn-default-bd" type="flat">Back</ui-button> -->
-                <ui-button @click="cancel" class="btn-default-bd" type="flat">Cancel</ui-button>
+                <ui-button @click="cancel" class="btn-default-bd" type="flat">{{$t('button.cancel')}}</ui-button>
             </div>
-            <!-- <person-selector v-ref:'employeesModal' :show.sync="empShow"></person-selector> -->
-            <indview-model :show.sync="show.indview"></indview-model>
+            <indview-model ref="indviewmodel" :show="show.indview"></indview-model>
             <ui-confirm
-              @confirmed="deleteConfirmed" @denied="deleteDenied" :show.sync="show.delConfirm"
+                ref="delconfirm"
+              @confirm="deleteConfirmed" @denied="deleteDenied" :show="show.delConfirm"
               close-on-confirm>
-              Do you want to delete this?
+              {{$t('common.deleteConfirm')}}
             </ui-confirm>
           </ui-tab>
 
-          <ui-tab header="Process" id = 'process'>
+          <ui-tab :title="$t('performance.process')" id='process'>
             <div class="field-row">
-                <div class="cell field"><label>Process Name</label></div>
+                <div class="cell field"><label>{{$t('performance.processName')}}</label></div>
                 <div class="cell field"><label class="label-proccess">{{processData.processName}}</label></div>
             </div>
             <div class="process-set-ctn">
                 <ul class="fix cell-g">
-                    <template v-for="(index,item) in processData.nodeList">
+                    <template v-for="(item, index) in processData.nodeList">
                         <li class="process-set-item cell-1-5">
                             <div class="img-wrap process-default">
                                 <div class="valign">
@@ -209,26 +204,19 @@
                                 <text-increment property='nodeWeight' editor-width="100"></text-increment>
                               </div>
                             </v-form>
-                            <!-- <div class="text operationText" v-show="item.stageName == 'performanceEvaluate'">
-                              <v-form :model="item" :schema="processSchema" label-width="0" form-style="weight-form">
-                                <text-increment property='nodeWeight' editor-width="100"></text-increment><label class="percentClass">%</label>
-                              </v-form>
-                            </div> -->
                         </li>
                     </template>
                 </ul>
             </div>
             <div class="vuetable-wrapper">
-              <vuetable v-ref:proTable :api-url="proTableUrl" :append-params="proParams"  :fields="proColumns"  pagination-path = "" table-wrapper=".vuetable-wrapper pl16 pr16 pb16" :sort-order="sortOrder" :item-actions="proActItem" per-page="10">
+              <vuetable ref="protable" :api-url="proTableUrl" :append-params="proParams"  :fields="proColumns"  pagination-path = "" table-wrapper=".vuetable-wrapper pl16 pr16 pb16" :sort-order="sortOrder" :item-actions="proActItem" per-page="10">
               </vuetable>
             </div>
             <div class="btn-group">
-                <!-- <ui-button @click="submit" color="primary mr10">Submit</ui-button>
-                <ui-button @click="tabChange('employees')" class="btn-default-bd" type="flat">Back</ui-button> -->
-                <ui-button @click="cancel" class="btn-default-bd" type="flat">Cancel</ui-button>
+                <ui-button @click="cancel" class="btn-default-bd" type="flat">{{$t('button.cancel')}}</ui-button>
             </div>
-            <ui-confirm @confirmed="submitConfirmed" :show.sync="show.submitConfirm" close-on-confirm>
-                Do you want to submit this?
+            <ui-confirm ref="submitconfirm" @confirm="submitConfirmed" :show="show.submitConfirm" close-on-confirm>
+                $t('common.submitConfirm')
             </ui-confirm>
           </ui-tab>
       </ui-tabs>
@@ -236,7 +224,7 @@
 </div>
 </template>
 
-<script type="text/ecmascript-6">
+<script>
 import Vue from 'vue';
 import {
     getDictMapping,
@@ -253,113 +241,114 @@ import {
 } from '../../components/basic/message';
 import indicatorView from './indicatorViewModal.vue';
 
-let basicSchema = new Schema({
-    schemeName: {
-        label: 'Scheme Name',
-        required: true,
-        whitespace: false
-    },
-    restrictYear: {
-        label: 'Restrict To Year',
-        required: true,
-        whitespace: false,
-        mapping: function() {
-            return getDictMapping('YEAR');
-        }
-    },
-    frequencyName: {
-        label: 'Frequency',
-        whitespace: false
-    },
-    schemePeriodName: {
-        label: 'Scheme Period',
-        whitespace: false
-    },
-    templateId: {
-        label: 'Select Template',
-        required: true,
-        whitespace: false,
-        mapping: function() {
-            return Vue.http.get(`/performance/department/templates`).then((response) => {
-                let data = response.data.data;
-                if (data) {
-                    let result = {};
-                    if (data && data instanceof Array) {
-                        for (let i = 0; i < data.length; i++) {
-                            result[data[i].templateName] = data[i].templateId
-                        }
-                        return result;
-                    }
-                }
-            })
-        }
-    },
-    templateName: {
-        label: 'Select Template',
-        required: true,
-        whitespace: false
-    },
-    startDate: {
-        label: 'Start Date',
-        required: true,
-        type: 'datetime',
-        default () {
-            return new Date();
-        }
-    },
-    endDate: {
-        label: 'End Date',
-        required: true,
-        type: 'datetime',
-        default () {
-            return new Date();
-        }
-    }
-});
-let processSchema = new Schema({
-    processId: {
-        label: '',
-        required: false,
-        whitespace: false,
-        mapping: function() {
-            return Vue.http.get(`/performance/processTemplates/dropdownList`).then((response) => {
-
-                let data = response.data;
-                if (data) {
-                    let result = {};
-                    if (data && data instanceof Array) {
-                        for (let i = 0; i < data.length; i++) {
-                            result[data[i].processTemplateName] = data[i].processTemplateId
-                        }
-                        return result;
-                    }
-                }
-            })
-        }
-    },
-    nodeWeight: {
-        mobile: true,
-        rules: {
-            type: 'number'
-        },
-        whitespace: false
-    },
-    employeeName: {
-        whitespace: false
-    },
-    processTemplateName: {
-        label: '',
-        whitespace: false
-    }
-
-});
-
 
 export default {
     data() {
         var self = this;
+        let basicSchema = new Schema({
+            schemeName: {
+                label: self.$t('performance.schemeName'),
+                required: true,
+                whitespace: false
+            },
+            restrictYear: {
+                label: self.$t('performance.restrictToYear'),
+                required: true,
+                whitespace: false,
+                mapping: function() {
+                    return getDictMapping('YEAR');
+                }
+            },
+            frequencyName: {
+                label: self.$t('performance.frequency'),
+                whitespace: false
+            },
+            schemePeriodName: {
+                label: self.$t('performance.schemePeriod'),
+                whitespace: false
+            },
+            templateId: {
+                label: self.$t('performance.selectTemplate'),
+                required: true,
+                whitespace: false,
+                mapping: function() {
+                    return Vue.http.get(`/performance/department/templates`).then((response) => {
+                        let data = response.data.data;
+                        if (data) {
+                            let result = {};
+                            if (data && data instanceof Array) {
+                                for (let i = 0; i < data.length; i++) {
+                                    result[data[i].templateName] = data[i].templateId
+                                }
+                                return result;
+                            }
+                        }
+                    })
+                }
+            },
+            templateName: {
+                label: self.$t('performance.selectTemplate'),
+                required: true,
+                whitespace: false
+            },
+            startDate: {
+                label: self.$t('staff.startDate'),
+                required: true,
+                type: 'datetime',
+                default () {
+                    return new Date();
+                }
+            },
+            endDate: {
+                label: self.$t('staff.endDate'),
+                required: true,
+                type: 'datetime',
+                default () {
+                    return new Date();
+                }
+            }
+        });
+        let processSchema = new Schema({
+            processId: {
+                label: '',
+                required: false,
+                whitespace: false,
+                mapping: function() {
+                    return Vue.http.get(`/performance/processTemplates/dropdownList`).then((response) => {
+
+                        let data = response.data;
+                        if (data) {
+                            let result = {};
+                            if (data && data instanceof Array) {
+                                for (let i = 0; i < data.length; i++) {
+                                    result[data[i].processTemplateName] = data[i].processTemplateId
+                                }
+                                return result;
+                            }
+                        }
+                    })
+                }
+            },
+            nodeWeight: {
+                mobile: true,
+                rules: {
+                    type: 'number'
+                },
+                whitespace: false
+            },
+            employeeName: {
+                whitespace: false
+            },
+            processTemplateName: {
+                label: '',
+                whitespace: false
+            }
+
+        });
+
+
         return {
-            panelTitle: 'View Individual Scheme',
+            panelTitle: this.$t('performance.viewIndividualScheme'),
             tableUrl: '/performance/schemeInfos/employeeList',
             empTableUrl: 'person/employees',
             proTableUrl: '/performance/schemeInfos/processList',
@@ -377,44 +366,43 @@ export default {
             empShow: {
                 modal: false
             },
-            activeTab: 'basic',
             basicSchema: basicSchema,
             basicModel: basicSchema.newModel(),
             processSchema: processSchema,
             processModel: processSchema.newModel(),
             itemActions: [{
                 name: 'view-item',
-                label: 'Indicator View',
+                label: this.$t('performance.indicatorView'),
                 icon: '',
                 class: 'operate'
             }, ],
             columns: [{
                     name: 'employeeName',
-                    title: 'Employee Name'
+                    title: this.$t('staff.employeeName')
                 },
                 {
                     name: 'employeeCode',
                     dataClass: 'tr',
-                    title: 'Employee ID'
+                    title: this.$t('staff.employeeId')
                 },
                 {
                     name: 'positionName',
-                    title: 'Position'
+                    title: this.$t('performance.position')
                 },
                 {
                     name: 'orgFullName',
-                    title: 'Organization'
+                    title: this.$t('staff.organization')
                 },
                 {
                     name: 'status',
-                    title: 'Status',
+                    title: this.$t('performance.status'),
                     callback(value) {
                       return self.fixStatusDist(value);
                     }
                 },
                 {
                     name: '__actions',
-                    title: 'Operate'
+                    title: this.$t('performance.operate')
                 }
             ],
             proActItem: [{
@@ -425,28 +413,28 @@ export default {
             }],
             proColumns: [{
                     name: 'employeeName',
-                    title: 'Employee Name'
+                    title: this.$t('staff.employeeName')
                 },
                 {
                     name: 'employeeCode',
                     dataClass: 'tr',
-                    title: 'Employee ID'
+                    title: this.$t('staff.employeeId')
                 },
                 {
                     name: 'positionName',
-                    title: 'Position'
+                    title: this.$t('performance.position')
                 },
                 {
                     name: 'approveStagesList',
-                    title: 'Approve Stages',
+                    title: this.$t('performance.approveStages'),
                     callback: function(value) {
                         let resStr = ""
                         if (!value instanceof Array) return;
                         value.forEach(function(item, index) {
-                          let approvePeople = item.approvePeople ? item.approvePeople.join(",") : "(no people)";
+                          let approvePeople = item.approvePeople ? item.approvePeople.join(",") : self.$t('performance.noPeople');
                           resStr += approvePeople;
                           if(index < (value.length-1)) {
-                            resStr += "<img class='wh-px40 br50 ml5 mr5' src='../../static/images/public/arrows.png' alt='' />";
+                            resStr += "<img class='wh-px40 br50 ml5 mr5' src='../../assets/images/public/arrows.png' alt='' />";
                           }
                         })
                         return resStr;
@@ -460,6 +448,11 @@ export default {
       getDictMapping('SCHEME_VALID_STATUS').then(function(res) {
         self.statusDist = res;
       });
+    },
+    mounted() {
+        this.$nextTick(function() {
+            this.initRoute()
+        })
     },
     components: {
         'indview-model': indicatorView,
@@ -505,23 +498,8 @@ export default {
                 this.$http.post('/performance/schemeInfos/createRelated', data, {
                     emulateJSON: true
                 }).then((response) => {
-                    this.$broadcast('vuetable:refresh');
+                    this.$refs.aemployeestable.reloadData()
                 });
-            }
-        },
-        'vuetable:action': function(action, data) {
-            this.empOperaterow = data;
-            if (action == 'view-item') {
-                let params = {
-                    schemeId: this.schemeId,
-                    employeeId: data.employeeId
-                };
-                this.show.indview = true;
-                this.$nextTick(() => {
-                    this.$broadcast('indModal:refresh', params);
-                })
-            } else if (action == 'delete-item') {
-                this.show.delConfirm = true;
             }
         },
         'indModal:submit': function(params) {
@@ -535,8 +513,26 @@ export default {
             }, (response) => {
                 //失败
             });
+        }
+    },
+
+    methods: {
+        action(action, data) {
+            this.empOperaterow = data;
+            if (action == 'view-item') {
+                let params = {
+                    schemeId: this.schemeId,
+                    employeeId: data.employeeId
+                };
+                this.$refs.indviewmodel.open()
+                this.$nextTick(() => {
+                    this.$refs.indviewmodel.initTable(params)
+                })
+            } else if (action == 'delete-item') {
+                this.$refs.delconfirm.open()
+            }
         },
-        'active-tab-changed': function(id) {
+        activeTabChanged(id) {
             if (id === 'basic') {
                 this.tabChange("basic", this.schemeId);
             } else if (id === 'employees') {
@@ -544,10 +540,7 @@ export default {
             } else {
                 this.tabChange("process", this.schemeId);
             }
-        }
-    },
-
-    methods: {
+        },
         basicNext() {
             this.tabChange("employees", this.schemeId);
         },
@@ -557,7 +550,7 @@ export default {
                 id: aid || this.schemeId || '0'
             };
             let name = 'individualSchemeView';
-            this.$router.go({
+            this.$router.push({
                 name: name,
                 params: param
             });
@@ -578,7 +571,7 @@ export default {
             })
         },
         submit() {
-            this.show.submitConfirm = true;
+            this.$refs.submitconfirm.open();
         },
         submitConfirmed() {
             this.forwardUrl('individualScheme');
@@ -593,12 +586,12 @@ export default {
                 }
             }).then((response) => {
                 _self.openMessage('success', this.$t('common.deleteSuccess'));
-                this.$broadcast('vuetable:refresh');
-                this.show.delConfirm = false;
+                this.$refs.aemployeestable.reloadData()
+                this.$refs.delconfirm.close()
             })
         },
         cancel() {
-            this.$router.go({
+            this.$router.push({
                 name: 'individualScheme',
             });
         },
@@ -628,25 +621,23 @@ export default {
         },
         forwardUrl(pathName, params) {
             params = params || {};
-            this.$router.go({
+            this.$router.push({
                 name: pathName,
                 params: params
             });
-            this.$router.go({
+            this.$router.push({
                 name: pathName,
                 params: params
             });
-        }
-    },
-    route: {
-        data(transition) {
+        },
+        initRoute() {
             let _self = this;
-            let step = transition.to.params.step;
-            _self.basicModel.id = transition.to.params.id;
+            let step = _self.$route.params.step;
+            _self.basicModel.id = _self.$route.params.id;
 
             if (_self.$route.name === 'individualSchemeView') {
                 if (!!step) {
-                    _self.activeTab = step;
+                    _self.$refs.uitabs.setActiveTab(step)
                     if (step === 'basic') {
                         initFormData('/performance/schemeInfos/detail', _self.basicModel, {
                             schemeId: this.schemeId
@@ -655,7 +646,7 @@ export default {
                             _self.basicModel.endDate = formatDate(new Date(_self.basicModel.endDate));
                         });
                     } else if (step === 'employees') {
-                        this.$broadcast('vuetable:refresh');
+                        this.$refs.aemployeestable.reloadData()
                     } else if (step === 'process') {
                         _self.processData.nodeList = [];
                         _self.$http.get('/performance/process/schemeProcessRatioList', {
